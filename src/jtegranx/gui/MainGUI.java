@@ -42,7 +42,7 @@ public class MainGUI extends javax.swing.JFrame {
         getContentPane().add(PayloadPathLabel, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 50, -1, 20));
 
         TopLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        TopLabel.setText("JTegraNX - Java TegraRcmSmash GUI by Dylan Wedman");
+        TopLabel.setText("JTegraNX - TegraRcmSmash GUI by Dylan Wedman");
         getContentPane().add(TopLabel, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 10, 580, -1));
         getContentPane().add(PayloadPath, new org.netbeans.lib.awtextra.AbsoluteConstraints(100, 50, 410, -1));
 
@@ -93,6 +93,8 @@ public class MainGUI extends javax.swing.JFrame {
 
             if (TegraRCM.detectRCMDevice()) {
                 TegraRCM.injectPayload(this, PayloadPath.getText(), null);
+                PayloadPath.setEditable(true);
+                Browse.setEnabled(true);
             } else {
                 Log.append("\nWaiting for RCM device");
                 Inject.setText("Cancel");
@@ -104,6 +106,8 @@ public class MainGUI extends javax.swing.JFrame {
                     while (Inject.getText().equals("Cancel")) {
                         if (TegraRCM.detectRCMDevice()) {
                             TegraRCM.injectPayload(MainGUI.this, PayloadPath.getText(), null);
+                            PayloadPath.setEditable(true);
+                            Browse.setEnabled(true);
                             Inject.setText("Inject");
                         }
                     }
