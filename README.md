@@ -4,3 +4,7 @@ A GUI for [TegraRcmSmash](https://github.com/rajkosto/TegraRcmSmash) written in 
 This program is bundled with the latest version of TegraRcmSmash and it is extracted from the .jar file when the program is launched and deleted when the program is closed.
 
 This program uses [usb4java](http://usb4java.org/index.html) to [detect the RCM device](./src/jtegranx/util/TegraRCM.java). Currently there is an issue where usb4java creates a temp directory that only contains libusb4java.dll, in normal circumstances this would be fine but it doesn't delete it when it's done with it and it always creates another one each time libusb is initialized (Thankfully only once each time this program is launched). I'm not sure why it does that and I will try to look for a fix on that.
+
+Because this program was written in Java, you will need to have it installed on your computer, you can download Java [here](https://www.java.com/en/).
+
+This program is only supported on Windows x64 Operating Systems, sorry for any inconvenience.
