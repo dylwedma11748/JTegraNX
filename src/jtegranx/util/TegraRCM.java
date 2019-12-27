@@ -107,7 +107,7 @@ public class TegraRCM {
                 JOptionPane.showMessageDialog(p, m, t, 0);
             }
         } else {
-            String m = "Re-extract TegraRcmSmash.exe?";
+            String m = "Unable to find or execute TegraRcmSmash. Re-extract?";
             String t = "JTegraNX Error";
             int omt = 0;
             String[] o = {"Yes", "No"};
