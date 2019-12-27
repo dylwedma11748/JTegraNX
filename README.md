@@ -7,4 +7,4 @@ This program uses [usb4java](http://usb4java.org/index.html) to [detect the RCM 
 
 Because this program was written in Java, you will need to have it installed on your computer, you can download Java [here](https://www.java.com/en/).
 
-This program is only supported on Windows x64 Operating Systems, sorry for any inconvenience.
+This program is only supported on Windows Operating Systems, sorry for any inconvenience.
