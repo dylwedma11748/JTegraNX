@@ -1,5 +1,5 @@
 # JTegraNX
-A GUI for TegraRcmSmash written in Java. This program is intended to be an alternate option for injecting a payload if you can't get [TegraRcmGUI](https://github.com/eliboa/TegraRcmGUI) to work properly.
+A GUI for [TegraRcmSmash](https://github.com/rajkosto/TegraRcmSmash) written in Java. This program is intended to be an alternate option for injecting a payload if you can't get [TegraRcmGUI](https://github.com/eliboa/TegraRcmGUI) to work properly.
 
 This program is bundled with the latest version of TegraRcmSmash and it is extracted from the .jar file when the program is launched and deleted when the program is closed.
 
