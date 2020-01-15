@@ -22,8 +22,17 @@ This program is only supported on Windows Operating Systems, sorry for any incon
 ## Using configs
 The new config system allows you to save what you entered in the "Payload Path" field and the "Arguments" field and load it again in another session.
 
-  ## Loading a config
-  Simply click on "Load Config" and JTegraNX will search the "configs" directory for any valid config files. Select the config you wish to use and click on "Load".
+## Loading a config
+Simply click on "Load Config" and JTegraNX will search the "configs" directory for any valid config files. Select the config you wish to use and click on "Load".
+
+## Saving a config
+Simple click on "Save Config" and enter a name for the config, it will be saved in the "configs" directory.
+
+## Bundled Payloads
+For any bundled payloads, JTegraNX will download them automatically, place them in the "payloads" directory, generate a config for them, and check for updates on them each time the program is launched. If an update for a payload is found, it will be taken care of.
+
+Currently bundled payloads:
+- [TegraExplorer](https://github.com/suchmememanyskill/TegraExplorer)
 
 # Credits
 - suchmememanyskill for allowing me to include [TegraExplorer](https://github.com/suchmememanyskill/TegraExplorer).
