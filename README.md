@@ -9,11 +9,12 @@ Because this program was written in Java, you will need to have it installed on 
 
 This program is only supported on Windows Operating Systems, sorry for any inconvenience.
 
-## Functions
+## Features
 - Payload injection (obviously)
 - Custom arguments
 - Config system (similar to favorites in [TegraRcmGUI](https://github.com/eliboa/TegraRcmGUI))
 - SD card mounting (Select "Load Config" to find it)
+- Bundled payloads
 
 ## Usage
 1. Choose payload or config
