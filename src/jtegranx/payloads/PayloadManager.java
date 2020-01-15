@@ -1,3 +1,24 @@
+/*
+
+JTegraNX - Another GUI for TegraRcmSmash
+
+Copyright (C) 2020 Dylan Wedman
+
+This program is free software; you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation; either version 2 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License along
+with this program; if not, write to the Free Software Foundation, Inc.,
+51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+
+ */
 package jtegranx.payloads;
 
 import java.io.BufferedReader;
@@ -19,28 +40,72 @@ public class PayloadManager {
     public static File payloadConfig;
 
     private static Payload tegraExplorer;
+    private static Payload lockpick_RCM;
+    
+    private static boolean tegraExplorerUpdate = false;
+    private static boolean lockpick_RCMupdate = false;
 
-    public static final Payload[] payloads = {null};
+    public static final Payload[] payloads = {null, null};
 
     public static void initPayloads() {
         new Thread() {
             @Override
             public void run() {
                 TegraExplorer.checkForUpdates();
+                Lockpick_RCM.checkForUpdates();
                 initPayloadFolder();
+                
                 tegraExplorer = TegraExplorer.update();
+                lockpick_RCM = Lockpick_RCM.update();
+
                 payloads[0] = tegraExplorer;
+                payloads[1] = lockpick_RCM;
 
                 if (tegraExplorer != null) {
                     if (!payloadExists(tegraExplorer)) {
+                        System.out.println("TegraExplorer not found in payloads directory. Downloading.");
                         downloadPayload(tegraExplorer);
-                    }
-                } else {
-                    if (tegraExplorer != null) {
+                    } else {
                         if (!getPayloadVersion(tegraExplorer).equals(tegraExplorer.getVersion()) && !tegraExplorer.getVersion().equals("")) {
+                            System.out.println("Updating TegraExplorer.");
+                            tegraExplorerUpdate = true;
                             new File(payloadDir.getAbsolutePath() + "\\TegraExplorer.bin").delete();
                             downloadPayload(tegraExplorer);
                         }
+                    }
+                } else {
+                    System.out.println("TegraExplorer update check returned null. Moving on.");
+                }
+
+                if (lockpick_RCM != null) {
+                    if (!payloadExists(lockpick_RCM)) {
+                        System.out.println("Lockpick_RCM not found in payloads directory. Downloading.");
+                        downloadPayload(lockpick_RCM);
+                    } else {
+                        if (!getPayloadVersion(lockpick_RCM).equals(lockpick_RCM.getVersion()) && !lockpick_RCM.getVersion().equals("")) {
+                            System.out.println("Updating Lockpick_RCM.");
+                            lockpick_RCMupdate = true;
+                            new File(payloadDir.getAbsolutePath() + "\\Lockpick_RCM.bin").delete();
+                            downloadPayload(tegraExplorer);
+                        }
+                    }
+                } else {
+                    System.out.println("Lockpick_RCM update check returned null. Moving on.");
+                }
+                
+                if (tegraExplorerUpdate) {
+                    System.out.println("Updated TegraExplorer.");
+                } else {
+                    if (tegraExplorer != null) {
+                        System.out.println("TegraExplorer is up to date.");
+                    }
+                }
+                
+                if (lockpick_RCMupdate) {
+                    System.out.println("Updated Lockpick_RCM.");
+                } else {
+                    if (lockpick_RCM != null) {
+                        System.out.println("Lockpick_RCM is up to date.");
                     }
                 }
 
@@ -103,7 +168,7 @@ public class PayloadManager {
 
             for (Payload payload : payloads) {
                 if (payload != null) {
-                    writer.append(payload.getName() + "Version=" + payload.getVersion());
+                    writer.println(payload.getName() + "Version=" + payload.getVersion());
                 }
             }
         } catch (IOException ex) {
