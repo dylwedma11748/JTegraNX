@@ -33,7 +33,9 @@ For any bundled payloads, JTegraNX will download them automatically, place them 
 
 ### Currently bundled payloads:
 - [TegraExplorer](https://github.com/suchmememanyskill/TegraExplorer)
+- [Lockpick_RCM](https://github.com/shchmue/Lockpick_RCM)
 
 # Credits
 - [suchmememanyskill](https://github.com/suchmememanyskill) for allowing me to include [TegraExplorer](https://github.com/suchmememanyskill/TegraExplorer).
 - [rajkosto](https://github.com/rajkosto) for [memloader](https://github.com/rajkosto/memloader) and [TegraRcmSmash](https://github.com/rajkosto/TegraRcmSmash).
+- [shchmue](https://github.com/shchmue) for [Lockpick_RCM](https://github.com/shchmue/Lockpick_RCM)
