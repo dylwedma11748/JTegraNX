@@ -1,3 +1,24 @@
+/*
+
+JTegraNX - Another GUI for TegraRcmSmash
+
+Copyright (C) 2020 Dylan Wedman
+
+This program is free software; you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation; either version 2 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License along
+with this program; if not, write to the Free Software Foundation, Inc.,
+51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+
+ */
 package jtegranx.util;
 
 import java.awt.Component;
@@ -22,6 +43,7 @@ public class Updater {
             @Override
             public void run() {
                 try {
+                    System.out.println("Checking for JTegraNX updates");
                     MainGUI.Log.append("Checking for updates");
                     String git = "https://github.com/dylwedma11748/JTegraNX/releases";
                     URL github = new URL(git);
@@ -41,7 +63,7 @@ public class Updater {
 
                                 if (currentVersionFloat < latestVersionFloat) {
                                     MainGUI.Log.append("\nUpdate detected");
-                                    int downloadUpdate = showOptionDialog(parent, "A new update has been released. Download Now?", "JTegraNX Update", YES_NO_OPTION, INFORMATION_MESSAGE, null, null, null);
+                                    int downloadUpdate = showOptionDialog(parent, "Latest Version: " + latestVersionFloat + "\nDownload now?", "New update available", YES_NO_OPTION, INFORMATION_MESSAGE, null, null, null);
 
                                     if (downloadUpdate == YES_OPTION) {
                                         FileFilter jar = new FileNameExtensionFilter("Jar files", "jar");
@@ -53,7 +75,7 @@ public class Updater {
                                         chooser.setMultiSelectionEnabled(false);
                                         chooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
 
-                                        int returnValue = chooser.showSaveDialog(null);
+                                        int returnValue = chooser.showSaveDialog(parent);
 
                                         if (returnValue == JFileChooser.APPROVE_OPTION) {
                                             String filePath = chooser.getSelectedFile().getAbsolutePath();
@@ -71,6 +93,7 @@ public class Updater {
                                             MainGUI.SaveConfig.setEnabled(true);
                                             MainGUI.LoadConfig.setEnabled(true);
                                             MainGUI.Reset.setEnabled(true);
+                                            break;
                                         }
                                     } else {
                                         MainGUI.Log.append("\nUpdate canceled");
@@ -78,18 +101,22 @@ public class Updater {
                                         MainGUI.SaveConfig.setEnabled(true);
                                         MainGUI.LoadConfig.setEnabled(true);
                                         MainGUI.Reset.setEnabled(true);
+                                        break;
                                     }
                                 } else if (latestVersionFloat < currentVersionFloat || currentVersionFloat == latestVersionFloat) {
+                                    System.out.println("JTegraNX is up to date.");
                                     MainGUI.Log.append("\nNo updates found");
                                     MainGUI.Inject.setEnabled(true);
                                     MainGUI.SaveConfig.setEnabled(true);
                                     MainGUI.LoadConfig.setEnabled(true);
                                     MainGUI.Reset.setEnabled(true);
+                                    break;
                                 }
                             }
                         }
                     }
                 } catch (IOException ex) {
+                    System.out.println("Unable to check for updates on JTegraNX. Reason: " + ex.getClass().getName() + " was thrown!");
                     MainGUI.Log.append("\n" + ex.getClass().getName() + " was thrown!");
                     MainGUI.Log.append("\nUnable to check for updates");
                     MainGUI.Inject.setEnabled(true);
