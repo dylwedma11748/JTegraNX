@@ -31,7 +31,7 @@ Simple click on "Save Config" and enter a name for the config, it will be saved 
 ## Bundled Payloads
 For any bundled payloads, JTegraNX will download them automatically, place them in the "payloads" directory, generate a config for them, and check for updates on them each time the program is launched. If an update for a payload is found, it will be taken care of.
 
-#### Currently bundled payloads:
+### Currently bundled payloads:
 - [TegraExplorer](https://github.com/suchmememanyskill/TegraExplorer)
 
 # Credits
