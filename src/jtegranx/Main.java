@@ -6,6 +6,8 @@ import java.util.logging.Logger;
 import javax.swing.JOptionPane;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
+import static jtegranx.util.ConfigManager.*;
+import jtegranx.payloads.PayloadManager;
 import static jtegranx.util.ResourceLoader.*;
 
 public class Main {
@@ -18,6 +20,8 @@ public class Main {
             try {
                 UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
                 loadResources();
+                generateSDConfig();
+                PayloadManager.initPayloads();
                 MainGUI gui = new MainGUI();
                 gui.setVisible(true);
             } catch (ClassNotFoundException | InstantiationException | IllegalAccessException | UnsupportedLookAndFeelException ex) {
