@@ -8,7 +8,6 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.swing.JOptionPane;
 import org.usb4java.Context;
 import org.usb4java.Device;
 import org.usb4java.DeviceDescriptor;
@@ -17,6 +16,7 @@ import org.usb4java.DeviceList;
 import org.usb4java.LibUsb;
 import org.usb4java.LibUsbException;
 import static jtegranx.util.ResourceLoader.*;
+import static javax.swing.JOptionPane.*;
 
 public class TegraRCM {
 
@@ -104,17 +104,17 @@ public class TegraRCM {
             } else {
                 String m = "Specified payload not found";
                 String t = "JTegraNX Error";
-                JOptionPane.showMessageDialog(p, m, t, 0);
+                showMessageDialog(p, m, t, 0);
             }
         } else {
             String m = "Unable to find or execute TegraRcmSmash. Re-extract?";
             String t = "JTegraNX Error";
             int omt = 0;
             String[] o = {"Yes", "No"};
-            int c = JOptionPane.showOptionDialog(p, m, t, omt, omt, null, o, null);
+            int c = showOptionDialog(p, m, t, omt, omt, null, o, null);
 
             if (c == omt) {
-                loadResources();
+                TegraRcmSmash = extract("TegraRcmSmash.exe");
             }
         }
     }
