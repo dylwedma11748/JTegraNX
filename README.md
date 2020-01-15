@@ -35,4 +35,4 @@ For any bundled payloads, JTegraNX will download them automatically, place them 
 - [TegraExplorer](https://github.com/suchmememanyskill/TegraExplorer)
 
 # Credits
-- suchmememanyskill for allowing me to include [TegraExplorer](https://github.com/suchmememanyskill/TegraExplorer).
+- @suchmememanyskill for allowing me to include [TegraExplorer](https://github.com/suchmememanyskill/TegraExplorer).
