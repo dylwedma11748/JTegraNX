@@ -22,7 +22,7 @@ This program is only supported on Windows Operating Systems, sorry for any incon
 ## Using configs
 The new config system allows you to save what you entered in the "Payload Path" field and the "Arguments" field and load it again in another session.
 
-  # Loading a config
+  ## Loading a config
   Simply click on "Load Config" and JTegraNX will search the "configs" directory for any valid config files. Select the config you wish to use and click on "Load".
 
 # Credits
