@@ -8,3 +8,22 @@ This program uses [usb4java](http://usb4java.org/index.html) to [detect the RCM 
 Because this program was written in Java, you will need to have it installed on your computer, you can download Java [here](https://www.java.com/en/).
 
 This program is only supported on Windows Operating Systems, sorry for any inconvenience.
+
+## Functions
+- Payload injection (obviously)
+- Custom arguments
+- Config system (similar to favorites in [TegraRcmGUI](https://github.com/eliboa/TegraRcmGUI))
+- SD card mounting (Select "Load Config" to find it)
+
+## Usage
+1. Choose payload or config
+2. Inject
+
+## Using configs
+The new config system allows you to save what you entered in the "Payload Path" field and the "Arguments" field and load it again in another session.
+
+  # Loading a config
+  Simply click on "Load Config" and JTegraNX will search the "configs" directory for any valid config files. Select the config you wish to use and click on "Load".
+
+# Credits
+- suchmememanyskill for allowing me to include [TegraExplorer](https://github.com/suchmememanyskill/TegraExplorer).
