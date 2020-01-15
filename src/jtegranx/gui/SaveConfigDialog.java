@@ -1,6 +1,29 @@
+/*
+
+JTegraNX - Another GUI for TegraRcmSmash
+
+Copyright (C) 2020 Dylan Wedman
+
+This program is free software; you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation; either version 2 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License along
+with this program; if not, write to the Free Software Foundation, Inc.,
+51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+
+ */
 package jtegranx.gui;
 
 import java.awt.Frame;
+import java.net.URL;
+import javax.swing.ImageIcon;
 import javax.swing.JDialog;
 import jtegranx.util.ConfigManager;
 
@@ -9,6 +32,13 @@ public class SaveConfigDialog extends JDialog {
     public SaveConfigDialog(Frame parent, boolean modal) {
         super(parent, modal);
         initComponents();
+        setIcon();
+    }
+    
+    private void setIcon() {
+        URL url = getClass().getResource("/jtegranx/gui/icon.png");
+        ImageIcon icon = new ImageIcon(url);
+        setIconImage(icon.getImage());
     }
 
     @SuppressWarnings("unchecked")

@@ -1,5 +1,28 @@
+/*
+
+JTegraNX - Another GUI for TegraRcmSmash
+
+Copyright (C) 2020 Dylan Wedman
+
+This program is free software; you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation; either version 2 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License along
+with this program; if not, write to the Free Software Foundation, Inc.,
+51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+
+ */
 package jtegranx.gui;
 
+import java.net.URL;
+import javax.swing.ImageIcon;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
@@ -15,7 +38,14 @@ public class MainGUI extends JFrame {
     @SuppressWarnings("LeakingThisInConstructor")
     public MainGUI() {
         initComponents();
+        setIcon();
         checkForUpdates(this);
+    }
+    
+    private void setIcon() {
+        URL url = getClass().getResource("/jtegranx/gui/icon.png");
+        ImageIcon icon = new ImageIcon(url);
+        setIconImage(icon.getImage());
     }
 
     public static LoadConfigDialog load = new LoadConfigDialog(null, true);
@@ -59,14 +89,14 @@ public class MainGUI extends JFrame {
         getContentPane().add(TopLabel, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 10, 580, -1));
         getContentPane().add(PayloadPath, new org.netbeans.lib.awtextra.AbsoluteConstraints(100, 40, 410, -1));
 
-        Browse.setText("Browse");
+        Browse.setIcon(new javax.swing.ImageIcon(getClass().getResource("/jtegranx/gui/browse.png"))); // NOI18N
         Browse.setToolTipText("Browse for payload.");
         Browse.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 BrowseActionPerformed(evt);
             }
         });
-        getContentPane().add(Browse, new org.netbeans.lib.awtextra.AbsoluteConstraints(520, 40, -1, -1));
+        getContentPane().add(Browse, new org.netbeans.lib.awtextra.AbsoluteConstraints(520, 50, -1, -1));
 
         Inject.setText("Inject");
         Inject.setToolTipText("Inject specified payload with specified arguments.");
@@ -78,7 +108,7 @@ public class MainGUI extends JFrame {
         });
         getContentPane().add(Inject, new org.netbeans.lib.awtextra.AbsoluteConstraints(70, 100, 110, 30));
 
-        VersionLabel.setText("v1.1");
+        VersionLabel.setText("v1.2");
         getContentPane().add(VersionLabel, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 290, -1, -1));
 
         ArgumentsLabel.setText("Arguments:");
@@ -128,8 +158,9 @@ public class MainGUI extends JFrame {
         chooser.setMultiSelectionEnabled(false);
         chooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
         chooser.setDialogTitle("Open Payload");
+        
 
-        int returnValue = chooser.showOpenDialog(null);
+        int returnValue = chooser.showOpenDialog(this);
 
         if (returnValue == JFileChooser.APPROVE_OPTION) {
             PayloadPath.setText(chooser.getSelectedFile().getAbsolutePath());

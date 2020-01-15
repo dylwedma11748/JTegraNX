@@ -88,7 +88,9 @@
     </Component>
     <Component class="javax.swing.JButton" name="Browse">
       <Properties>
-        <Property name="text" type="java.lang.String" value="Browse"/>
+        <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
+          <Image iconType="3" name="/jtegranx/gui/browse.png"/>
+        </Property>
         <Property name="toolTipText" type="java.lang.String" value="Browse for payload."/>
       </Properties>
       <Events>
@@ -96,7 +98,7 @@
       </Events>
       <Constraints>
         <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignAbsoluteLayout" value="org.netbeans.modules.form.compat2.layouts.DesignAbsoluteLayout$AbsoluteConstraintsDescription">
-          <AbsoluteConstraints x="520" y="40" width="-1" height="-1"/>
+          <AbsoluteConstraints x="520" y="50" width="-1" height="-1"/>
         </Constraint>
       </Constraints>
     </Component>
@@ -120,7 +122,7 @@
     </Component>
     <Component class="javax.swing.JLabel" name="VersionLabel">
       <Properties>
-        <Property name="text" type="java.lang.String" value="v1.1"/>
+        <Property name="text" type="java.lang.String" value="v1.2"/>
       </Properties>
       <AuxValues>
         <AuxValue name="JavaCodeGenerator_VariableModifier" type="java.lang.Integer" value="9"/>
