@@ -89,27 +89,15 @@ public class Updater {
                                             Downloader.downloadFile(download, filePath, false);
                                         } else {
                                             MainGUI.Log.append("\nUpdate canceled");
-                                            MainGUI.Inject.setEnabled(true);
-                                            MainGUI.SaveConfig.setEnabled(true);
-                                            MainGUI.LoadConfig.setEnabled(true);
-                                            MainGUI.Reset.setEnabled(true);
                                             break;
                                         }
                                     } else {
                                         MainGUI.Log.append("\nUpdate canceled");
-                                        MainGUI.Inject.setEnabled(true);
-                                        MainGUI.SaveConfig.setEnabled(true);
-                                        MainGUI.LoadConfig.setEnabled(true);
-                                        MainGUI.Reset.setEnabled(true);
                                         break;
                                     }
                                 } else if (latestVersionFloat < currentVersionFloat || currentVersionFloat == latestVersionFloat) {
                                     System.out.println("JTegraNX is up to date.");
                                     MainGUI.Log.append("\nNo updates found");
-                                    MainGUI.Inject.setEnabled(true);
-                                    MainGUI.SaveConfig.setEnabled(true);
-                                    MainGUI.LoadConfig.setEnabled(true);
-                                    MainGUI.Reset.setEnabled(true);
                                     break;
                                 }
                             }
@@ -117,12 +105,7 @@ public class Updater {
                     }
                 } catch (IOException ex) {
                     System.out.println("Unable to check for updates on JTegraNX. Reason: " + ex.getClass().getName() + " was thrown!");
-                    MainGUI.Log.append("\n" + ex.getClass().getName() + " was thrown!");
-                    MainGUI.Log.append("\nUnable to check for updates");
-                    MainGUI.Inject.setEnabled(true);
-                    MainGUI.SaveConfig.setEnabled(true);
-                    MainGUI.LoadConfig.setEnabled(true);
-                    MainGUI.Reset.setEnabled(true);
+                    MainGUI.Log.append("\nUnable to check for updates. Reason: " + ex.getClass().getName() + " was thrown");
                 }
             }
         }.start();

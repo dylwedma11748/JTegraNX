@@ -103,6 +103,9 @@ public class ConfigManager {
         File config = new File(configDir.getAbsolutePath() + "\\Config_" + name.replaceAll(" ", "_") + ".ini");
 
         if (config.exists()) {
+            MainGUI.PayloadPath.setText("");
+            MainGUI.Arguments.setText("");
+
             try (FileReader fr = new FileReader(config); BufferedReader reader = new BufferedReader(fr)) {
                 String line;
 
