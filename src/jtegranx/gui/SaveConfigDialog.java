@@ -34,9 +34,9 @@ public class SaveConfigDialog extends JDialog {
         initComponents();
         setIcon();
     }
-    
+
     private void setIcon() {
-        URL url = getClass().getResource("/jtegranx/gui/icon.png");
+        URL url = getClass().getResource("/jtegranx/gui/images/icon.png");
         ImageIcon icon = new ImageIcon(url);
         setIconImage(icon.getImage());
     }
