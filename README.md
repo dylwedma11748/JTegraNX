@@ -12,8 +12,10 @@ This program is only supported on Windows Operating Systems, sorry for any incon
 ## Features
 - Payload injection (obviously)
 - Custom arguments
+- Auto-injection
+- RCM status indicator with transparent images.
 - Config system (similar to favorites in [TegraRcmGUI](https://github.com/eliboa/TegraRcmGUI))
-- SD card mounting (Select "Load Config" to find it)
+- SD card mounting using [memloader](https://github.com/rajkosto/memloader) (Select "Load Config" to find it)
 - Bundled payloads
 
 ## Usage
@@ -39,4 +41,5 @@ For any bundled payloads, JTegraNX will download them automatically, place them 
 # Credits
 - [suchmememanyskill](https://github.com/suchmememanyskill) for allowing me to include [TegraExplorer](https://github.com/suchmememanyskill/TegraExplorer).
 - [rajkosto](https://github.com/rajkosto) for [memloader](https://github.com/rajkosto/memloader) and [TegraRcmSmash](https://github.com/rajkosto/TegraRcmSmash).
-- [shchmue](https://github.com/shchmue) for [Lockpick_RCM](https://github.com/shchmue/Lockpick_RCM)
+- [shchmue](https://github.com/shchmue) for [Lockpick_RCM](https://github.com/shchmue/Lockpick_RCM).
+- [eliboa](https://github.com/eliboa) for the images from [TegraRcmGUI](https://github.com/eliboa/TegraRcmGUI).
