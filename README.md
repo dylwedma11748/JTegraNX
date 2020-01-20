@@ -9,7 +9,7 @@ Because this program was written in Java, you will need to have it installed on 
 
 This program is only supported on Windows Operating Systems, sorry for any inconvenience.
 
-  ![Png](./JTegraNX.png)
+![Png](./JTegraNX.png)
 
 ## Features
 - Payload injection (obviously)
