@@ -10,6 +10,7 @@ Because this program was written in Java, you will need to have it installed on 
 This program is only supported on Windows Operating Systems, sorry for any inconvenience.
 
 ![Png](./JTegraNX.png)
+[![FOSSA Status](https://app.fossa.io/api/projects/git%2Bgithub.com%2Fdylwedma11748%2FJTegraNX.svg?type=shield)](https://app.fossa.io/projects/git%2Bgithub.com%2Fdylwedma11748%2FJTegraNX?ref=badge_shield)
 
 ## Features
 - Payload injection (obviously)
@@ -45,3 +46,7 @@ For any bundled payloads, JTegraNX will download them automatically, place them 
 - [rajkosto](https://github.com/rajkosto) for [memloader](https://github.com/rajkosto/memloader) and [TegraRcmSmash](https://github.com/rajkosto/TegraRcmSmash).
 - [shchmue](https://github.com/shchmue) for [Lockpick_RCM](https://github.com/shchmue/Lockpick_RCM).
 - [eliboa](https://github.com/eliboa) for the images from [TegraRcmGUI](https://github.com/eliboa/TegraRcmGUI).
+
+
+## License
+[![FOSSA Status](https://app.fossa.io/api/projects/git%2Bgithub.com%2Fdylwedma11748%2FJTegraNX.svg?type=large)](https://app.fossa.io/projects/git%2Bgithub.com%2Fdylwedma11748%2FJTegraNX?ref=badge_large)
