@@ -3,8 +3,6 @@ A GUI for [TegraRcmSmash](https://github.com/rajkosto/TegraRcmSmash) written in 
 
 This program is bundled TegraRcmSmash and the files needed to mount SD cards using memloader. They are extracted in a separate folder upon launch so for organization's sake, I'd put the .jar file in it's own dedicated folder if I were you.
 
-This program uses [usb4java](http://usb4java.org/index.html) to [detect the RCM device](./src/jtegranx/util/TegraRCM.java). Currently there is an issue where usb4java creates a temp directory that only contains libusb4java.dll, in normal circumstances this would be fine but it doesn't delete it when it's done with it and it always creates another one each time libusb is initialized (Thankfully only once each time this program is launched). I'm not sure why it does that and I will try to look for a fix on that.
-
 Because this program was written in Java, you will need to have it installed on your computer, you can download Java [here](https://www.java.com/en/).
 
 This program is only supported on Windows Operating Systems, sorry for any inconvenience.
@@ -19,6 +17,7 @@ This program is only supported on Windows Operating Systems, sorry for any incon
 - Config system (similar to favorites in [TegraRcmGUI](https://github.com/eliboa/TegraRcmGUI))
 - SD card mounting using [memloader](https://github.com/rajkosto/memloader) (Select "Load Config" to find it)
 - Bundled payloads
+- Tray icon with functionality.
 
 ## Usage
 1. Choose payload or config
@@ -39,9 +38,11 @@ For any bundled payloads, JTegraNX will download them automatically, place them 
 ### Currently bundled payloads:
 - [TegraExplorer](https://github.com/suchmememanyskill/TegraExplorer)
 - [Lockpick_RCM](https://github.com/shchmue/Lockpick_RCM)
+- [fusee-primary](https://github.com/Atmosphere-NX/Atmosphere/releases)
 
 # Credits
 - [suchmememanyskill](https://github.com/suchmememanyskill) for allowing me to include [TegraExplorer](https://github.com/suchmememanyskill/TegraExplorer).
 - [rajkosto](https://github.com/rajkosto) for [memloader](https://github.com/rajkosto/memloader) and [TegraRcmSmash](https://github.com/rajkosto/TegraRcmSmash).
 - [shchmue](https://github.com/shchmue) for [Lockpick_RCM](https://github.com/shchmue/Lockpick_RCM).
 - [eliboa](https://github.com/eliboa) for the images from [TegraRcmGUI](https://github.com/eliboa/TegraRcmGUI).
+- The creators of Atmosphere for [fusee-primary](https://github.com/Atmosphere-NX/Atmosphere/releases).
