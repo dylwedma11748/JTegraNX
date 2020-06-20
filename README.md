@@ -45,4 +45,4 @@ For any bundled payloads, JTegraNX will download them automatically, place them 
 - [rajkosto](https://github.com/rajkosto) for [memloader](https://github.com/rajkosto/memloader) and [TegraRcmSmash](https://github.com/rajkosto/TegraRcmSmash).
 - [shchmue](https://github.com/shchmue) for [Lockpick_RCM](https://github.com/shchmue/Lockpick_RCM).
 - [eliboa](https://github.com/eliboa) for the images from [TegraRcmGUI](https://github.com/eliboa/TegraRcmGUI).
-- The creators of Atmosphere for [fusee-primary](https://github.com/Atmosphere-NX/Atmosphere/releases).
+- The creators of Atmosphère for [fusee-primary](https://github.com/Atmosphere-NX/Atmosphere/releases).
