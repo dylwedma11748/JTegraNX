@@ -30,12 +30,12 @@ import java.net.URLConnection;
 public class Lockpick_RCM {
 
     private static String latestVersion;
-    private static final String github = "https://github.com/shchmue/Lockpick_RCM/releases";
+    private static final String GITHUB = "https://github.com/shchmue/Lockpick_RCM/releases";
     private static boolean success = false;
 
     public static Payload update() {
         if (success) {
-            return new Payload("Lockpick_RCM", latestVersion, github + "/download/" + latestVersion + "/Lockpick_RCM.bin");
+            return new Payload("Lockpick_RCM", latestVersion, GITHUB + "/download/" + latestVersion + "/Lockpick_RCM.bin");
         }
 
         return null;
@@ -44,7 +44,7 @@ public class Lockpick_RCM {
     public static void checkForUpdates() {
         try {
             System.out.println("Checking for updates on Lockpick_RCM.");
-            URL url = new URL(github);
+            URL url = new URL(GITHUB);
             URLConnection connection = url.openConnection();
 
             try (InputStreamReader isr = new InputStreamReader(connection.getInputStream()); BufferedReader bReader = new BufferedReader(isr)) {

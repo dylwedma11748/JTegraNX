@@ -28,34 +28,73 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.swing.DefaultListModel;
-import javax.swing.JOptionPane;
-import jtegranx.gui.LoadConfigDialog;
-import jtegranx.gui.MainGUI;
+import javafx.scene.control.ButtonBar;
+import javafx.scene.control.ButtonType;
+import javafx.scene.control.Dialog;
+import jtegranx.fx.JTegraNX;
 import static jtegranx.util.ResourceLoader.*;
 
 public class ConfigManager {
 
     public static File configDir;
+    private static File mainConfig;
 
-    public static void generateSDConfig() {
-        configDir = new File(jtegranxdir.getAbsolutePath() + "\\configs");
+    private static Dialog dialog;
 
-        if (!configDir.exists()) {
-            configDir.mkdir();
-        }
+    public static void loadMainConfigFile() {
+        mainConfig = new File(jtegranxdir.getAbsolutePath() + "\\jtegranx.ini");
 
-        File config = new File(configDir.getAbsolutePath() + "\\Config_Mount_SD_Card.ini");
+        if (mainConfig.exists() && configValid(mainConfig)) {
+            try (FileReader fr = new FileReader(mainConfig); BufferedReader reader = new BufferedReader(fr)) {
+                String line;
 
-        if (!config.exists()) {
-            try (PrintWriter writer = new PrintWriter(config)) {
-                writer.println("[JTegraNX Config]");
-                writer.println("configName=Mount SD Card");
-                writer.println("payloadPath=jtegranx\\memloader\\memloader_usb.bin");
-                writer.println("arguments=-r --dataini=\"jtegranx\\memloader\\ums_sd.ini\"");
+                while ((line = reader.readLine()) != null) {
+                    switch (line) {
+                        case "autoInject=true":
+                            JTegraNX.getController().autoInject.setSelected(true);
+                            JTegraNX.getController().autoInjectAction();
+                            break;
+                        case "hideLog=true":
+                            JTegraNX.getController().hideLog.setSelected(true);
+                            JTegraNX.getController().hideLogAction();
+                            break;
+                        case "minimizeToTray=true":
+                            JTegraNX.getController().minimizeToTray.setSelected(true);
+                            JTegraNX.getController().minimizeToTrayAction();
+                            break;
+                        default:
+                            break;
+                    }
+
+                    if (line.contains("payloadPath=")) {
+                        JTegraNX.getController().setPayloadPath(line.substring(line.indexOf("=") + 1));
+                    } else if (line.contains("arguments=")) {
+                        JTegraNX.getController().setArguments(line.substring(line.indexOf("=") + 1));
+                    } else if (line.contains("savedFolderPath=")) {
+                        if (line.length() > 16) {
+                            JTegraNX.getController().setSavedFolderPath(line.substring(line.indexOf("=") + 1));
+                        }
+                    }
+                }
             } catch (IOException ex) {
                 Logger.getLogger(ConfigManager.class.getName()).log(Level.SEVERE, null, ex);
             }
+        } else {
+            saveMainConfigFile();
+        }
+    }
+
+    public static void saveMainConfigFile() {
+        try (PrintWriter writer = new PrintWriter(mainConfig)) {
+            writer.println("[JTegraNX Main Config]");
+            writer.println("autoInject=" + JTegraNX.getController().autoInjectEnabled());
+            writer.println("hideLog=" + JTegraNX.getController().hideLog.isSelected());
+            writer.println("minimizeToTray=" + JTegraNX.getController().minimizeToTray.isSelected());
+            writer.println("payloadPath=" + JTegraNX.getController().getPayloadPath());
+            writer.println("arguments=" + JTegraNX.getController().getArguments());
+            writer.println("savedFolderPath=" + JTegraNX.getController().getSavedFolderPath());
+        } catch (IOException ex) {
+            Logger.getLogger(ConfigManager.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 
@@ -68,31 +107,40 @@ public class ConfigManager {
 
         File config = new File(configDir.getAbsolutePath() + "\\Config_" + name.replaceAll(" ", "_") + ".ini");
 
-        if (!config.exists()) {
-            try (PrintWriter writer = new PrintWriter(config)) {
-                writer.println("[JTegraNX Config]");
-                writer.println("configName=" + name);
-                writer.println("payloadPath=" + MainGUI.PayloadPath.getText());
-                writer.println("arguments=" + MainGUI.Arguments.getText());
+        if (config.exists()) {
+            dialog = new Dialog();
+            dialog.setTitle("JTegraNX");
+            dialog.setHeaderText("Config \"" + name + "\" already exists. Overwrite?");
+            dialog.setGraphic(JTegraNX.getController().getDialogImage());
 
-                MainGUI.Log.append("\nConfig Saved");
-            } catch (IOException ex) {
-                Logger.getLogger(ConfigManager.class.getName()).log(Level.SEVERE, null, ex);
-            }
-        } else {
-            int choice = JOptionPane.showOptionDialog(null, "Config \"" + name + "\" already exists. Overwrite?", "Save Config", 0, 1, null, null, null);
+            ButtonType overwrite = new ButtonType("Overwrite", ButtonBar.ButtonData.OK_DONE);
+            dialog.getDialogPane().getButtonTypes().addAll(overwrite, ButtonType.CANCEL);
 
-            if (choice == 0) {
+            dialog.initOwner(JTegraNX.getStage());
+            dialog.showAndWait();
+
+            if (dialog.getResult().toString().equals("ButtonType [text=Overwrite, buttonData=OK_DONE]")) {
                 try (PrintWriter writer = new PrintWriter(config)) {
                     writer.println("[JTegraNX Config]");
                     writer.println("configName=" + name);
-                    writer.println("payloadPath=" + MainGUI.PayloadPath.getText());
-                    writer.println("arguments=" + MainGUI.Arguments.getText());
+                    writer.println("payloadPath=" + JTegraNX.getController().getPayloadPath());
+                    writer.println("arguments=" + JTegraNX.getController().getArguments());
 
-                    MainGUI.Log.append("\nConfig Saved");
+                    JTegraNX.getController().appendLog("Config saved!");
                 } catch (IOException ex) {
                     Logger.getLogger(ConfigManager.class.getName()).log(Level.SEVERE, null, ex);
                 }
+            }
+        } else {
+            try (PrintWriter writer = new PrintWriter(config)) {
+                writer.println("[JTegraNX Config]");
+                writer.println("configName=" + name);
+                writer.println("payloadPath=" + JTegraNX.getController().getPayloadPath());
+                writer.println("arguments=" + JTegraNX.getController().getArguments());
+
+                JTegraNX.getController().appendLog("Config saved!");
+            } catch (IOException ex) {
+                Logger.getLogger(ConfigManager.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
     }
@@ -103,30 +151,41 @@ public class ConfigManager {
         File config = new File(configDir.getAbsolutePath() + "\\Config_" + name.replaceAll(" ", "_") + ".ini");
 
         if (config.exists()) {
-            MainGUI.PayloadPath.setText("");
-            MainGUI.Arguments.setText("");
-
             try (FileReader fr = new FileReader(config); BufferedReader reader = new BufferedReader(fr)) {
                 String line;
 
                 while ((line = reader.readLine()) != null) {
                     if (line.startsWith("payloadPath")) {
-                        MainGUI.PayloadPath.setText(line.substring(line.indexOf("=") + 1));
+                        JTegraNX.getController().setPayloadPath(line.substring(line.indexOf("=") + 1));
                     } else if (line.startsWith("arguments")) {
-                        MainGUI.Arguments.setText(line.substring(line.indexOf("=") + 1));
+                        JTegraNX.getController().setArguments(line.substring(line.indexOf("=") + 1));
                     }
                 }
             } catch (IOException ex) {
                 Logger.getLogger(ConfigManager.class.getName()).log(Level.SEVERE, null, ex);
             }
         } else {
-            JOptionPane.showMessageDialog(null, "Config \"" + name + "\" doesn't exist", "Load Config", 0);
+            JTegraNX.getController().appendLog(name + " config doesn't exist!");
         }
     }
 
-    private static boolean configValid(File config) {
+    public static void deleteConfig(String name) {
+        configDir = new File(jtegranxdir.getAbsolutePath() + "\\configs");
+
+        File config = new File(configDir.getAbsolutePath() + "\\Config_" + name.replaceAll(" ", "_") + ".ini");
+
+        if (config.exists()) {
+            config.delete();
+        } else {
+            JTegraNX.getController().appendLog(name + " config doesn't exist!");
+        }
+    }
+
+    public static boolean configValid(File config) {
         try (FileReader fr = new FileReader(config); BufferedReader reader = new BufferedReader(fr)) {
-            if (reader.readLine().equals("[JTegraNX Config]")) {
+            String line = reader.readLine();
+
+            if (line.equals("[JTegraNX Config]") || line.equals("[JTegraNX Main Config]")) {
                 return true;
             }
         } catch (IOException ex) {
@@ -136,7 +195,7 @@ public class ConfigManager {
         return false;
     }
 
-    private static String getConfigName(File config) {
+    public static String getConfigName(File config) {
         try (FileReader fr = new FileReader(config); BufferedReader reader = new BufferedReader(fr)) {
             String line;
 
@@ -152,7 +211,12 @@ public class ConfigManager {
     }
 
     public static void updateConfigList() {
-        DefaultListModel configList = new DefaultListModel();
+        JTegraNX.getController().removeAllConfigsFromList();
+
+        if (Tray.isTrayInitialized()) {
+            Tray.clearTrayMenu();
+        }
+
         configDir = new File(jtegranxdir.getAbsolutePath() + "\\configs");
 
         if (!configDir.exists()) {
@@ -163,12 +227,24 @@ public class ConfigManager {
             for (File file : files) {
                 if (file.getAbsolutePath().endsWith(".ini")) {
                     if (configValid(file)) {
-                        configList.addElement(getConfigName(file));
+                        JTegraNX.getController().addConfig(getConfigName(file));
+
+                        if (Tray.isTrayInitialized()) {
+                            Tray.addConfigToTray(file);
+                        }
                     }
                 }
             }
-        }
 
-        LoadConfigDialog.ConfigList.setModel(configList);
+            JTegraNX.getController().addConfig("Mount SD Card");
+
+            if (Tray.isTrayInitialized()) {
+                Tray.addDefaultMenuItems();
+            }
+        }
+    }
+
+    public static File getConfigDir() {
+        return configDir;
     }
 }

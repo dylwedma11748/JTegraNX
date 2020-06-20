@@ -38,7 +38,7 @@ public class ResourceLoader {
     private static BufferedOutputStream bos;
     private static File output;
 
-    private static final int bufferSize = 1024;
+    private static final int BUFFER_SIZE = 1024;
 
     // JTegraNX directory for resources
     public static File jtegranxdir;
@@ -52,30 +52,30 @@ public class ResourceLoader {
     public static File uboot;
     public static File[] ums_sd = {null, null, null};
 
-    public static final String dir = System.getProperty("user.dir");
+    public static final String DIR = System.getProperty("user.dir");
 
     public static void loadResources() {
-        jtegranxdir = new File(dir + "\\jtegranx");
+        jtegranxdir = new File(DIR + "\\jtegranx");
         memloaderdir = new File(jtegranxdir.getAbsolutePath() + "\\memloader");
 
         if (!jtegranxdir.exists()) {
             jtegranxdir.mkdir();
-            TegraRcmSmash = extract("TegraRcmSmash.exe");
+            TegraRcmSmash = extractTegraRCMSmash("TegraRcmSmash.exe");
         } else {
             TegraRcmSmash = new File(jtegranxdir.getAbsolutePath() + "\\TegraRcmSmash.exe");
 
             if (!TegraRcmSmash.exists()) {
-                TegraRcmSmash = extract("TegraRcmSmash.exe");
+                TegraRcmSmash = extractTegraRCMSmash("TegraRcmSmash.exe");
             }
         }
 
         if (!memloaderdir.exists()) {
             memloaderdir.mkdir();
-            memloader_usb = extract2("memloader_usb.bin");
-            uboot = extract2("u-boot.elf");
-            ums_sd[0] = extract2("ums_sd.ini");
-            ums_sd[1] = extract2("ums_sd.scr");
-            ums_sd[2] = extract2("ums_sd.scr.img");
+            memloader_usb = extractMemloaderFile("memloader_usb.bin");
+            uboot = extractMemloaderFile("u-boot.elf");
+            ums_sd[0] = extractMemloaderFile("ums_sd.ini");
+            ums_sd[1] = extractMemloaderFile("ums_sd.scr");
+            ums_sd[2] = extractMemloaderFile("ums_sd.scr.img");
         } else {
             memloader_usb = new File(memloaderdir.getAbsolutePath() + "\\memloader_usb.bin");
             uboot = new File(memloaderdir.getAbsolutePath() + "\\u-boot.elf");
@@ -84,33 +84,37 @@ public class ResourceLoader {
             ums_sd[2] = new File(memloaderdir.getAbsolutePath() + "\\ums_sd.scr.img");
 
             if (!memloader_usb.exists()) {
-                memloader_usb = extract2("memloader_usb.bin");
+                memloader_usb = extractMemloaderFile("memloader_usb.bin");
             }
 
             if (!uboot.exists()) {
-                uboot = extract2("u-boot.elf");
+                uboot = extractMemloaderFile("u-boot.elf");
             }
 
             if (!ums_sd[0].exists()) {
-                ums_sd[0] = extract2("ums_sd.ini");
+                ums_sd[0] = extractMemloaderFile("ums_sd.ini");
             }
 
             if (!ums_sd[1].exists()) {
-                ums_sd[1] = extract2("ums_sd.scr");
+                ums_sd[1] = extractMemloaderFile("ums_sd.scr");
             }
 
             if (!ums_sd[2].exists()) {
-                ums_sd[2] = extract2("ums_sd.scr.img");
+                ums_sd[2] = extractMemloaderFile("ums_sd.scr.img");
             }
         }
     }
 
-    public static File extract(String file) {
-        return rename(load(file), dir + "\\jtegranx\\" + file);
+    public static File extractTegraRCMSmash(String file) {
+        return rename(load(file), DIR + "\\jtegranx\\" + file);
+    }
+    
+    public static File extractPayload(String file) {
+        return rename(load(file), DIR + "\\jtegranx\\payloads\\" + file);
     }
 
-    public static File extract2(String file) {
-        return rename(load(file), dir + "\\jtegranx\\memloader\\" + file);
+    public static File extractMemloaderFile(String file) {
+        return rename(load(file), DIR + "\\jtegranx\\memloader\\" + file);
     }
 
     private static File load(String resource) {
@@ -121,10 +125,10 @@ public class ResourceLoader {
             fos = new FileOutputStream(output);
             bos = new BufferedOutputStream(fos);
 
-            byte[] buffer = new byte[bufferSize];
+            byte[] buffer = new byte[BUFFER_SIZE];
 
             while (bInput.read(buffer) != -1) {
-                bos.write(buffer, 0, bufferSize);
+                bos.write(buffer, 0, BUFFER_SIZE);
             }
 
             bInput.close();
@@ -136,7 +140,7 @@ public class ResourceLoader {
         return output;
     }
 
-    private static File rename(File input, String dest) {
+    public static File rename(File input, String dest) {
         if (input.renameTo(new File(dest))) {
             return new File(dest);
         }

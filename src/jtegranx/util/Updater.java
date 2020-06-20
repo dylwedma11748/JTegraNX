@@ -21,92 +21,99 @@ with this program; if not, write to the Free Software Foundation, Inc.,
  */
 package jtegranx.util;
 
-import java.awt.Component;
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.URL;
 import java.net.URLConnection;
-import javax.swing.JFileChooser;
-import static javax.swing.JOptionPane.INFORMATION_MESSAGE;
-import static javax.swing.JOptionPane.YES_NO_OPTION;
-import static javax.swing.JOptionPane.YES_OPTION;
-import static javax.swing.JOptionPane.showOptionDialog;
-import javax.swing.filechooser.FileFilter;
-import javax.swing.filechooser.FileNameExtensionFilter;
-import jtegranx.gui.MainGUI;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javafx.application.Platform;
+import javafx.scene.control.ButtonBar;
+import javafx.scene.control.ButtonType;
+import javafx.scene.control.Dialog;
+import javafx.stage.FileChooser;
+import jtegranx.fx.JTegraNX;
 
 public class Updater {
 
-    public static void checkForUpdates(Component parent) {
+    public Dialog updaterDialog;
+    private final String currentVersion = "v1.4";
+
+    public void checkForUpdates() {
         new Thread() {
             @Override
             public void run() {
-                try {
-                    System.out.println("Checking for JTegraNX updates");
-                    MainGUI.Log.append("Checking for updates");
-                    String git = "https://github.com/dylwedma11748/JTegraNX/releases";
-                    URL github = new URL(git);
-                    URLConnection connection = github.openConnection();
+                Platform.runLater(() -> {
+                    try {
+                        System.out.println("Checking for JTegraNX updates");
+                        String git = "https://github.com/dylwedma11748/JTegraNX/releases";
+                        URL github = new URL(git);
+                        URLConnection connection = github.openConnection();
 
-                    try (InputStreamReader isr = new InputStreamReader(connection.getInputStream()); BufferedReader bReader = new BufferedReader(isr)) {
-                        String line;
+                        try (InputStreamReader isr = new InputStreamReader(connection.getInputStream()); BufferedReader bReader = new BufferedReader(isr)) {
+                            String line;
 
-                        while ((line = bReader.readLine()) != null) {
-                            if (line.contains("<a href=\"/dylwedma11748/JTegraNX/releases/tag/")) {
-                                String latestVersion = line.substring(line.indexOf(">") + 1, line.lastIndexOf("<"));
-                                String versionNumber = latestVersion.substring(latestVersion.indexOf("v") + 1);
-                                String currentVersion = MainGUI.VersionLabel.getText();
+                            while ((line = bReader.readLine()) != null) {
+                                if (line.contains("<a href=\"/dylwedma11748/JTegraNX/releases/tag/")) {
+                                    String latestVersion = line.substring(line.indexOf(">") + 1, line.lastIndexOf("<"));
+                                    String versionNumber = latestVersion.substring(latestVersion.indexOf("v") + 1);
 
-                                float latestVersionFloat = Float.valueOf(versionNumber);
-                                float currentVersionFloat = Float.valueOf(currentVersion.substring(currentVersion.indexOf("v") + 1));
+                                    float latestVersionFloat = Float.valueOf(versionNumber);
+                                    float currentVersionFloat = Float.valueOf(currentVersion.substring(currentVersion.indexOf("v") + 1));
 
-                                if (currentVersionFloat < latestVersionFloat) {
-                                    MainGUI.Log.append("\nUpdate detected");
-                                    int downloadUpdate = showOptionDialog(parent, "Latest Version: " + latestVersionFloat + "\nDownload now?", "New update available", YES_NO_OPTION, INFORMATION_MESSAGE, null, null, null);
+                                    if (currentVersionFloat < latestVersionFloat) {
+                                        updaterDialog = new Dialog();
+                                        updaterDialog.setTitle("JTegraNX");
+                                        updaterDialog.setHeaderText("A new update has been released. Download now?");
+                                        updaterDialog.setGraphic(JTegraNX.getController().getDialogImage());
 
-                                    if (downloadUpdate == YES_OPTION) {
-                                        FileFilter jar = new FileNameExtensionFilter("Jar files", "jar");
+                                        ButtonType download = new ButtonType("Download", ButtonBar.ButtonData.OK_DONE);
+                                        updaterDialog.getDialogPane().getButtonTypes().addAll(download, ButtonType.CANCEL);
+                                        updaterDialog.initOwner(JTegraNX.getStage());
+                                        updaterDialog.showAndWait();
 
-                                        JFileChooser chooser = new JFileChooser();
-                                        chooser.setDialogTitle("Save file as");
-                                        chooser.setAcceptAllFileFilterUsed(false);
-                                        chooser.addChoosableFileFilter(jar);
-                                        chooser.setMultiSelectionEnabled(false);
-                                        chooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
+                                        if (updaterDialog.getResult().toString().equals("ButtonType [text=Download, buttonData=OK_DONE]")) {
+                                            FileChooser chooser = new FileChooser();
 
-                                        int returnValue = chooser.showSaveDialog(parent);
+                                            FileChooser.ExtensionFilter filter = new FileChooser.ExtensionFilter("Jar files (*.jar)", "*jar");
+                                            chooser.getExtensionFilters().add(filter);
 
-                                        if (returnValue == JFileChooser.APPROVE_OPTION) {
-                                            String filePath = chooser.getSelectedFile().getAbsolutePath();
+                                            File file = chooser.showSaveDialog(JTegraNX.getStage());
 
-                                            if (!filePath.endsWith(".jar")) {
-                                                filePath = filePath.concat(".jar");
+                                            if (file != null) {
+                                                String filePath = file.getAbsolutePath();
+
+                                                if (!filePath.endsWith(".jar")) {
+                                                    filePath = filePath.concat(".jar");
+                                                }
+
+                                                String downloadURLString = git + "/download/" + latestVersionFloat + "/JTegraNX.jar";
+                                                URL downloadURL = new URL(downloadURLString);
+                                                Downloader.downloadFile(downloadURL, filePath, false);
+                                            } else {
+                                                JTegraNX.getController().appendLog("Update canceled");
+                                                break;
                                             }
-
-                                            String downloadURL = git + "/download/" + latestVersionFloat + "/JTegraNX.jar";
-                                            URL download = new URL(downloadURL);
-                                            Downloader.downloadFile(download, filePath, false);
                                         } else {
-                                            MainGUI.Log.append("\nUpdate canceled");
+                                            JTegraNX.getController().appendLog("Update canceled");
                                             break;
                                         }
-                                    } else {
-                                        MainGUI.Log.append("\nUpdate canceled");
+                                    } else if (latestVersionFloat < currentVersionFloat || currentVersionFloat == latestVersionFloat) {
+                                        System.out.println("JTegraNX is up to date.");
+                                        JTegraNX.getController().appendLog("No updates found");
                                         break;
                                     }
-                                } else if (latestVersionFloat < currentVersionFloat || currentVersionFloat == latestVersionFloat) {
-                                    System.out.println("JTegraNX is up to date.");
-                                    MainGUI.Log.append("\nNo updates found");
+
                                     break;
                                 }
                             }
                         }
+                    } catch (IOException ex) {
+                        Logger.getLogger(Updater.class.getName()).log(Level.SEVERE, null, ex);
                     }
-                } catch (IOException ex) {
-                    System.out.println("Unable to check for updates on JTegraNX. Reason: " + ex.getClass().getName() + " was thrown!");
-                    MainGUI.Log.append("\nUnable to check for updates. Reason: " + ex.getClass().getName() + " was thrown");
-                }
+                });
             }
         }.start();
     }

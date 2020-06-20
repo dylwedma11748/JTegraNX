@@ -21,45 +21,41 @@ with this program; if not, write to the Free Software Foundation, Inc.,
  */
 package jtegranx.util;
 
-import java.awt.Component;
-import jtegranx.gui.MainGUI;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.swing.ImageIcon;
-import org.usb4java.DeviceHandle;
-import org.usb4java.LibUsb;
-import org.usb4java.LibUsbException;
 import static jtegranx.util.ResourceLoader.*;
-import static javax.swing.JOptionPane.*;
+import javax.usb.UsbException;
+import javax.usb.UsbHostManager;
+import javax.usb.UsbServices;
+import jtegranx.fx.JTegraNX;
 
 public class TegraRCM {
 
-    private static final short vendorID = 0x0955;
-    private static final short productID = 0x7321;
+    private static RCMDeviceListener listener;
+    private static UsbServices services;
 
-    public static boolean detectRCMDevice() {
-        int result = LibUsb.init(null);
-
-        if (result != LibUsb.SUCCESS) {
-            throw new LibUsbException("Unable to initialize libusb", result);
+    public static void initRCMDeviceListener() {
+        try {
+            services = UsbHostManager.getUsbServices();
+            listener = new RCMDeviceListener(services.getRootUsbHub());
+            services.addUsbServicesListener(listener);
+        } catch (UsbException | SecurityException ex) {
+            Logger.getLogger(TegraRCM.class.getName()).log(Level.SEVERE, null, ex);
         }
-
-        DeviceHandle handle = LibUsb.openDeviceWithVidPid(null, vendorID, productID);
-
-        if (handle != null) {
-            LibUsb.close(handle);
-            return true;
-        }
-
-        return false;
     }
 
-    public static void injectPayload(Component p, String payload, String args) {
+    public static void closeRCMDeviceListener() {
+        services.removeUsbServicesListener(listener);
+    }
+
+    public static void injectPayload(String payload, String args) {
         if (TegraRcmSmash.exists() && TegraRcmSmash.canExecute()) {
+            JTegraNX.getController().clearLog();
+            
             if (new File(payload).exists()) {
                 try {
                     String command = "\"" + TegraRcmSmash.getAbsolutePath() + "\" " + "\"" + payload + "\" " + args;
@@ -72,13 +68,16 @@ public class TegraRCM {
                         while ((line = reader.readLine()) != null) {
                             String l = line.replaceAll("\\W", "");
 
-                            if (l.contains("Smashing")) {
-                                MainGUI.Log.append("\nSmashing the stack!");
+                            if (l.contains("RCMDevice")) {
+                                JTegraNX.getController().appendLog("RCM Device initialized successfully!");
+                            } else if (l.contains("Uploadingpayload")) {
+                                JTegraNX.getController().appendLog("Uploading payload...");
+                            } else if (l.contains("Smashing")) {
+                                JTegraNX.getController().appendLog("Smashing the stack!");
                             } else if (l.contains("Smashed")) {
-                                MainGUI.Log.append("\nSmashed the stack with a SETUP request!");
-                                MainGUI.injected = true;
-                                MainGUI.Inject.setEnabled(false);
-                                MainGUI.RCMStatus.setIcon(new ImageIcon(TegraRCM.class.getClass().getResource("/jtegranx/gui/images/loaded.png")));
+                                JTegraNX.getController().appendLog("Smashed the stack with a SETUP request!");
+                                JTegraNX.getController().setRcmStatusImage(StatusImages.RCM_LOADED);
+                                JTegraNX.getController().setRcmStatus(false);
                             }
                         }
                     }
@@ -86,20 +85,12 @@ public class TegraRCM {
                     Logger.getLogger(TegraRCM.class.getName()).log(Level.SEVERE, null, ex);
                 }
             } else {
-                String m = "Specified payload not found";
-                String t = "JTegraNX Error";
-                showMessageDialog(p, m, t, 0);
+                JTegraNX.getController().appendLog("Payload not found!");
             }
         } else {
-            String m = "Unable to find or execute TegraRcmSmash. Re-extract?";
-            String t = "JTegraNX Error";
-            int omt = 0;
-            String[] o = {"Yes", "No"};
-            int c = showOptionDialog(p, m, t, omt, omt, null, o, null);
-
-            if (c == omt) {
-                TegraRcmSmash = extract("TegraRcmSmash.exe");
-            }
+            JTegraNX.getController().appendLog("TegraRcmSmash not found or cannot be executed! \nRe-extracting TegraRCMSmash.");
+            loadResources();
+            injectPayload(payload, args);
         }
     }
 }

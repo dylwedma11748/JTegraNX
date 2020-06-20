@@ -30,6 +30,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import jtegranx.util.ConfigManager;
 import static jtegranx.util.ConfigManager.configDir;
 import jtegranx.util.Downloader;
 import static jtegranx.util.ResourceLoader.*;
@@ -41,11 +42,13 @@ public class PayloadManager {
 
     private static Payload tegraExplorer;
     private static Payload lockpick_RCM;
-    
+    private static Payload fuseePrimary;
+
     private static boolean tegraExplorerUpdate = false;
     private static boolean lockpick_RCMupdate = false;
+    private static boolean fusse_primary_update = false;
 
-    public static final Payload[] payloads = {null, null};
+    public static final Payload[] PAYLOADS = {null, null, null};
 
     public static void initPayloads() {
         new Thread() {
@@ -53,17 +56,19 @@ public class PayloadManager {
             public void run() {
                 TegraExplorer.checkForUpdates();
                 Lockpick_RCM.checkForUpdates();
+                fusee_primary.checkForUpdates();
                 initPayloadFolder();
-                
+
                 tegraExplorer = TegraExplorer.update();
                 lockpick_RCM = Lockpick_RCM.update();
+                fuseePrimary = fusee_primary.update();
 
-                payloads[0] = tegraExplorer;
-                payloads[1] = lockpick_RCM;
+                PAYLOADS[0] = tegraExplorer;
+                PAYLOADS[1] = lockpick_RCM;
+                PAYLOADS[2] = fuseePrimary;
 
                 if (tegraExplorer != null) {
                     if (!payloadExists(tegraExplorer)) {
-                        System.out.println("TegraExplorer not found in payloads directory. Downloading.");
                         downloadPayload(tegraExplorer);
                     } else {
                         if (!getPayloadVersion(tegraExplorer).equals(tegraExplorer.getVersion()) && !tegraExplorer.getVersion().equals("")) {
@@ -73,26 +78,34 @@ public class PayloadManager {
                             downloadPayload(tegraExplorer);
                         }
                     }
-                } else {
-                    System.out.println("TegraExplorer update check returned null. Moving on.");
                 }
 
                 if (lockpick_RCM != null) {
                     if (!payloadExists(lockpick_RCM)) {
-                        System.out.println("Lockpick_RCM not found in payloads directory. Downloading.");
                         downloadPayload(lockpick_RCM);
                     } else {
                         if (!getPayloadVersion(lockpick_RCM).equals(lockpick_RCM.getVersion()) && !lockpick_RCM.getVersion().equals("")) {
                             System.out.println("Updating Lockpick_RCM.");
                             lockpick_RCMupdate = true;
                             new File(payloadDir.getAbsolutePath() + "\\Lockpick_RCM.bin").delete();
-                            downloadPayload(tegraExplorer);
+                            downloadPayload(lockpick_RCM);
                         }
                     }
-                } else {
-                    System.out.println("Lockpick_RCM update check returned null. Moving on.");
                 }
-                
+
+                if (lockpick_RCM != null) {
+                    if (!payloadExists(fuseePrimary)) {
+                        downloadPayload(fuseePrimary);
+                    } else {
+                        if (!getPayloadVersion(fuseePrimary).equals(fuseePrimary.getVersion()) && !fuseePrimary.getVersion().equals("")) {
+                            System.out.println("Updating fusee-primary.");
+                            fusse_primary_update = true;
+                            new File(payloadDir.getAbsolutePath() + "\\fusee-primary.bin").delete();
+                            downloadPayload(fuseePrimary);
+                        }
+                    }
+                }
+
                 if (tegraExplorerUpdate) {
                     System.out.println("Updated TegraExplorer.");
                 } else {
@@ -100,7 +113,7 @@ public class PayloadManager {
                         System.out.println("TegraExplorer is up to date.");
                     }
                 }
-                
+
                 if (lockpick_RCMupdate) {
                     System.out.println("Updated Lockpick_RCM.");
                 } else {
@@ -109,8 +122,18 @@ public class PayloadManager {
                     }
                 }
 
-                savePayloadUpdateInfo(payloads);
-                generatePayloadConfigs(payloads);
+                if (fusse_primary_update) {
+                    System.out.println("Updated fusee-primary.");
+                } else {
+                    if (fuseePrimary != null) {
+                        System.out.println("fusee-primary is up to date.");
+                    }
+                }
+
+                savePayloadUpdateInfo(PAYLOADS);
+                generatePayloadConfigs(PAYLOADS);
+                
+                ConfigManager.updateConfigList();
             }
         }.start();
     }

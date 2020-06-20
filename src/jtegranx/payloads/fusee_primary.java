@@ -27,15 +27,14 @@ import java.io.InputStreamReader;
 import java.net.URL;
 import java.net.URLConnection;
 
-public class TegraExplorer {
-
+public class fusee_primary {
     private static String latestVersion;
-    private static final String GITHUB = "https://github.com/suchmememanyskill/TegraExplorer/releases";
+    private static final String GITHUB = "https://github.com/Atmosphere-NX/Atmosphere/releases";
     private static boolean success = false;
-
+    
     public static Payload update() {
         if (success) {
-            return new Payload("TegraExplorer", latestVersion, GITHUB + "/download/" + latestVersion + "/TegraExplorer.bin");
+            return new Payload("fusee-primary", latestVersion, GITHUB + "/download/" + latestVersion + "/fusee-primary.bin");
         }
 
         return null;
@@ -43,7 +42,7 @@ public class TegraExplorer {
 
     public static void checkForUpdates() {
         try {
-            System.out.println("Checking for updates on TegraExplorer.");
+            System.out.println("Checking for updates on fusee-primary.");
             URL url = new URL(GITHUB);
             URLConnection connection = url.openConnection();
 
@@ -51,7 +50,7 @@ public class TegraExplorer {
                 String line;
 
                 while ((line = bReader.readLine()) != null) {
-                    if (line.contains("<a href=\"/suchmememanyskill/TegraExplorer/releases/tag/")) {
+                    if (line.contains("https://github.com/Atmosphere-NX/Atmosphere/releases/tag/")) {
                         latestVersion = line.substring(line.indexOf("tag/") + 4, line.indexOf("\">"));
                         success = true;
                         break;
@@ -59,7 +58,7 @@ public class TegraExplorer {
                 }
             }
         } catch (IOException ex) {
-            System.out.println("Unable to check for updates on TegraExplorer. Reason: " + ex.getClass().getName() + " was thrown!");
+            System.out.println("Unable to check for updates on Lockpick_RCM. Reason: " + ex.getClass().getName() + " was thrown!");
             latestVersion = "";
         }
     }

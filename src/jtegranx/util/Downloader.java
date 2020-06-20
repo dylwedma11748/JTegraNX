@@ -26,8 +26,11 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.URL;
-import static javax.swing.JOptionPane.INFORMATION_MESSAGE;
-import static javax.swing.JOptionPane.showMessageDialog;
+import javafx.application.Platform;
+import javafx.scene.control.ButtonBar;
+import javafx.scene.control.ButtonType;
+import javafx.scene.control.Dialog;
+import jtegranx.fx.JTegraNX;
 
 public class Downloader {
 
@@ -45,7 +48,18 @@ public class Downloader {
                         }
 
                         if (!silent) {
-                            showMessageDialog(null, "Download Complete", "Downloader", INFORMATION_MESSAGE);
+                            Platform.runLater(() -> {
+                                Dialog downloaderDialog = new Dialog();
+                                downloaderDialog.setTitle("JTegraNX");
+                                downloaderDialog.setHeaderText("Download complete.");
+                                downloaderDialog.setGraphic(JTegraNX.getController().getDialogImage());
+
+                                ButtonType close = new ButtonType("Close", ButtonBar.ButtonData.OK_DONE);
+                                downloaderDialog.getDialogPane().getButtonTypes().add(close);
+
+                                downloaderDialog.initOwner(JTegraNX.getStage());
+                                downloaderDialog.showAndWait();
+                            });
                         }
                     }
                 } catch (IOException ex) {
