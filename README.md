@@ -24,21 +24,25 @@ This program is only supported on Windows Operating Systems, sorry for any incon
 2. Inject
 
 ## Using configs
-The new config system allows you to save what you entered in the "Payload Path" field and the "Arguments" field and load it again in another session.
+The config system allows you to save what you entered in the "Payload Path" field and the "Arguments" field and load it again in another session.
 
-### Loading a config:
-Simply click on "Load Config" and JTegraNX will search the "configs" directory for any valid config files. Select the config you wish to use and click on "Load".
+### Loading a saved config:
+Simply click on "Load Config" and JTegraNX will search the "configs" directory for any valid config files. Select the config you wish to use.
+
+### Loading external configs (v1.5+)
+Simply click on "Load Config" and select "External Config".
 
 ### Saving a config:
-Simple click on "Save Config" and enter a name for the config, it will be saved in the "configs" directory.
+Simple click on "Save Config", input a name for the config and hit enter. It will be saved in the "configs" directory.
 
 ## Bundled Payloads
-For any bundled payloads, JTegraNX will download them automatically, place them in the "payloads" directory, generate a config for them, and check for updates on them each time the program is launched. If an update for a payload is found, it will be taken care of.
+For any bundled payloads, JTegraNX will download them automatically, place them in the "payloads" directory, and check for updates on them each time the program is launched. If an update for a payload is found, it will be taken care of.
 
 ### Currently bundled payloads:
 - [TegraExplorer](https://github.com/suchmememanyskill/TegraExplorer)
 - [Lockpick_RCM](https://github.com/shchmue/Lockpick_RCM)
 - [fusee-primary](https://github.com/Atmosphere-NX/Atmosphere/releases)
+- [Hekate](https://github.com/CTCaer/hekate)
 
 # Credits
 - [suchmememanyskill](https://github.com/suchmememanyskill) for allowing me to include [TegraExplorer](https://github.com/suchmememanyskill/TegraExplorer).
@@ -46,3 +50,4 @@ For any bundled payloads, JTegraNX will download them automatically, place them 
 - [shchmue](https://github.com/shchmue) for [Lockpick_RCM](https://github.com/shchmue/Lockpick_RCM).
 - [eliboa](https://github.com/eliboa) for the images from [TegraRcmGUI](https://github.com/eliboa/TegraRcmGUI).
 - The creators of Atmosphère for [fusee-primary](https://github.com/Atmosphere-NX/Atmosphere/releases).
+- [CTCaer](https://github.com/CTCaer) for [Hekate](https://github.com/CTCaer/hekate).
