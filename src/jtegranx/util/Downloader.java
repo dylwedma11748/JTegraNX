@@ -31,10 +31,11 @@ import javafx.scene.control.ButtonBar;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.Dialog;
 import jtegranx.fx.JTegraNX;
+import static jtegranx.payloads.PayloadManager.payloadDir;
 
 public class Downloader {
 
-    public static void downloadFile(URL download, String filePath, boolean silent) {
+    public static void downloadFile(URL download, String filePath, boolean silent, boolean hekate) {
         new Thread() {
             @Override
             public void run() {
@@ -65,7 +66,25 @@ public class Downloader {
                 } catch (IOException ex) {
                     System.err.println("Unable to download \"" + download + "\". Reason: " + ex.getClass().getName() + " was thrown!");
                 }
+
+                if (hekate) {
+                    Unzip.unzip(payloadDir.getAbsolutePath() + "\\Hekate.zip", payloadDir.getAbsolutePath()); 
+                    deleteDirectory(new File(payloadDir.getAbsolutePath() + "\\bootloader"));
+                    new File(payloadDir.getAbsolutePath() + "\\Hekate.zip").delete();
+                }
             }
         }.start();
+    }
+    
+    private static void deleteDirectory(File directoryToBeDeleted) {
+        File[] allContents = directoryToBeDeleted.listFiles();
+        
+        if (allContents != null) {
+            for (File file : allContents) {
+                deleteDirectory(file);
+            }
+        }
+        
+        directoryToBeDeleted.delete();
     }
 }

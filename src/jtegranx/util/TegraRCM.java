@@ -55,7 +55,7 @@ public class TegraRCM {
     public static void injectPayload(String payload, String args) {
         if (TegraRcmSmash.exists() && TegraRcmSmash.canExecute()) {
             JTegraNX.getController().clearLog();
-            
+
             if (new File(payload).exists()) {
                 try {
                     String command = "\"" + TegraRcmSmash.getAbsolutePath() + "\" " + "\"" + payload + "\" " + args;
@@ -66,19 +66,7 @@ public class TegraRCM {
                         String line;
 
                         while ((line = reader.readLine()) != null) {
-                            String l = line.replaceAll("\\W", "");
-
-                            if (l.contains("RCMDevice")) {
-                                JTegraNX.getController().appendLog("RCM Device initialized successfully!");
-                            } else if (l.contains("Uploadingpayload")) {
-                                JTegraNX.getController().appendLog("Uploading payload...");
-                            } else if (l.contains("Smashing")) {
-                                JTegraNX.getController().appendLog("Smashing the stack!");
-                            } else if (l.contains("Smashed")) {
-                                JTegraNX.getController().appendLog("Smashed the stack with a SETUP request!");
-                                JTegraNX.getController().setRcmStatusImage(StatusImages.RCM_LOADED);
-                                JTegraNX.getController().setRcmStatus(false);
-                            }
+                            JTegraNX.getController().appendLog(line);
                         }
                     }
                 } catch (IOException ex) {

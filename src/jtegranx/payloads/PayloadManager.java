@@ -30,10 +30,10 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import jtegranx.util.ConfigManager;
-import static jtegranx.util.ConfigManager.configDir;
+import jtegranx.fx.JTegraNX;
+import jtegranx.util.Directories;
 import jtegranx.util.Downloader;
-import static jtegranx.util.ResourceLoader.*;
+import jtegranx.util.Tray;
 
 public class PayloadManager {
 
@@ -43,118 +43,105 @@ public class PayloadManager {
     private static Payload tegraExplorer;
     private static Payload lockpick_RCM;
     private static Payload fuseePrimary;
+    private static Payload hekate;
 
-    private static boolean tegraExplorerUpdate = false;
-    private static boolean lockpick_RCMupdate = false;
-    private static boolean fusse_primary_update = false;
-
-    public static final Payload[] PAYLOADS = {null, null, null};
+    public static final Payload[] PAYLOADS = {null, null, null, null};
 
     public static void initPayloads() {
-        new Thread() {
-            @Override
-            public void run() {
-                TegraExplorer.checkForUpdates();
-                Lockpick_RCM.checkForUpdates();
-                fusee_primary.checkForUpdates();
-                initPayloadFolder();
-
-                tegraExplorer = TegraExplorer.update();
-                lockpick_RCM = Lockpick_RCM.update();
-                fuseePrimary = fusee_primary.update();
-
-                PAYLOADS[0] = tegraExplorer;
-                PAYLOADS[1] = lockpick_RCM;
-                PAYLOADS[2] = fuseePrimary;
-
-                if (tegraExplorer != null) {
-                    if (!payloadExists(tegraExplorer)) {
-                        downloadPayload(tegraExplorer);
-                    } else {
-                        if (!getPayloadVersion(tegraExplorer).equals(tegraExplorer.getVersion()) && !tegraExplorer.getVersion().equals("")) {
-                            System.out.println("Updating TegraExplorer.");
-                            tegraExplorerUpdate = true;
-                            new File(payloadDir.getAbsolutePath() + "\\TegraExplorer.bin").delete();
-                            downloadPayload(tegraExplorer);
-                        }
-                    }
-                }
-
-                if (lockpick_RCM != null) {
-                    if (!payloadExists(lockpick_RCM)) {
-                        downloadPayload(lockpick_RCM);
-                    } else {
-                        if (!getPayloadVersion(lockpick_RCM).equals(lockpick_RCM.getVersion()) && !lockpick_RCM.getVersion().equals("")) {
-                            System.out.println("Updating Lockpick_RCM.");
-                            lockpick_RCMupdate = true;
-                            new File(payloadDir.getAbsolutePath() + "\\Lockpick_RCM.bin").delete();
-                            downloadPayload(lockpick_RCM);
-                        }
-                    }
-                }
-
-                if (lockpick_RCM != null) {
-                    if (!payloadExists(fuseePrimary)) {
-                        downloadPayload(fuseePrimary);
-                    } else {
-                        if (!getPayloadVersion(fuseePrimary).equals(fuseePrimary.getVersion()) && !fuseePrimary.getVersion().equals("")) {
-                            System.out.println("Updating fusee-primary.");
-                            fusse_primary_update = true;
-                            new File(payloadDir.getAbsolutePath() + "\\fusee-primary.bin").delete();
-                            downloadPayload(fuseePrimary);
-                        }
-                    }
-                }
-
-                if (tegraExplorerUpdate) {
-                    System.out.println("Updated TegraExplorer.");
-                } else {
-                    if (tegraExplorer != null) {
-                        System.out.println("TegraExplorer is up to date.");
-                    }
-                }
-
-                if (lockpick_RCMupdate) {
-                    System.out.println("Updated Lockpick_RCM.");
-                } else {
-                    if (lockpick_RCM != null) {
-                        System.out.println("Lockpick_RCM is up to date.");
-                    }
-                }
-
-                if (fusse_primary_update) {
-                    System.out.println("Updated fusee-primary.");
-                } else {
-                    if (fuseePrimary != null) {
-                        System.out.println("fusee-primary is up to date.");
-                    }
-                }
-
-                savePayloadUpdateInfo(PAYLOADS);
-                generatePayloadConfigs(PAYLOADS);
-                
-                ConfigManager.updateConfigList();
-            }
-        }.start();
-    }
-
-    private static boolean payloadExists(Payload payload) {
-        return new File(payloadDir.getAbsolutePath() + "\\" + payload.getName() + ".bin").exists();
-    }
-
-    private static void initPayloadFolder() {
-        payloadDir = new File(jtegranxdir.getAbsolutePath() + "\\payloads");
+        TegraExplorer.checkForUpdates();
+        Lockpick_RCM.checkForUpdates();
+        fusee_primary.checkForUpdates();
+        Hekate.checkForUpdates();
+        payloadDir = Directories.getPayloadDir();
         payloadConfig = new File(payloadDir.getAbsolutePath() + "\\info.ini");
 
-        if (!payloadDir.exists()) {
-            payloadDir.mkdir();
+        tegraExplorer = TegraExplorer.update();
+        lockpick_RCM = Lockpick_RCM.update();
+        fuseePrimary = fusee_primary.update();
+        hekate = Hekate.update();
+
+        PAYLOADS[0] = hekate;
+        PAYLOADS[1] = tegraExplorer;
+        PAYLOADS[2] = lockpick_RCM;
+        PAYLOADS[3] = fuseePrimary;
+
+        if (tegraExplorer != null) {
+            if (!payloadExists(tegraExplorer)) {
+                downloadPayload(tegraExplorer);
+            } else {
+                if (!getPayloadVersion(tegraExplorer).equals(tegraExplorer.getVersion()) && !tegraExplorer.getVersion().equals("")) {
+                    System.out.println("Updating TegraExplorer.");
+                    new File(payloadDir.getAbsolutePath() + "\\TegraExplorer.bin").delete();
+                    downloadPayload(tegraExplorer);
+                }
+            }
         }
+
+        if (lockpick_RCM != null) {
+            if (!payloadExists(lockpick_RCM)) {
+                downloadPayload(lockpick_RCM);
+            } else {
+                if (!getPayloadVersion(lockpick_RCM).equals(lockpick_RCM.getVersion()) && !lockpick_RCM.getVersion().equals("")) {
+                    System.out.println("Updating Lockpick_RCM.");
+                    new File(payloadDir.getAbsolutePath() + "\\Lockpick_RCM.bin").delete();
+                    downloadPayload(lockpick_RCM);
+                }
+            }
+        }
+
+        if (lockpick_RCM != null) {
+            if (!payloadExists(fuseePrimary)) {
+                downloadPayload(fuseePrimary);
+            } else {
+                if (!getPayloadVersion(fuseePrimary).equals(fuseePrimary.getVersion()) && !fuseePrimary.getVersion().equals("")) {
+                    System.out.println("Updating fusee-primary.");
+                    new File(payloadDir.getAbsolutePath() + "\\fusee-primary.bin").delete();
+                    downloadPayload(fuseePrimary);
+                }
+            }
+        }
+
+        if (hekate != null) {
+            if (!payloadExists(hekate)) {
+                downloadPayload(hekate);
+            } else {
+                if (!getPayloadVersion(hekate).equals(hekate.getVersion()) && !hekate.getVersion().equals("")) {
+                    System.out.println("Updating Hekate");
+                    new File(payloadDir.getAbsolutePath() + "\\Hekate.bin").delete();
+                    downloadPayload(hekate);
+                }
+            }
+        }
+
+        for (Payload payload : PAYLOADS) {
+            JTegraNX.getController().addPayloadToMenu(payload);
+        }
+
+        savePayloadUpdateInfo();
+        Tray.showTrayIcon();
+        addPayloadsToTray();
+    }
+
+    public static boolean payloadExists(Payload payload) {
+        return new File(payloadDir.getAbsolutePath() + "\\" + payload.getName() + ".bin").exists();
     }
 
     private static void downloadPayload(Payload payload) {
         try {
             URL download = new URL(payload.getDownloadURL());
-            Downloader.downloadFile(download, payloadDir.getAbsolutePath() + "\\" + payload.getName() + ".bin", true);
+
+            if (payload.getName().equals("Hekate")) {
+                Downloader.downloadFile(download, payloadDir.getAbsolutePath() + "\\" + payload.getName() + ".zip", true, true);
+                File h = new File(payloadDir.getAbsolutePath() + "\\hekate_ctcaer_" + payload.getVersion() + ".bin");
+
+                while (!h.renameTo(new File(payloadDir.getAbsolutePath() + "\\Hekate.bin"))) {
+                    if (h.renameTo(new File(payloadDir.getAbsolutePath() + "\\Hekate.bin"))) {
+                        break;
+                    }
+                }
+            } else {
+                Downloader.downloadFile(download, payloadDir.getAbsolutePath() + "\\" + payload.getName() + ".bin", true, false);
+            }
         } catch (MalformedURLException ex) {
             Logger.getLogger(PayloadManager.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -178,42 +165,27 @@ public class PayloadManager {
         return "";
     }
 
-    private static void savePayloadUpdateInfo(Payload[] payloads) {
+    public static void addPayloadsToTray() {
+        for (Payload payload : PAYLOADS) {
+            Tray.addPayloadToTray(payload);
+        }
+    }
+
+    private static void savePayloadUpdateInfo() {
         if (payloadConfig.exists()) {
             new File(payloadConfig.getAbsolutePath()).delete();
         }
 
         try (PrintWriter writer = new PrintWriter(payloadConfig)) {
-            writer.println("Warning: Modifying this file may cause problems with JTegraNX.");
-            writer.println("Do not modify this file unless you know what you're doing.");
-            writer.println("");
             writer.println("[Payload Info]");
 
-            for (Payload payload : payloads) {
+            for (Payload payload : PAYLOADS) {
                 if (payload != null) {
                     writer.println(payload.getName() + "Version=" + payload.getVersion());
                 }
             }
         } catch (IOException ex) {
             Logger.getLogger(PayloadManager.class.getName()).log(Level.SEVERE, null, ex);
-        }
-    }
-
-    private static void generatePayloadConfigs(Payload[] payloads) {
-        for (Payload payload : payloads) {
-            if (payload != null) {
-                File config = new File(configDir.getAbsolutePath() + "\\Config_" + payload.getName().replaceAll(" ", "_") + ".ini");
-
-                if (!config.exists()) {
-                    try (PrintWriter writer = new PrintWriter(config)) {
-                        writer.println("[JTegraNX Config]");
-                        writer.println("configName=" + payload.getName());
-                        writer.println("payloadPath=jtegranx\\payloads\\" + payload.getName() + ".bin");
-                    } catch (IOException ex) {
-                        Logger.getLogger(PayloadManager.class.getName()).log(Level.SEVERE, null, ex);
-                    }
-                }
-            }
         }
     }
 }

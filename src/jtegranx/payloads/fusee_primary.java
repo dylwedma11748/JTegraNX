@@ -42,7 +42,6 @@ public class fusee_primary {
 
     public static void checkForUpdates() {
         try {
-            System.out.println("Checking for updates on fusee-primary.");
             URL url = new URL(GITHUB);
             URLConnection connection = url.openConnection();
 
@@ -58,7 +57,7 @@ public class fusee_primary {
                 }
             }
         } catch (IOException ex) {
-            System.out.println("Unable to check for updates on Lockpick_RCM. Reason: " + ex.getClass().getName() + " was thrown!");
+            System.out.println("Unable to check for updates on fusee-primary. Reason: " + ex.getClass().getName() + " was thrown!");
             latestVersion = "";
         }
     }

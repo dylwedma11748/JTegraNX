@@ -55,8 +55,8 @@ public class ResourceLoader {
     public static final String DIR = System.getProperty("user.dir");
 
     public static void loadResources() {
-        jtegranxdir = new File(DIR + "\\jtegranx");
-        memloaderdir = new File(jtegranxdir.getAbsolutePath() + "\\memloader");
+        jtegranxdir = Directories.getJtegranxdir();
+        memloaderdir = Directories.getMemloaderdir();
 
         if (!jtegranxdir.exists()) {
             jtegranxdir.mkdir();

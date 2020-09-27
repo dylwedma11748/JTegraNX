@@ -27,6 +27,7 @@ import java.util.ResourceBundle;
 import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
@@ -34,6 +35,8 @@ import javafx.scene.control.ButtonBar;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Dialog;
+import javafx.scene.control.Menu;
+import javafx.scene.control.MenuItem;
 import javafx.scene.control.RadioMenuItem;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
@@ -44,8 +47,9 @@ import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.HBox;
 import javafx.stage.FileChooser;
-import jtegranx.payloads.PayloadManager;
+import jtegranx.payloads.Payload;
 import jtegranx.util.ConfigManager;
+import jtegranx.util.Directories;
 import jtegranx.util.ResourceLoader;
 import jtegranx.util.StatusImages;
 import jtegranx.util.TegraRCM;
@@ -76,6 +80,7 @@ public class GUIController implements Initializable {
     public ImageView rcmStatus;
     public TextArea log;
     public HBox hbox;
+    public Menu payloads;
 
     @FXML
     public void injectAction() {
@@ -107,15 +112,15 @@ public class GUIController implements Initializable {
     public void autoInjectAction() {
         if (autoInject.isSelected()) {
             inject.setDisable(true);
-            
+
             if (Tray.isTrayInitialized()) {
                 Tray.getAutoInjectMenuItemFromTray().setLabel("Auto-inject (Enabled)");
             }
-            
+
             injectAction();
         } else {
             inject.setDisable(false);
-            
+
             if (Tray.isTrayInitialized()) {
                 Tray.getAutoInjectMenuItemFromTray().setLabel("Auto-inject (Disabled)");
             }
@@ -124,48 +129,39 @@ public class GUIController implements Initializable {
 
     @FXML
     private void deleteSelectedConfig() {
-        String selected = (String) configList.getSelectionModel().getSelectedItem();
-        boolean bundledPayloadConfig;
+        if (configList.getSelectionModel().getSelectedIndex() != -1) {
+            String selected = (String) configList.getSelectionModel().getSelectedItem();
 
-        if (!selected.equals("Mount SD Card")) {
-            switch (selected) {
-                case "TegraExplorer":
-                    bundledPayloadConfig = true;
-                    break;
-                case "Lockpick_RCM":
-                    bundledPayloadConfig = true;
-                    break;
-                case "fusee-primary":
-                    bundledPayloadConfig = true;
-                    break;
-                default:
-                    bundledPayloadConfig = false;
-                    break;
-            }
-            
-            dialog = new Dialog();
-            dialog.setTitle("JTegraNX");
-            
-            if (bundledPayloadConfig) {
-                dialog.setHeaderText("This config is for a bundled payload, it will be re-created when the program is restarted. Delete anyway?");
-            } else {
+            if (!selected.equals("Mount SD Card") && !selected.equals("External Config")) {
+                dialog = new Dialog();
+                dialog.setTitle("JTegraNX");
+
                 dialog.setHeaderText("Are you sure you want to delete the selected config?");
-            }
-            
-            dialog.setGraphic(getDialogImage());
 
-            ButtonType delete = new ButtonType("Delete", ButtonBar.ButtonData.OK_DONE);
-            dialog.getDialogPane().getButtonTypes().addAll(delete, ButtonType.CANCEL);
+                dialog.setGraphic(getDialogImage());
 
-            dialog.initOwner(JTegraNX.getStage());
-            dialog.showAndWait();
+                ButtonType delete = new ButtonType("Delete", ButtonBar.ButtonData.OK_DONE);
+                dialog.getDialogPane().getButtonTypes().addAll(delete, ButtonType.CANCEL);
 
-            if (dialog.getResult().toString().equals("ButtonType [text=Delete, buttonData=OK_DONE]")) {
-                ConfigManager.deleteConfig(selected);
-                configList.getSelectionModel().clearSelection(configList.getSelectionModel().getSelectedIndex());
+                dialog.initOwner(JTegraNX.getStage());
+                dialog.showAndWait();
+
+                if (dialog.getResult().toString().equals("ButtonType [text=Delete, buttonData=OK_DONE]")) {
+                    ConfigManager.deleteConfig(selected);
+                    configList.getSelectionModel().clearSelection(configList.getSelectionModel().getSelectedIndex());
+                    updateConfigList();
+                    setPayloadPath("");
+                    setArguments("");
+                }
+            } else {
+                if (selected.equals("Mount SD Card")) {
+                    appendLog("Mount SD Card config can't be deleted.");
+                } else if (selected.equals("External Config")) {
+                    appendLog("Deleting external configs currently is not allowed.");
+                }
             }
         } else {
-            appendLog("Mount SD Card config can't be deleted.");
+            appendLog("No config selected.");
         }
     }
 
@@ -212,6 +208,65 @@ public class GUIController implements Initializable {
                     setPayloadPath("jtegranx\\memloader\\memloader_usb.bin");
                     setArguments("-r --dataini=\"jtegranx\\memloader\\ums_sd.ini\"");
                     break;
+                case "External Config":
+                    setPayloadPath("");
+                    setArguments("");
+
+                    FileChooser chooser = new FileChooser();
+
+                    if (new File(savedFolderPath).exists()) {
+                        chooser.setInitialDirectory(new File(savedFolderPath));
+                    }
+
+                    FileChooser.ExtensionFilter filter = new FileChooser.ExtensionFilter("JTegraNX Configs (*.ini)", "*ini");
+                    chooser.getExtensionFilters().add(filter);
+
+                    File file = chooser.showOpenDialog(JTegraNX.getStage());
+
+                    if (file != null && file.exists()) {
+                        if (!new File(Directories.getConfigDir().getAbsolutePath() + "\\Config_" + ConfigManager.getConfigName(file) + ".ini").exists()) {
+                            savedFolderPath = file.getParent();
+
+                            if (ConfigManager.configValid(file)) {
+                                ConfigManager.loadExternalConfig(file);
+                            }
+                        } else {
+                            dialog = new Dialog();
+                            dialog.setTitle("JTegraNX");
+
+                            dialog.setHeaderText("Selected external config exists in \"configs\" directory. \nLoad external config or config from \"configs\"?");
+
+                            dialog.setGraphic(getDialogImage());
+
+                            ButtonType external = new ButtonType("External", ButtonBar.ButtonData.OK_DONE);
+                            ButtonType configs = new ButtonType("\"Configs\"", ButtonBar.ButtonData.OK_DONE);
+                            dialog.getDialogPane().getButtonTypes().addAll(external, configs, ButtonType.CANCEL);
+
+                            dialog.initOwner(JTegraNX.getStage());
+                            dialog.showAndWait();
+
+                            switch (dialog.getResult().toString()) {
+                                case "ButtonType [text=External, buttonData=OK_DONE]":
+                                    if (ConfigManager.configValid(file)) {
+                                        ConfigManager.loadExternalConfig(file);
+                                    }   break;
+                                case "ButtonType [text=\"Configs\", buttonData=OK_DONE]":
+                                    ConfigManager.loadConfig(ConfigManager.getConfigName(file));
+                                    // IndexOutOfBoundsException gets thrown here but it functions as intended
+                                    configList.getSelectionModel().select(ConfigManager.getConfigName(file));
+                                    break;
+                                default:
+                                    // IndexOutOfBoundsException gets thrown here but it functions as intended
+                                    configList.getSelectionModel().clearSelection(configList.getSelectionModel().getSelectedIndex());
+                                    break;
+                            }
+                        }
+                    } else {
+                        // IndexOutOfBoundsException gets thrown here but it functions as intended
+                        configList.getSelectionModel().clearSelection(configList.getSelectionModel().getSelectedIndex());
+                    }
+
+                    break;
                 default:
                     setPayloadPath("");
                     setArguments("");
@@ -228,14 +283,14 @@ public class GUIController implements Initializable {
                 setMinimizeTrayFlag(true);
                 trayMinimize = 1;
                 break;
-            
+
             case 1:
                 setMinimizeTrayFlag(false);
                 trayMinimize = 0;
                 break;
         }
     }
-    
+
     private void setMinimizeTrayFlag(boolean tray) {
         if (tray) {
             JTegraNX.getStage().iconifiedProperty().addListener(listener);
@@ -275,6 +330,8 @@ public class GUIController implements Initializable {
         if (event.getCode().equals(KeyCode.ENTER)) {
             if (!configNameEntry.getText().equals("")) {
                 ConfigManager.saveConfig(configNameEntry.getText());
+                updateConfigList();
+                configList.getSelectionModel().select(configNameEntry.getText());
                 configNameEntry.setText("");
                 hbox.setLayoutX(135);
                 configNameEntry.setVisible(false);
@@ -319,8 +376,7 @@ public class GUIController implements Initializable {
             System.exit(0);
         } else {
             ResourceLoader.loadResources();
-            PayloadManager.initPayloads();
-            
+
             listener = (ChangeListener) (ObservableValue observable, Object oldValue, Object newValue) -> {
                 if (newValue.toString().equals("true")) {
                     Platform.setImplicitExit(false);
@@ -337,7 +393,7 @@ public class GUIController implements Initializable {
     public String getArguments() {
         return arguments.getText();
     }
-    
+
     public ComboBox getConfigList() {
         return configList;
     }
@@ -376,6 +432,19 @@ public class GUIController implements Initializable {
 
     public void addConfig(String config) {
         configList.getItems().add(config);
+
+    }
+
+    public void addPayloadToMenu(Payload payload) {
+        MenuItem item = new MenuItem(payload.getName() + " v" + payload.getVersion());
+
+        item.setOnAction((ActionEvent event) -> {
+            setPayloadPath("jtegranx\\payloads\\" + payload.getName() + ".bin");
+            setArguments("");
+            configList.getSelectionModel().select(-1);
+        });
+
+        payloads.getItems().add(item);
     }
 
     public void removeAllConfigsFromList() {

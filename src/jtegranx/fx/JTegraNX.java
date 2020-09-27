@@ -28,7 +28,9 @@ import javafx.scene.Scene;
 import javafx.scene.image.Image;
 import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
+import jtegranx.payloads.PayloadManager;
 import jtegranx.util.ConfigManager;
+import jtegranx.util.Directories;
 import jtegranx.util.TegraRCM;
 import jtegranx.util.Tray;
 import jtegranx.util.Updater;
@@ -44,6 +46,8 @@ public class JTegraNX extends Application {
     @Override
     @SuppressWarnings("ResultOfObjectAllocationIgnored")
     public void start(Stage stage) throws IOException {
+        Directories.initDirectories();
+        
         FXMLLoader loader = new FXMLLoader(getClass().getResource("GUI.fxml"));
         Pane base = loader.load();
         controller = loader.getController();
@@ -57,13 +61,14 @@ public class JTegraNX extends Application {
         stage.getIcons().add(icon);
         stage.setResizable(false);
         
+        PayloadManager.initPayloads();
         ConfigManager.loadMainConfigFile();
-        ConfigManager.updateConfigList();
-        Tray.showTrayIcon();
+        
         TegraRCM.initRCMDeviceListener();
-        updater.checkForUpdates();
         
         stage.show();
+        updater.checkForUpdates();
+        ConfigManager.updateConfigList();
     }
 
     @Override

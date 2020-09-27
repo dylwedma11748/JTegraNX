@@ -25,25 +25,22 @@
             <children>
                 <MenuBar fx:id="menuBar" prefHeight="25.0" prefWidth="600.0">
                     <menus>
-                        <Menu mnemonicParsing="false" text="Options">
+                        <Menu mnemonicParsing="false" text="Menu">
                             <items>
+                        <MenuItem mnemonicParsing="false" onAction="#checkForUpdates" text="Check for updates" />
                         <MenuItem mnemonicParsing="false" onAction="#clearFields" text="Clear fields" />
                         <MenuItem mnemonicParsing="false" onAction="#clearLog" text="Clear log" />
-                                <RadioMenuItem fx:id="hideLog" mnemonicParsing="false" onAction="#hideLogAction" text="Hide log" />
-                        <RadioMenuItem fx:id="minimizeToTray" mnemonicParsing="false" onAction="#minimizeToTrayAction" text="Minimize to tray" />
-                        <MenuItem mnemonicParsing="false" onAction="#deleteSelectedConfig" text="Delete selected config" />
+                        <MenuItem mnemonicParsing="false" onAction="#deleteSelectedConfig" text="Delete config" />
+                        <Menu fx:id="payloads" mnemonicParsing="false" text="Payloads" />
+                        <Menu mnemonicParsing="false" text="Settings">
+                           <items>
+                              <RadioMenuItem fx:id="autoInject" mnemonicParsing="false" onAction="#autoInjectAction" text="Auto-inject" />
+                                      <RadioMenuItem fx:id="hideLog" mnemonicParsing="false" onAction="#hideLogAction" text="Hide log" />
+                              <RadioMenuItem fx:id="minimizeToTray" mnemonicParsing="false" onAction="#minimizeToTrayAction" text="Minimize to tray" />
+                           </items>
+                        </Menu>
                             </items>
                         </Menu>
-                  <Menu mnemonicParsing="false" text="Settings">
-                     <items>
-                        <RadioMenuItem fx:id="autoInject" mnemonicParsing="false" onAction="#autoInjectAction" text="Auto-inject" />
-                     </items>
-                  </Menu>
-                  <Menu mnemonicParsing="false" text="Help">
-                     <items>
-                        <MenuItem mnemonicParsing="false" onAction="#checkForUpdates" text="Check for updates" />
-                     </items>
-                  </Menu>
                     </menus>
                     <effect>
                         <DropShadow />
@@ -87,7 +84,7 @@
                   <Tooltip text="Browse for payload." />
                </tooltip>
                 </Button>
-                <TextArea fx:id="log" editable="false" layoutX="11.0" layoutY="172.0" prefHeight="100.0" prefWidth="412.0">
+                <TextArea fx:id="log" editable="false" layoutX="11.0" layoutY="172.0" prefHeight="100.0" prefWidth="412.0" wrapText="true">
                     <effect>
                         <DropShadow />
                     </effect>

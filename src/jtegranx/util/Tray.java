@@ -35,16 +35,22 @@ import java.util.logging.Logger;
 import javafx.application.Platform;
 import javax.swing.ImageIcon;
 import jtegranx.fx.JTegraNX;
-import static jtegranx.util.ConfigManager.configDir;
+import jtegranx.payloads.Payload;
+import jtegranx.payloads.PayloadManager;
 
 public class Tray {
 
+    private static final File configDir = Directories.getConfigDir();
     private static boolean trayInitialized = false;
     private static PopupMenu menu;
     private static SystemTray systemTray;
     private static TrayIcon trayIcon;
     private static MenuItem autoInjectItem;
     private static MenuItem exitItem;
+
+    public static void addSeperator() {
+        menu.addSeparator();
+    }
 
     public static void showTrayIcon() {
         if (!SystemTray.isSupported()) {
@@ -70,8 +76,6 @@ public class Tray {
                     }
                 }
             }
-
-            addDefaultMenuItems();
 
             try {
                 trayIcon.addActionListener((ActionEvent e) -> {
@@ -103,6 +107,36 @@ public class Tray {
 
     public static MenuItem getAutoInjectMenuItemFromTray() {
         return autoInjectItem;
+    }
+
+    public static void addPayloadToTray(Payload payload) {
+        MenuItem p = new MenuItem(payload.getName() + " v" + payload.getVersion());
+
+        p.addActionListener((ActionEvent e) -> {
+            Platform.runLater(() -> {
+                if (PayloadManager.payloadExists(payload)) {
+                    JTegraNX.getController().setPayloadPath("jtegranx\\payloads\\" + payload.getName() + ".bin");
+                    JTegraNX.getController().setArguments("");
+                    JTegraNX.getController().getConfigList().getSelectionModel().select(-1);
+                }
+            });
+        });
+
+        menu.add(p);
+    }
+
+    public static void addMountSDCardConfigToTray() {
+        MenuItem config = new MenuItem("Mount SD Card");
+
+        config.addActionListener((ActionEvent e) -> {
+            Platform.runLater(() -> {
+                JTegraNX.getController().setPayloadPath("jtegranx\\memloader\\memloader_usb.bin");
+                JTegraNX.getController().setArguments("-r --dataini=\"jtegranx\\memloader\\ums_sd.ini\"");
+                JTegraNX.getController().getConfigList().getSelectionModel().select(config.getLabel());
+            });
+        });
+
+        menu.add(config);
     }
 
     public static void addConfigToTray(File file) {

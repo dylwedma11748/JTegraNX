@@ -43,7 +43,6 @@ public class TegraExplorer {
 
     public static void checkForUpdates() {
         try {
-            System.out.println("Checking for updates on TegraExplorer.");
             URL url = new URL(GITHUB);
             URLConnection connection = url.openConnection();
 

@@ -35,7 +35,7 @@ public class Lockpick_RCM {
 
     public static Payload update() {
         if (success) {
-            return new Payload("Lockpick_RCM", latestVersion, GITHUB + "/download/" + latestVersion + "/Lockpick_RCM.bin");
+            return new Payload("Lockpick_RCM", latestVersion, GITHUB + "/download/v" + latestVersion + "/Lockpick_RCM.bin");
         }
 
         return null;
@@ -43,7 +43,6 @@ public class Lockpick_RCM {
 
     public static void checkForUpdates() {
         try {
-            System.out.println("Checking for updates on Lockpick_RCM.");
             URL url = new URL(GITHUB);
             URLConnection connection = url.openConnection();
 
@@ -52,7 +51,7 @@ public class Lockpick_RCM {
 
                 while ((line = bReader.readLine()) != null) {
                     if (line.contains("<a href=\"/shchmue/Lockpick_RCM/releases/tag/")) {
-                        latestVersion = line.substring(line.indexOf("tag/") + 4, line.indexOf("\">"));
+                        latestVersion = line.substring(line.indexOf("tag/") + 5, line.indexOf("\">"));
                         success = true;
                         break;
                     }

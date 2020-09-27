@@ -32,7 +32,7 @@ import javafx.scene.control.ButtonBar;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.Dialog;
 import jtegranx.fx.JTegraNX;
-import static jtegranx.util.ResourceLoader.*;
+import jtegranx.payloads.PayloadManager;
 
 public class ConfigManager {
 
@@ -42,7 +42,7 @@ public class ConfigManager {
     private static Dialog dialog;
 
     public static void loadMainConfigFile() {
-        mainConfig = new File(jtegranxdir.getAbsolutePath() + "\\jtegranx.ini");
+        mainConfig = new File(Directories.getJtegranxdir().getAbsolutePath() + "\\jtegranx.ini");
 
         if (mainConfig.exists() && configValid(mainConfig)) {
             try (FileReader fr = new FileReader(mainConfig); BufferedReader reader = new BufferedReader(fr)) {
@@ -99,7 +99,7 @@ public class ConfigManager {
     }
 
     public static void saveConfig(String name) {
-        configDir = new File(jtegranxdir.getAbsolutePath() + "\\configs");
+        configDir = Directories.getConfigDir();
 
         if (!configDir.exists()) {
             configDir.mkdir();
@@ -126,7 +126,7 @@ public class ConfigManager {
                     writer.println("payloadPath=" + JTegraNX.getController().getPayloadPath());
                     writer.println("arguments=" + JTegraNX.getController().getArguments());
 
-                    JTegraNX.getController().appendLog("Config saved!");
+                    JTegraNX.getController().appendLog("Config \"" + name + "\" saved.");
                 } catch (IOException ex) {
                     Logger.getLogger(ConfigManager.class.getName()).log(Level.SEVERE, null, ex);
                 }
@@ -138,7 +138,7 @@ public class ConfigManager {
                 writer.println("payloadPath=" + JTegraNX.getController().getPayloadPath());
                 writer.println("arguments=" + JTegraNX.getController().getArguments());
 
-                JTegraNX.getController().appendLog("Config saved!");
+                JTegraNX.getController().appendLog("Config \"" + name + "\" saved.");
             } catch (IOException ex) {
                 Logger.getLogger(ConfigManager.class.getName()).log(Level.SEVERE, null, ex);
             }
@@ -146,7 +146,7 @@ public class ConfigManager {
     }
 
     public static void loadConfig(String name) {
-        configDir = new File(jtegranxdir.getAbsolutePath() + "\\configs");
+        configDir = Directories.getConfigDir();
 
         File config = new File(configDir.getAbsolutePath() + "\\Config_" + name.replaceAll(" ", "_") + ".ini");
 
@@ -168,9 +168,29 @@ public class ConfigManager {
             JTegraNX.getController().appendLog(name + " config doesn't exist!");
         }
     }
+    
+    public static void loadExternalConfig(File config) {
+        if (config.exists()) {
+            try (FileReader fr = new FileReader(config); BufferedReader reader = new BufferedReader(fr)) {
+                String line;
+
+                while ((line = reader.readLine()) != null) {
+                    if (line.startsWith("payloadPath")) {
+                        JTegraNX.getController().setPayloadPath(line.substring(line.indexOf("=") + 1));
+                    } else if (line.startsWith("arguments")) {
+                        JTegraNX.getController().setArguments(line.substring(line.indexOf("=") + 1));
+                    }
+                }
+            } catch (IOException ex) {
+                Logger.getLogger(ConfigManager.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        } else {
+            JTegraNX.getController().appendLog("Specified external config doesn't exist!");
+        }
+    }
 
     public static void deleteConfig(String name) {
-        configDir = new File(jtegranxdir.getAbsolutePath() + "\\configs");
+        configDir = Directories.getConfigDir();
 
         File config = new File(configDir.getAbsolutePath() + "\\Config_" + name.replaceAll(" ", "_") + ".ini");
 
@@ -217,7 +237,7 @@ public class ConfigManager {
             Tray.clearTrayMenu();
         }
 
-        configDir = new File(jtegranxdir.getAbsolutePath() + "\\configs");
+        configDir = Directories.getConfigDir();
 
         if (!configDir.exists()) {
             configDir.mkdir();
@@ -235,16 +255,16 @@ public class ConfigManager {
                     }
                 }
             }
-
+            
             JTegraNX.getController().addConfig("Mount SD Card");
+            JTegraNX.getController().addConfig("External Config");
 
             if (Tray.isTrayInitialized()) {
+                Tray.addMountSDCardConfigToTray();
+                Tray.addSeperator();
+                PayloadManager.addPayloadsToTray();
                 Tray.addDefaultMenuItems();
             }
         }
-    }
-
-    public static File getConfigDir() {
-        return configDir;
     }
 }
