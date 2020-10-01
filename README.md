@@ -1,7 +1,7 @@
 # JTegraNX - Another TegraRcmSmash GUI
 A GUI for [TegraRcmSmash](https://github.com/rajkosto/TegraRcmSmash) written in Java. This program is intended to be an alternate option for injecting a payload if you can't get [TegraRcmGUI](https://github.com/eliboa/TegraRcmGUI) to work properly.
 
-This program is bundled TegraRcmSmash and the files needed to mount SD cards using memloader. They are extracted in a separate folder upon launch so for organization's sake, I'd put the .jar file in it's own dedicated folder if I were you.
+This program is bundled with TegraRcmSmash and the files needed to mount SD cards using memloader. They are extracted in a separate folder upon launch so for organization's sake, I'd put the .jar file in it's own dedicated folder if I were you.
 
 Because this program was written in Java, you will need to have it installed on your computer, you can download Java [here](https://www.java.com/en/).
 
