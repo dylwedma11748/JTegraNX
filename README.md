@@ -51,6 +51,41 @@ For any bundled payloads, JTegraNX will download them automatically, place them 
 - [fusee-primary](https://github.com/Atmosphere-NX/Atmosphere/releases)
 - [Hekate](https://github.com/CTCaer/hekate)
 
+## Bulding from source
+JTegraNX in it's current state is made of two projects, a Netbeans project that has all the Java bits and a Visual Studio 2019 solution that handles the native code.
+
+Creating the Neteans project isn't that complicated.
+1. Create a new Netbeans Java project and name it JTegraNX.
+2. Download [usb4java](https://github.com/usb4java/usb4java/releases), [Apache Commons Lang](https://commons.apache.org/proper/commons-lang/download_lang.cgi) and [GitHandler](https://github.com/dylwedma11748/GitHandler/releases).
+3. Extract the usb4java and Apache Commons Lang archives.
+4. On Netbeans, Projects -> JTegraNX -> Libraries, right-click and select "Add JAR/Folder" and add "usb4java-version.jar", "commons-lang3-version.jar", the usb4java native JAR that corresponds with your OS (Located where you extracted the usb4java archive), "commons-lang3-version.jar" (Located where you extracted the Apache Commons Lang archive) and GitHandler.jar (Located wherever you saved GitHandler when you downloaded it).
+5. Add the Java source files from this repository.
+6. Now would be a good time to follow the instructions for the Visual Studio Solution.
+7. Copy libusbK.dll from the libusbK-dev-kit to the directory of the Netbeans project.
+8. Do a test run to make sure everything is running correctly.
+9. If everything is working properly build the project.
+10. Download [jarsplice](http://www.java2s.com/Code/Jar/j/Downloadjarsplice040jar.htm) and use it to combine the main JAR file, the library JAR files, the compiled Native and libusbK.dll into one executable JAR file.
+
+As for the Native, this is where things may get complicated.
+The libusbk-dev-kit is required for building the native. Download it [here](https://sourceforge.net/projects/libusbk/files/libusbK-release/3.0.7.0/).
+
+1. Create a new Visual Studio Solution (Dynamic Link Libray) and name it JTegraNX.
+2. Open the project's properties -> C/C++ -> Precompiled headers, and set "Precompiled Header" to "Not Using Precompiled Headers" and clear the "Precompiled Header File" field.
+3. In C/C++ -> General -> Additional Include Directories, add the include directories for JNI ((JDK Path)\include and (JDK Path\include\win32)) and libusbK (default is C:\libusbK-dev-kit\includes) and apply.
+4. Switch platfrom to x64.
+5. In Linker -> General -> Additional Library Directories, add C:\libusbK-dev-kit\bin\dll\amd64 if that's where you installed the libusbK-dev-kit and apply.
+6. Switch platform to Win32.
+7. In Linker -> General -> Additional Library Directories, add C:\libusbK-dev-kit\bin\lib\x86 if that's where you installed the libusbK-dev-kit and apply.
+8. Switch platfrom to All Platfroms.
+9. In Configuration Properties -> General -> Output Directory, set the output directory to where the Netbeans project has been created, (Example: C:\Users\user\Documents\NetBeansProjects\JTegraNX) and apply. This step is optional but makes it to where you won't have to copy the compiled native to the Netbeans project directory every time you build it.
+10. In Linker -> Input -> Additional Dependencies, add SetupAPI.lib and libusbK.lib.
+11. Delete "framework.h", "pch.h", "dllmain.ccp", and "pch.cpp" from the project.
+12. Copy the Native's soruce files from this repository to the directory of the Visual Studio Project.
+13. Copy libusbK.dll from the libusbK-dev-kit to the directory of the Visual Studio Project.
+14. In the Soluition Explorer, right click on Header Files and select Add -> Exisiting Item... and add all the header files.
+15. In the Soluition Explorer, right click on Source Files and select Add -> Exisiting Item... and add all the source files.
+16. Build the Release configuration corresponding to your system's OS architecture.
+
 # Credits
 - [suchmememanyskill](https://github.com/suchmememanyskill) for allowing me to include [TegraExplorer](https://github.com/suchmememanyskill/TegraExplorer) and for [this guide](https://nh-server.github.io/switch-guide/user_guide/emummc/sd_preparation/) that the SD preperation feature relies on.
 - [rajkosto](https://github.com/rajkosto) for [memloader](https://github.com/rajkosto/memloader) and [TegraRcmSmash](https://github.com/rajkosto/TegraRcmSmash) (No longer being used in v1.6+).
