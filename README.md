@@ -66,6 +66,8 @@ Creating the Netbeans project isn't that complicated.
 9. If everything is working properly build the project.
 10. Download [jarsplice](http://www.java2s.com/Code/Jar/j/Downloadjarsplice040jar.htm) and use it to combine the main JAR file, the library JAR files, the compiled Native and libusbK.dll into one executable JAR file.
 
+To make changes to the UI, open MainUI.fxml using [Scene Builder](https://gluonhq.com/products/scene-builder/).
+
 As for the Native, this is where things may get complicated.
 The libusbk-dev-kit is required for building the native. Download it [here](https://sourceforge.net/projects/libusbk/files/libusbK-release/3.0.7.0/).
 
