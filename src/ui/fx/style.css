@@ -1,0 +1,56 @@
+.button {
+	-fx-background-color: transparent;
+	-fx-opacity: 0.6;
+}
+
+.button:hover {
+    -fx-opacity: 1;
+}
+
+.menu {
+	-fx-opacity: 0.6;
+}
+
+.menu-item {
+	-fx-opacity: 0.6;
+}
+
+.menu-item:hover {
+	-fx-opacity: 1;
+}
+
+.menu:hover {
+	-fx-opacity: 1;
+}
+
+#pane {
+	-fx-background-image: url("../images/background.png");
+}
+
+#menuBar {
+	-fx-background-color: transparent;
+}
+
+#browse {
+    -fx-background-image: url("../images/browse.png");
+}
+
+#inject {
+    -fx-background-image: url("../images/inject.png");
+}
+
+#loadConfig {
+	-fx-background-image: url("../images/loadConfig.png");
+}
+
+#saveConfig {
+	-fx-background-image: url("../images/saveConfig.png");
+}
+
+#close {
+	-fx-background-image: url("../images/close.png");
+}
+
+#minimize {
+	-fx-background-image: url("../images/minimize.png");
+}
