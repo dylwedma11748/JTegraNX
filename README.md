@@ -1,42 +1,49 @@
-# JTegraNX - Another TegraRcmSmash GUI
-A GUI for [TegraRcmSmash](https://github.com/rajkosto/TegraRcmSmash) written in Java. This program is intended to be an alternate option for injecting a payload if you can't get [TegraRcmGUI](https://github.com/eliboa/TegraRcmGUI) to work properly.
+# JTegraNX - Another RCM payload injector
 
-This program is bundled with TegraRcmSmash and the files needed to mount SD cards using memloader. They are extracted in a separate folder upon launch so for organization's sake, I'd put the .jar file in it's own dedicated folder if I were you.
+In order to run this program, you need Java installed on your computer. You can download Java [here](https://www.java.com/en/).
 
-Because this program was written in Java, you will need to have it installed on your computer, you can download Java [here](https://www.java.com/en/).
+JTegraNX is only supported on Windows.
 
-This program is only supported on Windows Operating Systems, sorry for any inconvenience.
-
-![Png](./preview.PNG)
+![Png](./screenshot.PNG)
 
 ## Features
-- Payload injection (obviously)
-- Custom arguments
+- RCM payload injection
 - Auto-injection
-- RCM status indicator with transparent images.
+- RCM status indicator with transparent images
 - Config system (similar to favorites in [TegraRcmGUI](https://github.com/eliboa/TegraRcmGUI))
-- SD card mounting using [memloader](https://github.com/rajkosto/memloader) (Select "Load Config" to find it)
 - Bundled payloads
-- Tray icon with functionality.
+- Tray icon with functionality
+- SD card preparation
+- APX driver detection/installation
 
 ## Usage
 1. Choose payload or config
 2. Inject
 
 ## Using configs
-The config system allows you to save what you entered in the "Payload Path" field and the "Arguments" field and load it again in another session.
+The config system allows you to save what you entered in the "Payload Path" field and load it again in another session.
 
 ### Loading a saved config:
-Simply click on "Load Config" and JTegraNX will search the "configs" directory for any valid config files. Select the config you wish to use.
-
-### Loading external configs (v1.5+)
-Simply click on "Load Config" and select "External Config".
+Simply click on "Load Config" to reveal the config list, then select the config you wish to use.
 
 ### Saving a config:
-Simple click on "Save Config", input a name for the config and hit enter. It will be saved in the "configs" directory.
+Simple click on "Save Config", input a name for the config and hit enter.
+
+## Custom Settings
+You can now customize JTegraNX's settings to your liking.
+- You can now toggle auto-checking for JTegraNX updates.
+- You can now toggle auto-checking for payload updates.
+- You can now choose which payloads you want to include with JTegraNX.
+- You can now toggle the tray icon being enabled or disabled.
+
+## SD Card preparation
+This new feature with JTegraNX will download all the basic requirements for getting your Switch ready for CFW and copy them to the specified output path.
+
+## APX driver detection/installation
+JTegraNX can detect if the APX driver is missing or incorrect, and if this is the case, you have the option to install it from there.
 
 ## Bundled Payloads
-For any bundled payloads, JTegraNX will download them automatically, place them in the "payloads" directory, and check for updates on them each time the program is launched. If an update for a payload is found, it will be taken care of.
+For any bundled payloads, JTegraNX will download them automatically, place them in the "payloads" directory, and optionaly check for updates on them each time the program is launched. If updates are enabled and an update for a payload is found, it will be taken care of.
 
 ### Currently bundled payloads:
 - [TegraExplorer](https://github.com/suchmememanyskill/TegraExplorer)
@@ -45,8 +52,8 @@ For any bundled payloads, JTegraNX will download them automatically, place them 
 - [Hekate](https://github.com/CTCaer/hekate)
 
 # Credits
-- [suchmememanyskill](https://github.com/suchmememanyskill) for allowing me to include [TegraExplorer](https://github.com/suchmememanyskill/TegraExplorer).
-- [rajkosto](https://github.com/rajkosto) for [memloader](https://github.com/rajkosto/memloader) and [TegraRcmSmash](https://github.com/rajkosto/TegraRcmSmash).
+- [suchmememanyskill](https://github.com/suchmememanyskill) for allowing me to include [TegraExplorer](https://github.com/suchmememanyskill/TegraExplorer) and for [this guide](https://nh-server.github.io/switch-guide/user_guide/emummc/sd_preparation/) that the SD preperation feature relies on.
+- [rajkosto](https://github.com/rajkosto) for [memloader](https://github.com/rajkosto/memloader) and [TegraRcmSmash](https://github.com/rajkosto/TegraRcmSmash) (No longer being used in v1.6+).
 - [shchmue](https://github.com/shchmue) for [Lockpick_RCM](https://github.com/shchmue/Lockpick_RCM).
 - [eliboa](https://github.com/eliboa) for the images from [TegraRcmGUI](https://github.com/eliboa/TegraRcmGUI).
 - The creators of Atmosphère for [fusee-primary](https://github.com/Atmosphere-NX/Atmosphere/releases).
