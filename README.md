@@ -54,7 +54,7 @@ For any bundled payloads, JTegraNX will download them automatically, place them 
 ## Bulding from source
 JTegraNX in it's current state is made of two projects, a Netbeans project that has all the Java bits and a Visual Studio 2019 solution that handles the native code.
 
-Creating the Neteans project isn't that complicated.
+Creating the Netbeans project isn't that complicated.
 1. Create a new Netbeans Java project and name it JTegraNX.
 2. Download [usb4java](https://github.com/usb4java/usb4java/releases), [Apache Commons Lang](https://commons.apache.org/proper/commons-lang/download_lang.cgi) and [GitHandler](https://github.com/dylwedma11748/GitHandler/releases).
 3. Extract the usb4java and Apache Commons Lang archives.
