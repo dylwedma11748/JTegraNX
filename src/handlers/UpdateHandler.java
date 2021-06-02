@@ -32,7 +32,7 @@ import ui.fx.JTegraNX;
 public class UpdateHandler {
 
     private static Release jtegranx;
-    private static final String currentVersion = "1.6";
+    private static final String currentVersion = "1.6.1";
 
     public static void checkForUpdates() {
         Platform.runLater(() -> {
