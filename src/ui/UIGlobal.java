@@ -83,14 +83,14 @@ public class UIGlobal {
                     injectPayload(JTegraNX.getController().getPayloadPathField().getText());
                 }
 
-                if (previous_rcm_status.equals("RCM_UNDETECTED") && GlobalSettings.driverUpdatedThisSession) {
+                if (previous_rcm_status.equals("RCM_UNDETECTED") && GlobalSettings.driverUpdatedNeedsReconnect) {
                     RCM.promptDeviceReconnect();
-                    GlobalSettings.driverUpdatedThisSession = false;
+                    GlobalSettings.driverUpdatedNeedsReconnect = false;
                 }
 
                 if (previous_rcm_status.equals("DRIVER_MISSING")) {
                     RCM.promptDeviceReconnect();
-                    GlobalSettings.driverUpdatedThisSession = false;
+                    GlobalSettings.driverUpdatedNeedsReconnect = false;
                 }
 
                 if (previous_rcm_status.equals("RCM_UNDETECTED") && deviceAlert.isShowing()) {

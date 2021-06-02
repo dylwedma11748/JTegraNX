@@ -91,8 +91,6 @@ public class RCM {
         Platform.runLater(() -> {
             UIGlobal.setDeviceAlert(AlertHandler.createAlert("APX Driver installed", "Please reconnect the RCM device.", "This will prevent any errors while injecting a payload."));
             UIGlobal.getDeviceAlert().show();
-            UIGlobal.clearLog();
-            appendLog("APX driver installed");
         });
     }
 

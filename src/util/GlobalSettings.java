@@ -54,5 +54,5 @@ public class GlobalSettings {
     public static boolean includeTegraExplorer = true;
     public static boolean minimizeToTray = false;
     public static boolean payloadsUpdatedThisSession = false;
-    public static boolean driverUpdatedThisSession = true;
+    public static boolean driverUpdatedNeedsReconnect = false;
 }

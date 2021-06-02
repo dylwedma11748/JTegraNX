@@ -260,10 +260,15 @@ public class MainUIController implements Initializable {
 
         if (result == DriverInstaller.CANCELED) {
             UIGlobal.appendLog("Driver installation canceled");
-        } else {
+        } else if (result != DriverInstaller.READY_FOR_USE) {
             if (!UIGlobal.getRCMStatus().equals("RCM_DETECTED")) {
-                GlobalSettings.driverUpdatedThisSession = true;
+                GlobalSettings.driverUpdatedNeedsReconnect = true;
+                UIGlobal.appendLog("APX driver installed");
+                UIGlobal.appendLog("RCM device needs to be reconnected");
             }
+        } else {
+            UIGlobal.appendLog("APX driver installed");
+            UIGlobal.appendLog("RCM device ready for use");
         }
     }
 

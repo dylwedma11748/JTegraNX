@@ -32,6 +32,7 @@ import handlers.ResourceHandler;
 public class DriverInstaller {
 
     public static final int CANCELED = -2147483648;
+    public static final int READY_FOR_USE = 256;
 
     public static int installDriver() {
         try {
