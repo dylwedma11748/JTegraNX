@@ -1,5 +1,5 @@
 ![Png](https://img.shields.io/badge/Platform-Windows-blue)
-![Png](https://img.shields.io/badge/Latest%20stable%20release-1.6-green)
+![Png](https://img.shields.io/badge/Latest%20stable%20release-1.6.1-green)
 ![GitHub](https://img.shields.io/github/license/dylwedma11748/JTegraNX)
 ![GitHub All Releases](https://img.shields.io/github/downloads/dylwedma11748/JTegraNX/total)
 ![GitHub repo size](https://img.shields.io/github/repo-size/dylwedma11748/JTegraNX)
