@@ -5,7 +5,7 @@
 ![GitHub repo size](https://img.shields.io/github/repo-size/dylwedma11748/JTegraNX)
 ###
 ![Png](src/ui/images/banner.png)
-# Another RCM payload injector
+# JTegraNX - Another RCM payload injector
 
 In order to run this program, you need Java 8 or higher installed on your computer. You can download Java [here](https://www.java.com/en/).
 
