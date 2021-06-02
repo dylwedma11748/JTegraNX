@@ -1,3 +1,8 @@
+![Png](https://img.shields.io/badge/Platform-Windows-blue)
+![Png](https://img.shields.io/badge/Latest%20stable%20release-1.6-green)
+![GitHub](https://img.shields.io/github/license/dylwedma11748/JTegraNX)
+![GitHub All Releases](https://img.shields.io/github/downloads/dylwedma11748/JTegraNX/total)
+![GitHub repo size](https://img.shields.io/github/repo-size/dylwedma11748/JTegraNX)
 # JTegraNX - Another RCM payload injector
 
 In order to run this program, you need Java installed on your computer. You can download Java [here](https://www.java.com/en/).
