@@ -76,7 +76,7 @@ To make changes to the UI, open MainUI.fxml using [Scene Builder](https://gluonh
 As for the Native, this is where things may get complicated.
 The libusbk-dev-kit is required for building the native. Download it [here](https://sourceforge.net/projects/libusbk/files/libusbK-release/3.0.7.0/).
 
-1. Create a new Visual Studio Solution (Dynamic Link Libray) and name it JTegraNX.
+1. Create a new Visual Studio Solution (Dynamic Link Library) and name it JTegraNX.
 2. Open the project's properties -> C/C++ -> Precompiled headers, and set "Precompiled Header" to "Not Using Precompiled Headers" and clear the "Precompiled Header File" field.
 3. In C/C++ -> General -> Additional Include Directories, add the include directories for JNI ((JDK Path)\include and (JDK Path\include\win32)) and libusbK (default is C:\libusbK-dev-kit\includes) and apply.
 4. Switch platfrom to x64.
