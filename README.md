@@ -52,7 +52,7 @@ This new feature with JTegraNX will download all the basic requirements for gett
 JTegraNX can detect if the APX driver is missing or incorrect, and if this is the case, you have the option to install it from there.
 
 ## Portable mode
-JTegraNX's old behaviour for handling data files has been re-implemented as a secondary option. Portable mode make it to where the "Payloads" directory and the main config file are created in the working directory of where the JAR is executed. You can switch between standard and portable mode using the Settings menu.
+JTegraNX's old behavior for handling data files has been re-implemented as a secondary option. Portable mode make it to where the "Payloads" directory and the main config file are created in the working directory of where the JAR is executed. You can switch between standard and portable mode using the Settings menu.
 
 ## Bundled Payloads
 For any bundled payloads, JTegraNX will download them automatically, place them in the "Payloads" directory, and optionaly check for updates on them each time the program is launched. If updates are enabled and an update for a payload is found, it will be taken care of.
@@ -68,9 +68,9 @@ JTegraNX in it's current state is made of two projects, a Netbeans project that 
 
 Creating the Netbeans project isn't that complicated.
 1. Create a new Netbeans Java project and name it JTegraNX.
-2. Download [usb4java](https://github.com/usb4java/usb4java/releases), [Apache Commons Lang](https://commons.apache.org/proper/commons-lang/download_lang.cgi) and [GitHandler](https://github.com/dylwedma11748/GitHandler/releases).
+2. Download [usb4java](https://github.com/usb4java/usb4java/releases), [Apache Commons Lang](https://commons.apache.org/proper/commons-lang/download_lang.cgi), and [GitHandler](https://github.com/dylwedma11748/GitHandler/releases).
 3. Extract the usb4java and Apache Commons Lang archives.
-4. On Netbeans, Projects -> JTegraNX -> Libraries, right-click and select "Add JAR/Folder" and add "usb4java-version.jar", "commons-lang3-version.jar", the usb4java native JAR that corresponds with your OS architecture (Located where you extracted the usb4java archive), "commons-lang3-version.jar" (Located where you extracted the Apache Commons Lang archive) and GitHandler.jar (Located wherever you saved GitHandler when you downloaded it).
+4. On Netbeans, Projects -> JTegraNX -> Libraries, right-click and select "Add JAR/Folder" and add "usb4java-version.jar", "commons-lang3-version.jar", the usb4java native JAR that corresponds with your OS architecture (Located where you extracted the usb4java archive), "commons-lang3-version.jar" (Located where you extracted the Apache Commons Lang archive), and GitHandler.jar (Located wherever you saved GitHandler when you downloaded it).
 5. Add the Java source files from this repository.
 6. Now would be a good time to follow the instructions for the Visual Studio Solution.
 7. Copy libusbK.dll from the libusbK-dev-kit to the directory of the Netbeans project.
@@ -86,11 +86,11 @@ The libusbk-dev-kit is required for building the native. Download it [here](http
 1. Create a new Visual Studio Solution (Dynamic Link Library) and name it JTegraNX.
 2. Open the project's properties -> C/C++ -> Precompiled headers, and set "Precompiled Header" to "Not Using Precompiled Headers" and clear the "Precompiled Header File" field.
 3. In C/C++ -> General -> Additional Include Directories, add the include directories for JNI ((JDK Path)\include and (JDK Path\include\win32)) and libusbK (default is C:\libusbK-dev-kit\includes) and apply.
-4. Switch platfrom to x64.
+4. Switch platform to x64.
 5. In Linker -> General -> Additional Library Directories, add C:\libusbK-dev-kit\bin\dll\amd64 if that's where you installed the libusbK-dev-kit and apply.
 6. Switch platform to Win32.
 7. In Linker -> General -> Additional Library Directories, add C:\libusbK-dev-kit\bin\lib\x86 if that's where you installed the libusbK-dev-kit and apply.
-8. Switch platfrom to All Platfroms.
+8. Switch platform to All Platforms.
 9. In Configuration Properties -> General -> Output Directory, set the output directory to where the Netbeans project has been created, (Example: C:\Users\user\Documents\NetBeansProjects\JTegraNX) and apply. This step is optional but makes it to where you won't have to copy the compiled native to the Netbeans project directory every time you build it.
 10. In Linker -> Input -> Additional Dependencies, add SetupAPI.lib and libusbK.lib.
 11. Delete "framework.h", "pch.h", "dllmain.ccp", and "pch.cpp" from the project.
