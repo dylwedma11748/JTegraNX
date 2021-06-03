@@ -1,6 +1,6 @@
-![Png](https://img.shields.io/badge/Platform-Windows-blue)
-![Png](https://img.shields.io/badge/Latest%20stable%20release-1.6.1-green)
-![GitHub](https://img.shields.io/github/license/dylwedma11748/JTegraNX)
+![Png](https://img.shields.io/badge/Platform-Windows%20x86--x64-green)
+![Png](https://img.shields.io/badge/Latest%20release-1.6.2-green)
+![GitHub](https://img.shields.io/badge/License%20-GPL--2.0-green)
 ![GitHub All Releases](https://img.shields.io/github/downloads/dylwedma11748/JTegraNX/total)
 ![GitHub repo size](https://img.shields.io/github/repo-size/dylwedma11748/JTegraNX)
 ###
@@ -23,6 +23,7 @@ JTegraNX is currently only supported on Windows, but I plan to add support for L
 - Tray icon with functionality
 - SD card preparation
 - APX driver detection/installation
+- Portable mode
 
 ## Usage
 1. Choose payload or config
@@ -50,8 +51,11 @@ This new feature with JTegraNX will download all the basic requirements for gett
 ## APX driver detection/installation
 JTegraNX can detect if the APX driver is missing or incorrect, and if this is the case, you have the option to install it from there.
 
+## Portable mode
+JTegraNX's old behaviour for handling data files has been re-implemented as a secondary option. Portable mode make it to where the "Payloads" directory and the main config file are created in the working directory of where the JAR is executed. You can switch between standard and portable mode using the Settings menu.
+
 ## Bundled Payloads
-For any bundled payloads, JTegraNX will download them automatically, place them in the "payloads" directory, and optionaly check for updates on them each time the program is launched. If updates are enabled and an update for a payload is found, it will be taken care of.
+For any bundled payloads, JTegraNX will download them automatically, place them in the "Payloads" directory, and optionaly check for updates on them each time the program is launched. If updates are enabled and an update for a payload is found, it will be taken care of.
 
 ### Currently bundled payloads:
 - [TegraExplorer](https://github.com/suchmememanyskill/TegraExplorer)
