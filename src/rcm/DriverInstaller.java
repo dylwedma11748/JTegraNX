@@ -36,7 +36,14 @@ public class DriverInstaller {
 
     public static int installDriver() {
         try {
-            File driverInstaller = ResourceHandler.rename(ResourceHandler.load("APX-Driver.exe"), GlobalSettings.JTEGRANX_DIR_PATH + File.separator + "APX-Driver.exe");
+            File driverInstaller;
+            
+            if (!GlobalSettings.portableMode) {
+                driverInstaller = ResourceHandler.rename(ResourceHandler.load("APX-Driver.exe"), GlobalSettings.STANDARD_MODE_JTEGRANX_DIR_PATH + File.separator + "APX-Driver.exe");
+            } else {
+                driverInstaller = ResourceHandler.rename(ResourceHandler.load("APX-Driver.exe"), GlobalSettings.PORTABLE_MODE_JTEGRANX_DIR_PATH + File.separator + "APX-Driver.exe");
+            }
+            
             Process install = Runtime.getRuntime().exec("cmd /c " + driverInstaller.getAbsolutePath());
             int exitCode = install.waitFor();
             FileUtils.forceDelete(driverInstaller);

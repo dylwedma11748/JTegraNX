@@ -21,18 +21,22 @@ with this program; if not, write to the Free Software Foundation, Inc.,
  */
 package handlers;
 
+import git.Asset;
 import git.GitHandler;
 import git.Release;
 import java.io.File;
+import java.net.URISyntaxException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javafx.application.Platform;
-import javafx.stage.FileChooser;
 import ui.UIGlobal;
 import ui.fx.JTegraNX;
+import util.GlobalSettings;
 
 public class UpdateHandler {
 
     private static Release jtegranx;
-    private static final String currentVersion = "1.6.1";
+    private static final String currentVersion = "1.6.2";
 
     public static void checkForUpdates() {
         Platform.runLater(() -> {
@@ -42,27 +46,55 @@ public class UpdateHandler {
                 boolean update = AlertHandler.showConfirmationDialog("JTegraNX updater", "A new release of JTegraNX has been found. Download now?\n\nCurrent release: JTegraNX v" + currentVersion + "\nLatest release: " + jtegranx.getReleaseName(), "");
 
                 if (update) {
-                    FileChooser chooser = new FileChooser();
+                    File running = new File("");
 
-                    FileChooser.ExtensionFilter filter = new FileChooser.ExtensionFilter("Executable Jar File (*.jar)", "*jar");
-                    chooser.getExtensionFilters().add(filter);
+                    try {
+                        running = new File(UpdateHandler.class.getProtectionDomain().getCodeSource().getLocation().toURI());
+                    } catch (URISyntaxException ex) {
+                        Logger.getLogger(UpdateHandler.class.getName()).log(Level.SEVERE, null, ex);
+                    }
 
-                    File file = chooser.showSaveDialog(JTegraNX.getStage());
+                    boolean updated = false;
+                    File jar = null;
 
-                    if (file != null) {
-                        jtegranx.getAssets().stream().filter((asset) -> (asset.getAssetName().equals("JTegraNX.jar"))).forEachOrdered((asset) -> {
-                            String destination = file.getAbsolutePath();
+                    if (running.getPath().endsWith(".jar")) {
+                        for (Asset asset : jtegranx.getAssets()) {
+                            if (GlobalSettings.OS_ARCH.equals("amd64")) {
+                                if (asset.getAssetName().equals("JTegraNX-x64.jar")) {
+                                    jar = GitHandler.downloadAsset(asset, running.getAbsolutePath());
 
-                            if (!destination.endsWith(".jar")) {
-                                destination = destination.concat(".jar");
+                                    if (jar.exists()) {
+                                        updated = true;
+                                    }
+                                }
+                            } else {
+                                if (asset.getAssetName().equals("JTegraNX-x86.jar")) {
+                                    jar = GitHandler.downloadAsset(asset, running.getAbsolutePath());
+                                    
+                                    if (jar.exists()) {
+                                        updated = true;
+                                    }
+                                }
                             }
 
-                            GitHandler.downloadAsset(asset, destination);
-                        });
+                            if (updated) {
+                                UIGlobal.appendLog("Download complete");
+                                boolean restart = AlertHandler.showConfirmationDialog("JTegraNX updater", "JTegraNX has been updated and needs to be restarted for the changes to apply", "Restart now?");
 
-                        if (file.exists()) {
-                            UIGlobal.appendLog("Download complete");
+                                if (restart) {
+                                    UIGlobal.restartJTegraNX();
+                                } else {
+                                    GlobalSettings.restartPending = true;
+                                    JTegraNX.getController().getCheckJTegraNXUpdatesMenuItem().setText("Restart JTegraNX to finish update");
+                                }
+                            } else {
+                                if (jar == null) {
+                                    AlertHandler.showErrorMessage("JTegraNX updater", "A GitHandler error occured", "Unable to locate valid asset");
+                                }
+                            }
                         }
+                    } else {
+                        AlertHandler.showErrorMessage("JTegraNX updater", "Unable to update JTegraNX", "JTegraNX is running from an IDE or a non-JAR build");
                     }
                 }
             } else {

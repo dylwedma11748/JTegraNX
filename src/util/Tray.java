@@ -105,7 +105,11 @@ public class Tray {
 
                 fuseePrimary.addActionListener((ActionEvent e) -> {
                     Platform.runLater(() -> {
-                        JTegraNX.getController().getPayloadPathField().setText(GlobalSettings.JTEGRANX_PAYLOAD_DIR_PATH + File.separator + "fusee-primary.bin");
+                        if (!GlobalSettings.portableMode) {
+                            JTegraNX.getController().getPayloadPathField().setText(GlobalSettings.STANDARD_MODE_JTEGRANX_PAYLOAD_DIR_PATH + File.separator + "fusee-primary.bin");
+                        } else {
+                            JTegraNX.getController().getPayloadPathField().setText(GlobalSettings.PORTABLE_MODE_JTEGRANX_PAYLOAD_DIR_PATH + File.separator + "fusee-primary.bin");
+                        }
 
                         try {
                             if (!JTegraNX.getController().getConfigList().getSelectionModel().getSelectedItem().equals("No configs")) {
@@ -124,7 +128,11 @@ public class Tray {
 
                 hekate.addActionListener((ActionEvent e) -> {
                     Platform.runLater(() -> {
-                        JTegraNX.getController().getPayloadPathField().setText(GlobalSettings.JTEGRANX_PAYLOAD_DIR_PATH + File.separator + "Hekate.bin");
+                        if (!GlobalSettings.portableMode) {
+                            JTegraNX.getController().getPayloadPathField().setText(GlobalSettings.STANDARD_MODE_JTEGRANX_PAYLOAD_DIR_PATH + File.separator + "Hekate.bin");
+                        } else {
+                            JTegraNX.getController().getPayloadPathField().setText(GlobalSettings.PORTABLE_MODE_JTEGRANX_PAYLOAD_DIR_PATH + File.separator + "Hekate.bin");
+                        }
 
                         try {
                             if (!JTegraNX.getController().getConfigList().getSelectionModel().getSelectedItem().equals("No configs")) {
@@ -143,7 +151,11 @@ public class Tray {
 
                 lockpickRCM.addActionListener((ActionEvent e) -> {
                     Platform.runLater(() -> {
-                        JTegraNX.getController().getPayloadPathField().setText(GlobalSettings.JTEGRANX_PAYLOAD_DIR_PATH + File.separator + "Lockpick_RCM.bin");
+                        if (!GlobalSettings.portableMode) {
+                            JTegraNX.getController().getPayloadPathField().setText(GlobalSettings.STANDARD_MODE_JTEGRANX_PAYLOAD_DIR_PATH + File.separator + "Lockpick_RCM.bin");
+                        } else {
+                            JTegraNX.getController().getPayloadPathField().setText(GlobalSettings.PORTABLE_MODE_JTEGRANX_PAYLOAD_DIR_PATH + File.separator + "Lockpick_RCM.bin");
+                        }
 
                         try {
                             if (!JTegraNX.getController().getConfigList().getSelectionModel().getSelectedItem().equals("No configs")) {
@@ -162,7 +174,11 @@ public class Tray {
 
                 tegraExplorer.addActionListener((ActionEvent e) -> {
                     Platform.runLater(() -> {
-                        JTegraNX.getController().getPayloadPathField().setText(GlobalSettings.JTEGRANX_PAYLOAD_DIR_PATH + File.separator + "TegraExplorer.bin");
+                        if (!GlobalSettings.portableMode) {
+                            JTegraNX.getController().getPayloadPathField().setText(GlobalSettings.STANDARD_MODE_JTEGRANX_PAYLOAD_DIR_PATH + File.separator + "TegraExplorer.bin");
+                        } else {
+                            JTegraNX.getController().getPayloadPathField().setText(GlobalSettings.PORTABLE_MODE_JTEGRANX_PAYLOAD_DIR_PATH + File.separator + "TegraExplorer.bin");
+                        }
 
                         try {
                             if (!JTegraNX.getController().getConfigList().getSelectionModel().getSelectedItem().equals("No configs")) {

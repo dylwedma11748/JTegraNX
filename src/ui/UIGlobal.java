@@ -32,6 +32,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.scene.image.Image;
 import handlers.PayloadHandler;
+import java.io.File;
 import javafx.application.Platform;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
@@ -156,6 +157,7 @@ public class UIGlobal {
     }
 
     public static void closeJTegraNX() {
+        JTegraNX.getStage().close();
         GlobalSettings.savedPayloadPath = JTegraNX.getController().getPayloadPathField().getText();
 
         if (GlobalSettings.enableTrayIcon) {
@@ -165,6 +167,25 @@ public class UIGlobal {
         saveMainConfigFile();
         Platform.exit();
         System.exit(0);
+    }
+    
+    public static void restartJTegraNX() {
+        JTegraNX.getStage().close();
+        GlobalSettings.savedPayloadPath = JTegraNX.getController().getPayloadPathField().getText();
+
+        if (GlobalSettings.enableTrayIcon) {
+            Tray.disableTrayIcon();
+        }
+
+        saveMainConfigFile();
+        Platform.exit();
+        
+        try {
+            Runtime.getRuntime().exec("java -jar \"" + System.getProperty("user.dir") + File.separator + "JTegraNX.jar");
+            System.exit(0);
+        } catch (IOException ex) {
+            Logger.getLogger(UIGlobal.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 
     public static void applyGlobalSettings() {
@@ -193,8 +214,8 @@ public class UIGlobal {
     }
 
     public static boolean readMainConfigFile() {
-        if (GlobalSettings.JTEGRANX_CONFIG_FILE.exists()) {
-            try (FileReader reader = new FileReader(GlobalSettings.JTEGRANX_CONFIG_FILE); BufferedReader bReader = new BufferedReader(reader)) {
+        if (GlobalSettings.PORTABLE_MODE_JTEGRANX_CONFIG_FILE.exists()) {
+            try (FileReader reader = new FileReader(GlobalSettings.PORTABLE_MODE_JTEGRANX_CONFIG_FILE); BufferedReader bReader = new BufferedReader(reader)) {
                 String line;
 
                 while ((line = bReader.readLine()) != null) {
@@ -281,6 +302,97 @@ public class UIGlobal {
                 Logger.getLogger(UIGlobal.class.getName()).log(Level.SEVERE, null, ex);
             }
 
+            GlobalSettings.portableMode = true;
+            return true;
+        } else if (GlobalSettings.STANDARD_MODE_JTEGRANX_CONFIG_FILE.exists()) {
+            try (FileReader reader = new FileReader(GlobalSettings.STANDARD_MODE_JTEGRANX_CONFIG_FILE); BufferedReader bReader = new BufferedReader(reader)) {
+                String line;
+
+                while ((line = bReader.readLine()) != null) {
+                    if (line.contains("savedFolderPath")) {
+                        GlobalSettings.savedFolderPath = line.substring(line.indexOf("=") + 1);
+                    }
+
+                    if (line.contains("savedPayloadPath")) {
+                        GlobalSettings.savedPayloadPath = line.substring(line.indexOf("=") + 1);
+                    }
+
+                    if (line.contains("selectedConfig")) {
+                        GlobalSettings.selectedConfig = line.substring(line.indexOf("=") + 1);
+                    }
+
+                    if (line.contains("autoInject")) {
+                        GlobalSettings.autoInject = Boolean.valueOf(line.substring(line.indexOf("=") + 1));
+                    }
+
+                    if (line.contains("checkJTegraNXUpdates")) {
+                        GlobalSettings.checkJTegraNXUpdates = Boolean.valueOf(line.substring(line.indexOf("=") + 1));
+                    }
+
+                    if (line.contains("checkPayloadUpdates")) {
+                        GlobalSettings.checkPayloadUpdates = Boolean.valueOf(line.substring(line.indexOf("=") + 1));
+                    }
+
+                    if (line.contains("enableTrayIcon")) {
+                        GlobalSettings.enableTrayIcon = Boolean.valueOf(line.substring(line.indexOf("=") + 1));
+                    }
+
+                    if (line.contains("includeFussePrimary")) {
+                        GlobalSettings.includeFuseePrimary = Boolean.valueOf(line.substring(line.indexOf("=") + 1));
+                    }
+
+                    if (line.contains("includeHekate")) {
+                        GlobalSettings.includeHekate = Boolean.valueOf(line.substring(line.indexOf("=") + 1));
+                    }
+
+                    if (line.contains("includeLockpickRCM")) {
+                        GlobalSettings.includeLockpickRCM = Boolean.valueOf(line.substring(line.indexOf("=") + 1));
+                    }
+
+                    if (line.contains("includeTegraExplorer")) {
+                        GlobalSettings.includeTegraExplorer = Boolean.valueOf(line.substring(line.indexOf("=") + 1));
+                    }
+
+                    if (line.contains("minimizeToTray")) {
+                        GlobalSettings.minimizeToTray = Boolean.valueOf(line.substring(line.indexOf("=") + 1));
+                    }
+
+                    if (line.contains("[PAYLOAD RELEASE INFO]")) {
+                        if (GlobalSettings.includeFuseePrimary) {
+                            line = bReader.readLine();
+                            GlobalSettings.fuseePrimaryTag = line.substring(line.indexOf("=") + 1);
+                        }
+
+                        if (GlobalSettings.includeHekate) {
+                            line = bReader.readLine();
+                            GlobalSettings.hekateTag = line.substring(line.indexOf("=") + 1);
+                        }
+
+                        if (GlobalSettings.includeLockpickRCM) {
+                            line = bReader.readLine();
+                            GlobalSettings.lockpickRCMTag = line.substring(line.indexOf("=") + 1);
+                        }
+
+                        if (GlobalSettings.includeTegraExplorer) {
+                            line = bReader.readLine();
+                            GlobalSettings.tegraExplorerTag = line.substring(line.indexOf("=") + 1);
+                        }
+                    }
+
+                    if (line.contains("[JTEGRANX CONFIG]")) {
+                        String configNameLine = bReader.readLine();
+                        String configName = configNameLine.substring(configNameLine.indexOf("=") + 1);
+                        String payloadPathLine = bReader.readLine();
+                        String payloadPath = payloadPathLine.substring(payloadPathLine.indexOf("=") + 1);
+                        Config config = new Config(configName, payloadPath);
+                        ConfigManager.addConfig(config);
+                    }
+                }
+            } catch (IOException ex) {
+                Logger.getLogger(UIGlobal.class.getName()).log(Level.SEVERE, null, ex);
+            }
+
+            GlobalSettings.portableMode = false;
             return true;
         }
 
@@ -288,29 +400,52 @@ public class UIGlobal {
     }
 
     public static void saveMainConfigFile() {
-        if (!GlobalSettings.JTEGRANX_DIR.exists()) {
-            GlobalSettings.JTEGRANX_DIR.mkdir();
-        }
+        if (GlobalSettings.portableMode) {
+            try (PrintWriter writer = new PrintWriter(GlobalSettings.PORTABLE_MODE_JTEGRANX_CONFIG_FILE)) {
+                writer.println("[SETTINGS]");
+                writer.println("savedFolderPath=" + GlobalSettings.savedFolderPath);
+                writer.println("savedPayloadPath=" + GlobalSettings.savedPayloadPath);
+                writer.println("selectedConfig=" + GlobalSettings.selectedConfig);
+                writer.println("autoInject=" + GlobalSettings.autoInject);
+                writer.println("checkJTegraNXUpdates=" + GlobalSettings.checkJTegraNXUpdates);
+                writer.println("checkPayloadUpdates=" + GlobalSettings.checkPayloadUpdates);
+                writer.println("enableTrayIcon=" + GlobalSettings.enableTrayIcon);
+                writer.println("includeFussePrimary=" + GlobalSettings.includeFuseePrimary);
+                writer.println("includeHekate=" + GlobalSettings.includeHekate);
+                writer.println("includeLockpickRCM=" + GlobalSettings.includeLockpickRCM);
+                writer.println("includeTegraExplorer=" + GlobalSettings.includeTegraExplorer);
+                writer.println("minimizeToTray=" + GlobalSettings.minimizeToTray);
+                writer.println();
+                writer.println(PayloadHandler.getPayloadInfoAsString());
+                writer.println(ConfigManager.getConfigs());
+            } catch (FileNotFoundException ex) {
+                Logger.getLogger(UIGlobal.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        } else {
+            if (!GlobalSettings.STANDARD_MODE_JTEGRANX_DIR.exists()) {
+                GlobalSettings.STANDARD_MODE_JTEGRANX_DIR.mkdir();
+            }
 
-        try (PrintWriter writer = new PrintWriter(GlobalSettings.JTEGRANX_CONFIG_FILE)) {
-            writer.println("[SETTINGS]");
-            writer.println("savedFolderPath=" + GlobalSettings.savedFolderPath);
-            writer.println("savedPayloadPath=" + GlobalSettings.savedPayloadPath);
-            writer.println("selectedConfig=" + GlobalSettings.selectedConfig);
-            writer.println("autoInject=" + GlobalSettings.autoInject);
-            writer.println("checkJTegraNXUpdates=" + GlobalSettings.checkJTegraNXUpdates);
-            writer.println("checkPayloadUpdates=" + GlobalSettings.checkPayloadUpdates);
-            writer.println("enableTrayIcon=" + GlobalSettings.enableTrayIcon);
-            writer.println("includeFussePrimary=" + GlobalSettings.includeFuseePrimary);
-            writer.println("includeHekate=" + GlobalSettings.includeHekate);
-            writer.println("includeLockpickRCM=" + GlobalSettings.includeLockpickRCM);
-            writer.println("includeTegraExplorer=" + GlobalSettings.includeTegraExplorer);
-            writer.println("minimizeToTray=" + GlobalSettings.minimizeToTray);
-            writer.println();
-            writer.println(PayloadHandler.getPayloadInfoAsString());
-            writer.println(ConfigManager.getConfigs());
-        } catch (FileNotFoundException ex) {
-            Logger.getLogger(UIGlobal.class.getName()).log(Level.SEVERE, null, ex);
+            try (PrintWriter writer = new PrintWriter(GlobalSettings.STANDARD_MODE_JTEGRANX_CONFIG_FILE)) {
+                writer.println("[SETTINGS]");
+                writer.println("savedFolderPath=" + GlobalSettings.savedFolderPath);
+                writer.println("savedPayloadPath=" + GlobalSettings.savedPayloadPath);
+                writer.println("selectedConfig=" + GlobalSettings.selectedConfig);
+                writer.println("autoInject=" + GlobalSettings.autoInject);
+                writer.println("checkJTegraNXUpdates=" + GlobalSettings.checkJTegraNXUpdates);
+                writer.println("checkPayloadUpdates=" + GlobalSettings.checkPayloadUpdates);
+                writer.println("enableTrayIcon=" + GlobalSettings.enableTrayIcon);
+                writer.println("includeFussePrimary=" + GlobalSettings.includeFuseePrimary);
+                writer.println("includeHekate=" + GlobalSettings.includeHekate);
+                writer.println("includeLockpickRCM=" + GlobalSettings.includeLockpickRCM);
+                writer.println("includeTegraExplorer=" + GlobalSettings.includeTegraExplorer);
+                writer.println("minimizeToTray=" + GlobalSettings.minimizeToTray);
+                writer.println();
+                writer.println(PayloadHandler.getPayloadInfoAsString());
+                writer.println(ConfigManager.getConfigs());
+            } catch (FileNotFoundException ex) {
+                Logger.getLogger(UIGlobal.class.getName()).log(Level.SEVERE, null, ex);
+            }
         }
     }
 }

@@ -48,7 +48,8 @@ public class SDPrepare {
     private static final String HEKATE_IPL = "https://nh-server.github.io/switch-guide/files/emu/hekate_ipl.ini";
     private static final String EMUMMC = "https://nh-server.github.io/switch-guide/files/emummc.txt";
     private static final String BOOTLOGOS = "https://nh-server.github.io/switch-guide/files/bootlogos.zip";
-    private static final File TEMPDIR = new File(GlobalSettings.JTEGRANX_DIR_PATH + File.separator + "SD");
+    
+    private static File tempDir;
 
     private static File sdRoot;
     private static File atmosphere_zip;
@@ -64,8 +65,14 @@ public class SDPrepare {
     private static File nxThemeInstaller_file;
 
     private static void downloadFiles() {
-        if (!TEMPDIR.exists()) {
-            TEMPDIR.mkdir();
+        if (!GlobalSettings.portableMode) {
+            tempDir = new File(GlobalSettings.STANDARD_MODE_JTEGRANX_DIR_PATH + File.separator + "SD");
+        } else {
+            tempDir = new File(GlobalSettings.PORTABLE_MODE_JTEGRANX_DIR_PATH + File.separator + "SD");
+        }
+        
+        if (!tempDir.exists()) {
+            tempDir.mkdir();
         }
 
         hekate = GitHandler.generateLatestRelease("https://github.com/CTCaer/hekate/releases");
@@ -74,7 +81,7 @@ public class SDPrepare {
             UIGlobal.appendLog("Downloading Hekate");
             return asset;
         }).forEachOrdered((asset) -> {
-            hekate_zip = GitHandler.downloadAsset(asset, TEMPDIR.getAbsolutePath() + File.separator + asset.getAssetName());
+            hekate_zip = GitHandler.downloadAsset(asset, tempDir.getAbsolutePath() + File.separator + asset.getAssetName());
         });
 
         atmosphere = GitHandler.generateLatestRelease("https://github.com/Atmosphere-NX/Atmosphere/releases");
@@ -83,7 +90,7 @@ public class SDPrepare {
             UIGlobal.appendLog("Downloading Atmosphère");
             return asset;
         }).forEachOrdered((asset) -> {
-            atmosphere_zip = GitHandler.downloadAsset(asset, TEMPDIR.getAbsolutePath() + File.separator + asset.getAssetName());
+            atmosphere_zip = GitHandler.downloadAsset(asset, tempDir.getAbsolutePath() + File.separator + asset.getAssetName());
         });
 
         lockpickRCM = GitHandler.generateLatestRelease("https://github.com/shchmue/Lockpick_RCM/releases");
@@ -92,7 +99,7 @@ public class SDPrepare {
             UIGlobal.appendLog("Downloading Lockpick_RCM");
             return asset;
         }).forEachOrdered((asset) -> {
-            lockpickRCM_file = GitHandler.downloadAsset(asset, TEMPDIR.getAbsolutePath() + File.separator + asset.getAssetName());
+            lockpickRCM_file = GitHandler.downloadAsset(asset, tempDir.getAbsolutePath() + File.separator + asset.getAssetName());
         });
 
         checkpoint = GitHandler.generateLatestRelease("https://github.com/FlagBrew/Checkpoint/releases");
@@ -101,7 +108,7 @@ public class SDPrepare {
             UIGlobal.appendLog("Downloading Checkpoint");
             return asset;
         }).forEachOrdered((asset) -> {
-            checkpoint_file = GitHandler.downloadAsset(asset, TEMPDIR.getAbsolutePath() + File.separator + asset.getAssetName());
+            checkpoint_file = GitHandler.downloadAsset(asset, tempDir.getAbsolutePath() + File.separator + asset.getAssetName());
         });
 
         ftpd = GitHandler.generateLatestRelease("https://github.com/mtheall/ftpd/releases");
@@ -110,7 +117,7 @@ public class SDPrepare {
             UIGlobal.appendLog("Downloading ftpd");
             return asset;
         }).forEachOrdered((asset) -> {
-            ftpd_file = GitHandler.downloadAsset(asset, TEMPDIR.getAbsolutePath() + File.separator + asset.getAssetName());
+            ftpd_file = GitHandler.downloadAsset(asset, tempDir.getAbsolutePath() + File.separator + asset.getAssetName());
         });
 
         nxThemeInstaller = GitHandler.generateLatestRelease("https://github.com/exelix11/SwitchThemeInjector/releases");
@@ -119,7 +126,7 @@ public class SDPrepare {
             UIGlobal.appendLog("Downloading NXThemesInstaller");
             return asset;
         }).forEachOrdered((asset) -> {
-            nxThemeInstaller_file = GitHandler.downloadAsset(asset, TEMPDIR.getAbsolutePath() + File.separator + asset.getAssetName());
+            nxThemeInstaller_file = GitHandler.downloadAsset(asset, tempDir.getAbsolutePath() + File.separator + asset.getAssetName());
         });
 
         nxShell = GitHandler.generateLatestRelease("https://github.com/joel16/NX-Shell/releases");
@@ -128,7 +135,7 @@ public class SDPrepare {
             UIGlobal.appendLog("Downloading NX-Shell");
             return asset;
         }).forEachOrdered((asset) -> {
-            nxShell_file = GitHandler.downloadAsset(asset, TEMPDIR.getAbsolutePath() + File.separator + asset.getAssetName());
+            nxShell_file = GitHandler.downloadAsset(asset, tempDir.getAbsolutePath() + File.separator + asset.getAssetName());
         });
 
         hbAppStore = GitHandler.generateLatestRelease("https://github.com/fortheusers/hb-appstore/releases");
@@ -137,57 +144,57 @@ public class SDPrepare {
             UIGlobal.appendLog("Downloading hbappstore");
             return asset;
         }).forEachOrdered((asset) -> {
-            appstore_file = GitHandler.downloadAsset(asset, TEMPDIR.getAbsolutePath() + File.separator + asset.getAssetName());
+            appstore_file = GitHandler.downloadAsset(asset, tempDir.getAbsolutePath() + File.separator + asset.getAssetName());
         });
 
         UIGlobal.appendLog("Downloading Hekate config file");
-        hekate_ipl_file = downloadDirectLinkFile(HEKATE_IPL, TEMPDIR.getAbsolutePath() + File.separator + "hekate_ipl.ini");
+        hekate_ipl_file = downloadDirectLinkFile(HEKATE_IPL, tempDir.getAbsolutePath() + File.separator + "hekate_ipl.ini");
         UIGlobal.appendLog("Downloading 90dns DNS redirecton config file");
-        emummc_file = downloadDirectLinkFile(EMUMMC, TEMPDIR.getAbsolutePath() + File.separator + "emummc.txt");
+        emummc_file = downloadDirectLinkFile(EMUMMC, tempDir.getAbsolutePath() + File.separator + "emummc.txt");
         UIGlobal.appendLog("Downloading bootlogos");
-        bootlogos_zip = downloadDirectLinkFile(BOOTLOGOS, TEMPDIR.getAbsolutePath() + File.separator + "bootlogos.zip");
+        bootlogos_zip = downloadDirectLinkFile(BOOTLOGOS, tempDir.getAbsolutePath() + File.separator + "bootlogos.zip");
     }
 
     private static void extractAndMoveFiles() {
         UIGlobal.appendLog("Extracting archives");
-        ZipHandler.unzip(atmosphere_zip.getAbsolutePath(), TEMPDIR.getAbsolutePath());
-        ZipHandler.unzip(hekate_zip.getAbsolutePath(), TEMPDIR.getAbsolutePath());
-        ZipHandler.unzip(bootlogos_zip.getAbsolutePath(), TEMPDIR.getAbsolutePath());
+        ZipHandler.unzip(atmosphere_zip.getAbsolutePath(), tempDir.getAbsolutePath());
+        ZipHandler.unzip(hekate_zip.getAbsolutePath(), tempDir.getAbsolutePath());
+        ZipHandler.unzip(bootlogos_zip.getAbsolutePath(), tempDir.getAbsolutePath());
 
         UIGlobal.appendLog("Copying files");
-        hekate_ipl_file.renameTo(new File(TEMPDIR.getAbsolutePath() + File.separator + "bootloader" + File.separator + "hekate_ipl.ini"));
-        lockpickRCM_file.renameTo(new File(TEMPDIR.getAbsolutePath() + File.separator + "bootloader" + File.separator + "payloads" + File.separator + "Lockpick_RCM.bin"));
+        hekate_ipl_file.renameTo(new File(tempDir.getAbsolutePath() + File.separator + "bootloader" + File.separator + "hekate_ipl.ini"));
+        lockpickRCM_file.renameTo(new File(tempDir.getAbsolutePath() + File.separator + "bootloader" + File.separator + "payloads" + File.separator + "Lockpick_RCM.bin"));
 
-        File hostsDir = new File(TEMPDIR.getAbsolutePath() + File.separator + "atmosphere" + File.separator + "hosts");
+        File hostsDir = new File(tempDir.getAbsolutePath() + File.separator + "atmosphere" + File.separator + "hosts");
         hostsDir.mkdir();
         emummc_file.renameTo(new File(hostsDir.getAbsolutePath() + File.separator + "emummc.txt"));
 
-        File appstoreDir = new File(TEMPDIR.getAbsolutePath() + File.separator + "switch" + File.separator + "appstore");
+        File appstoreDir = new File(tempDir.getAbsolutePath() + File.separator + "switch" + File.separator + "appstore");
         appstoreDir.mkdir();
         appstore_file.renameTo(new File(appstoreDir.getAbsolutePath() + File.separator + "appstore.nro"));
 
-        checkpoint_file.renameTo(new File(TEMPDIR.getAbsolutePath() + File.separator + "switch" + File.separator + "Checkpoint.nro"));
-        ftpd_file.renameTo(new File(TEMPDIR.getAbsolutePath() + File.separator + "switch" + File.separator + "ftpd.nro"));
-        nxShell_file.renameTo(new File(TEMPDIR.getAbsolutePath() + File.separator + "switch" + File.separator + "NX-Shell.nro"));
-        nxThemeInstaller_file.renameTo(new File(TEMPDIR.getAbsolutePath() + File.separator + "switch" + File.separator + "NXThemesInstaller.nro"));
+        checkpoint_file.renameTo(new File(tempDir.getAbsolutePath() + File.separator + "switch" + File.separator + "Checkpoint.nro"));
+        ftpd_file.renameTo(new File(tempDir.getAbsolutePath() + File.separator + "switch" + File.separator + "ftpd.nro"));
+        nxShell_file.renameTo(new File(tempDir.getAbsolutePath() + File.separator + "switch" + File.separator + "NX-Shell.nro"));
+        nxThemeInstaller_file.renameTo(new File(tempDir.getAbsolutePath() + File.separator + "switch" + File.separator + "NXThemesInstaller.nro"));
 
         try {
-            FileUtils.copyDirectory(new File(TEMPDIR.getAbsolutePath() + File.separator + "atmosphere"), new File(sdRoot.getAbsolutePath() + File.separator + "atmosphere"));
-            FileUtils.copyDirectory(new File(TEMPDIR.getAbsolutePath() + File.separator + "bootloader"), new File(sdRoot.getAbsolutePath() + File.separator + "bootloader"));
-            FileUtils.copyDirectory(new File(TEMPDIR.getAbsolutePath() + File.separator + "sept"), new File(sdRoot.getAbsolutePath() + File.separator + "sept"));
-            FileUtils.copyDirectory(new File(TEMPDIR.getAbsolutePath() + File.separator + "switch"), new File(sdRoot.getAbsolutePath() + File.separator + "switch"));
+            FileUtils.copyDirectory(new File(tempDir.getAbsolutePath() + File.separator + "atmosphere"), new File(sdRoot.getAbsolutePath() + File.separator + "atmosphere"));
+            FileUtils.copyDirectory(new File(tempDir.getAbsolutePath() + File.separator + "bootloader"), new File(sdRoot.getAbsolutePath() + File.separator + "bootloader"));
+            FileUtils.copyDirectory(new File(tempDir.getAbsolutePath() + File.separator + "sept"), new File(sdRoot.getAbsolutePath() + File.separator + "sept"));
+            FileUtils.copyDirectory(new File(tempDir.getAbsolutePath() + File.separator + "switch"), new File(sdRoot.getAbsolutePath() + File.separator + "switch"));
         } catch (IOException ex) {
             Logger.getLogger(SDPrepare.class.getName()).log(Level.SEVERE, null, ex);
         }
 
-        File hbMenu = new File(TEMPDIR.getAbsolutePath() + File.separator + "hbmenu.nro");
+        File hbMenu = new File(tempDir.getAbsolutePath() + File.separator + "hbmenu.nro");
         hbMenu.renameTo(new File(sdRoot.getAbsolutePath() + File.separator + "hbmenu.nro"));
     }
 
     private static void cleanUp() {
         try {
             UIGlobal.appendLog("Cleaning up");
-            FileUtils.deleteDirectory(TEMPDIR);
+            FileUtils.deleteDirectory(tempDir);
         } catch (IOException ex) {
             Logger.getLogger(SDPrepare.class.getName()).log(Level.SEVERE, null, ex);
         }

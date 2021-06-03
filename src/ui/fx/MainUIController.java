@@ -26,8 +26,11 @@ import configs.ConfigManager;
 import handlers.PayloadHandler;
 import handlers.UpdateHandler;
 import java.io.File;
+import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -43,6 +46,7 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
+import org.apache.commons.io.FileUtils;
 import rcm.DriverInstaller;
 import ui.UIGlobal;
 import util.GlobalSettings;
@@ -98,6 +102,12 @@ public class MainUIController implements Initializable {
 
     @FXML
     private CheckMenuItem includeTegraExplorer;
+    
+    @FXML
+    private CheckMenuItem standardMode;
+
+    @FXML
+    private CheckMenuItem portableMode;
 
     @FXML
     private Button inject;
@@ -116,7 +126,6 @@ public class MainUIController implements Initializable {
 
     @FXML
     private void close() {
-        JTegraNX.getStage().close();
         UIGlobal.closeJTegraNX();
     }
 
@@ -138,10 +147,18 @@ public class MainUIController implements Initializable {
             if (new File(GlobalSettings.savedFolderPath).exists()) {
                 chooser.setInitialDirectory(new File(GlobalSettings.savedFolderPath));
             } else {
-                chooser.setInitialDirectory(GlobalSettings.JTEGRANX_PAYLOAD_DIR);
+                if (!GlobalSettings.portableMode) {
+                    chooser.setInitialDirectory(GlobalSettings.STANDARD_MODE_JTEGRANX_PAYLOAD_DIR);
+                } else {
+                    chooser.setInitialDirectory(GlobalSettings.PORTABLE_MODE_JTEGRANX_PAYLOAD_DIR);
+                }
             }
         } else {
-            chooser.setInitialDirectory(GlobalSettings.JTEGRANX_PAYLOAD_DIR);
+            if (!GlobalSettings.portableMode) {
+                chooser.setInitialDirectory(GlobalSettings.STANDARD_MODE_JTEGRANX_PAYLOAD_DIR);
+            } else {
+                chooser.setInitialDirectory(GlobalSettings.PORTABLE_MODE_JTEGRANX_PAYLOAD_DIR);
+            }
         }
 
         FileChooser.ExtensionFilter filter = new FileChooser.ExtensionFilter("RCM payload files (*.bin)", "*bin");
@@ -215,6 +232,58 @@ public class MainUIController implements Initializable {
             if (GlobalSettings.enableTrayIcon) {
                 Tray.updateMenuItems();
             }
+        } else if (source.equals(standardMode)) {
+            if (GlobalSettings.PORTABLE_MODE_JTEGRANX_CONFIG_FILE.exists()) {
+                try {
+                    FileUtils.forceDelete(GlobalSettings.PORTABLE_MODE_JTEGRANX_CONFIG_FILE);
+                } catch (IOException ex) {
+                    Logger.getLogger(MainUIController.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+            
+            if (GlobalSettings.PORTABLE_MODE_JTEGRANX_PAYLOAD_DIR.exists()) {
+                try {
+                    FileUtils.deleteDirectory(GlobalSettings.PORTABLE_MODE_JTEGRANX_PAYLOAD_DIR);
+                } catch (IOException ex) {
+                    Logger.getLogger(MainUIController.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+            
+            UIGlobal.appendLog("Using standard mode");
+            GlobalSettings.portableMode = false;
+            portableMode.setSelected(false);
+            
+            PayloadHandler.updatePayloads();
+
+            if (GlobalSettings.enableTrayIcon) {
+                Tray.updateMenuItems();
+            }
+        } else if (source.equals(portableMode)) {
+            if (GlobalSettings.STANDARD_MODE_JTEGRANX_CONFIG_FILE.exists()) {
+                try {
+                    FileUtils.forceDelete(GlobalSettings.STANDARD_MODE_JTEGRANX_CONFIG_FILE);
+                } catch (IOException ex) {
+                    Logger.getLogger(MainUIController.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+            
+            if (GlobalSettings.STANDARD_MODE_JTEGRANX_PAYLOAD_DIR.exists()) {
+                try {
+                    FileUtils.deleteDirectory(GlobalSettings.STANDARD_MODE_JTEGRANX_PAYLOAD_DIR);
+                } catch (IOException ex) {
+                    Logger.getLogger(MainUIController.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+            
+            UIGlobal.appendLog("Using portable mode");
+            GlobalSettings.portableMode = true;
+            standardMode.setSelected(false);
+            
+            PayloadHandler.updatePayloads();
+
+            if (GlobalSettings.enableTrayIcon) {
+                Tray.updateMenuItems();
+            }
         }
     }
 
@@ -225,7 +294,11 @@ public class MainUIController implements Initializable {
 
     @FXML
     private void checkForJTegraNXUpdates() {
-        UpdateHandler.checkForUpdates();
+        if (!GlobalSettings.restartPending) {
+            UpdateHandler.checkForUpdates();
+        } else {
+            UIGlobal.restartJTegraNX();
+        }
     }
 
     @FXML
@@ -339,7 +412,7 @@ public class MainUIController implements Initializable {
         }
     }
 
-    private void setFrameDragEvent() {
+    private void setUndecoratedFrameDragEvent() {
         pane.setOnMousePressed((MouseEvent event) -> {
             xOffset = JTegraNX.getStage().getX() - event.getScreenX();
             yOffset = JTegraNX.getStage().getY() - event.getScreenY();
@@ -406,6 +479,14 @@ public class MainUIController implements Initializable {
     public CheckMenuItem getIncludeTegraExplorerItem() {
         return includeTegraExplorer;
     }
+    
+    public CheckMenuItem getStandardModeMenuItem() {
+        return standardMode;
+    }
+
+    public CheckMenuItem getPortableModeMenuItem() {
+        return portableMode;
+    }
 
     public Button getInjectButton() {
         return inject;
@@ -417,6 +498,6 @@ public class MainUIController implements Initializable {
 
     @Override
     public void initialize(URL url, ResourceBundle rb) {
-        setFrameDragEvent();
+        setUndecoratedFrameDragEvent();
     }
 }

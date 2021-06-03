@@ -228,6 +228,44 @@
                         </ImageView>
                      </graphic>
                   </Menu>
+                  <Menu mnemonicParsing="false" text="Configuration mode">
+                     <graphic>
+                        <ImageView fitHeight="32.0" fitWidth="32.0" pickOnBounds="true" preserveRatio="true">
+                           <image>
+                              <Image url="@../images/loadConfig.png" />
+                           </image>
+                           <effect>
+                              <DropShadow />
+                           </effect>
+                        </ImageView>
+                     </graphic>
+                     <items>
+                        <CheckMenuItem fx:id="standardMode" mnemonicParsing="false" onAction="#changeSetting" text="Standard mode">
+                           <graphic>
+                              <ImageView fitHeight="32.0" fitWidth="32.0" pickOnBounds="true" preserveRatio="true">
+                                 <image>
+                                    <Image url="@../images/loadConfig.png" />
+                                 </image>
+                                 <effect>
+                                    <DropShadow />
+                                 </effect>
+                              </ImageView>
+                           </graphic>
+                        </CheckMenuItem>
+                        <CheckMenuItem fx:id="portableMode" mnemonicParsing="false" onAction="#changeSetting" text="Portable mode">
+                           <graphic>
+                              <ImageView fitHeight="32.0" fitWidth="32.0" pickOnBounds="true" preserveRatio="true">
+                                 <image>
+                                    <Image url="@../images/loadConfig.png" />
+                                 </image>
+                                 <effect>
+                                    <DropShadow />
+                                 </effect>
+                              </ImageView>
+                           </graphic>
+                        </CheckMenuItem>
+                     </items>
+                  </Menu>
                   <CheckMenuItem fx:id="enableTrayIcon" mnemonicParsing="false" onAction="#changeSetting" text="Enable tray icon">
                      <graphic>
                         <ImageView fitHeight="32.0" fitWidth="32.0" pickOnBounds="true" preserveRatio="true">

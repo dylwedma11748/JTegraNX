@@ -27,11 +27,17 @@ public class GlobalSettings {
 
     public static final String OS_ARCH = System.getProperty("os.arch");
 
-    public static final String JTEGRANX_DIR_PATH = System.getProperty("user.home") + File.separator + "Documents" + File.separator + "JTegraNX";
-    public static final File JTEGRANX_DIR = new File(JTEGRANX_DIR_PATH);
-    public static final String JTEGRANX_PAYLOAD_DIR_PATH = JTEGRANX_DIR_PATH + File.separator + "Payloads";
-    public static final File JTEGRANX_PAYLOAD_DIR = new File(JTEGRANX_PAYLOAD_DIR_PATH);
-    public static final File JTEGRANX_CONFIG_FILE = new File(JTEGRANX_DIR_PATH + File.separator + "JTegraNX.ini");
+    public static final String STANDARD_MODE_JTEGRANX_DIR_PATH = System.getProperty("user.home") + File.separator + "Documents" + File.separator + "JTegraNX";
+    public static final File STANDARD_MODE_JTEGRANX_DIR = new File(STANDARD_MODE_JTEGRANX_DIR_PATH);
+    public static final String STANDARD_MODE_JTEGRANX_PAYLOAD_DIR_PATH = STANDARD_MODE_JTEGRANX_DIR_PATH + File.separator + "Payloads";
+    public static final File STANDARD_MODE_JTEGRANX_PAYLOAD_DIR = new File(STANDARD_MODE_JTEGRANX_PAYLOAD_DIR_PATH);
+    public static final File STANDARD_MODE_JTEGRANX_CONFIG_FILE = new File(STANDARD_MODE_JTEGRANX_DIR_PATH + File.separator + "JTegraNX.ini");
+    
+    public static final String PORTABLE_MODE_JTEGRANX_DIR_PATH = System.getProperty("user.dir");
+    public static final File PORTABLE_MODE_JTEGRANX_DIR = new File(PORTABLE_MODE_JTEGRANX_DIR_PATH);
+    public static final String PORTABLE_MODE_JTEGRANX_PAYLOAD_DIR_PATH = PORTABLE_MODE_JTEGRANX_DIR_PATH + File.separator + "Payloads";
+    public static final File PORTABLE_MODE_JTEGRANX_PAYLOAD_DIR = new File(PORTABLE_MODE_JTEGRANX_PAYLOAD_DIR_PATH);
+    public static final File PORTABLE_MODE_JTEGRANX_CONFIG_FILE = new File(PORTABLE_MODE_JTEGRANX_DIR_PATH + File.separator + "JTegraNX.ini");
 
     public static String savedFolderPath;
     public static String savedPayloadPath;
@@ -54,5 +60,7 @@ public class GlobalSettings {
     public static boolean includeTegraExplorer = true;
     public static boolean minimizeToTray = false;
     public static boolean payloadsUpdatedThisSession = false;
+    public static boolean portableMode = false;
     public static boolean driverUpdatedNeedsReconnect = false;
+    public static boolean restartPending = false;
 }

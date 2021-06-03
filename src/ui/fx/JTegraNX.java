@@ -36,6 +36,10 @@ import javafx.stage.StageStyle;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
 import handlers.PayloadHandler;
+import java.io.File;
+import java.net.URISyntaxException;
+import java.util.ArrayList;
+import java.util.List;
 import javafx.application.Platform;
 import ui.UIGlobal;
 import util.GlobalSettings;
@@ -64,7 +68,10 @@ public class JTegraNX extends Application {
         stage.setResizable(false);
         JTegraNX.stage = stage;
 
+        boolean configFileFoundAndRead = false;
+
         if (UIGlobal.readMainConfigFile()) {
+            configFileFoundAndRead = true;
             UIGlobal.applyGlobalSettings();
             UIGlobal.startDeviceListener();
 
@@ -83,11 +90,6 @@ public class JTegraNX extends Application {
             }
 
             ConfigManager.updateConfigList();
-        } else {
-            PayloadHandler.updatePayloads();
-            UpdateHandler.checkForUpdates();
-            UIGlobal.startDeviceListener();
-            ConfigManager.updateConfigList();
         }
 
         controller.getPayloadPathField().textProperty().addListener((observable, oldValue, newValue) -> {
@@ -97,9 +99,43 @@ public class JTegraNX extends Application {
         });
 
         stage.show();
+
+        if (configFileFoundAndRead) {
+            if (GlobalSettings.portableMode) {
+                UIGlobal.appendLog("Using portable mode");
+                controller.getPortableModeMenuItem().setSelected(true);
+                controller.getStandardModeMenuItem().setSelected(false);
+            } else {
+                UIGlobal.appendLog("Using standard mode");
+                controller.getPortableModeMenuItem().setSelected(false);
+                controller.getStandardModeMenuItem().setSelected(true);
+            }
+        } else {
+            List<String> choices = new ArrayList<>();
+            choices.add("Standard mode");
+            choices.add("Portable mode");
+            String mode = AlertHandler.createChoiceDialog("JTegraNX", "Choose configuration mode", "Mode: ", choices);
+
+            if (mode != null && mode.equals("Portable mode")) {
+                GlobalSettings.portableMode = true;
+                UIGlobal.appendLog("Using portable mode");
+                controller.getPortableModeMenuItem().setSelected(true);
+                controller.getStandardModeMenuItem().setSelected(false);
+            } else {
+                GlobalSettings.portableMode = false;
+                UIGlobal.appendLog("Using standard mode");
+                controller.getPortableModeMenuItem().setSelected(false);
+                controller.getStandardModeMenuItem().setSelected(true);
+            }
+
+            PayloadHandler.updatePayloads();
+            UpdateHandler.checkForUpdates();
+            UIGlobal.startDeviceListener();
+            ConfigManager.updateConfigList();
+        }
     }
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws URISyntaxException {
         try {
             UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
         } catch (ClassNotFoundException | InstantiationException | IllegalAccessException | UnsupportedLookAndFeelException ex) {
