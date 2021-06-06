@@ -1,5 +1,5 @@
 ![Png](https://img.shields.io/badge/Platform-Windows%20x86--x64-green)
-![Png](https://img.shields.io/badge/Latest%20release-1.6.2-green)
+![Png](https://img.shields.io/badge/Latest%20release-1.6.3-green)
 ![GitHub](https://img.shields.io/badge/License%20-GPL--2.0-green)
 ![GitHub All Releases](https://img.shields.io/github/downloads/dylwedma11748/JTegraNX/total)
 ![GitHub repo size](https://img.shields.io/github/repo-size/dylwedma11748/JTegraNX)
@@ -12,7 +12,7 @@ In order to run this program, you need Java 8 or higher installed on your comput
 JTegraNX is currently only supported on Windows, but I plan to add support for Linux and macOS.
 
 ## Preview
-![Png](./screenshot.PNG)
+![Png](./Preview.PNG)
 
 ## Features
 - RCM payload injection
