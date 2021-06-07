@@ -2,7 +2,7 @@
 
 JTegraNX - Another RCM payload injector
 
-Copyright (C) 2021 Dylan Wedman
+Copyright (C) 2019-2021 Dylan Wedman
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -33,6 +33,7 @@ import java.util.logging.Logger;
 import javafx.scene.image.Image;
 import handlers.PayloadHandler;
 import java.io.File;
+import java.net.URISyntaxException;
 import javafx.application.Platform;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
@@ -65,10 +66,8 @@ public class UIGlobal {
     }
 
     public static void injectPayload(String payloadPath) {
-        if (rcm_status.equals("RCM_DETECTED")) {
-            clearLog();
-            RCM.injectPayload(payloadPath);
-        }
+        clearLog();
+        RCM.injectPayload(payloadPath);
     }
 
     public static void setRCMStatus(String status) {
@@ -168,7 +167,7 @@ public class UIGlobal {
         Platform.exit();
         System.exit(0);
     }
-    
+
     public static void restartJTegraNX() {
         JTegraNX.getStage().close();
         GlobalSettings.savedPayloadPath = JTegraNX.getController().getPayloadPathField().getText();
@@ -179,13 +178,17 @@ public class UIGlobal {
 
         saveMainConfigFile();
         Platform.exit();
-        
+
+        File runningJAR;
+
         try {
-            Runtime.getRuntime().exec("java -jar \"" + System.getProperty("user.dir") + File.separator + "JTegraNX.jar");
-            System.exit(0);
-        } catch (IOException ex) {
+            runningJAR = new File(UIGlobal.class.getProtectionDomain().getCodeSource().getLocation().toURI());
+            Runtime.getRuntime().exec("java -jar \"" + runningJAR.getAbsolutePath() + "\"");
+        } catch (IOException | URISyntaxException ex) {
             Logger.getLogger(UIGlobal.class.getName()).log(Level.SEVERE, null, ex);
         }
+
+        System.exit(0);
     }
 
     public static void applyGlobalSettings() {

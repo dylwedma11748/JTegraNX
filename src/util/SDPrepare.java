@@ -2,7 +2,7 @@
 
 JTegraNX - Another RCM payload injector
 
-Copyright (C) 2021 Dylan Wedman
+Copyright (C) 2019-2021 Dylan Wedman
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -48,7 +48,7 @@ public class SDPrepare {
     private static final String HEKATE_IPL = "https://nh-server.github.io/switch-guide/files/emu/hekate_ipl.ini";
     private static final String EMUMMC = "https://nh-server.github.io/switch-guide/files/emummc.txt";
     private static final String BOOTLOGOS = "https://nh-server.github.io/switch-guide/files/bootlogos.zip";
-    
+
     private static File tempDir;
 
     private static File sdRoot;
@@ -70,7 +70,7 @@ public class SDPrepare {
         } else {
             tempDir = new File(GlobalSettings.PORTABLE_MODE_JTEGRANX_DIR_PATH + File.separator + "SD");
         }
-        
+
         if (!tempDir.exists()) {
             tempDir.mkdir();
         }

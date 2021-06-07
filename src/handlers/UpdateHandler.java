@@ -2,7 +2,7 @@
 
 JTegraNX - Another RCM payload injector
 
-Copyright (C) 2021 Dylan Wedman
+Copyright (C) 2019-2021 Dylan Wedman
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -36,7 +36,7 @@ import util.GlobalSettings;
 public class UpdateHandler {
 
     private static Release jtegranx;
-    private static final String currentVersion = "1.6.2";
+    private static final String currentVersion = "1.6.3";
 
     public static void checkForUpdates() {
         Platform.runLater(() -> {
@@ -59,7 +59,7 @@ public class UpdateHandler {
 
                     if (running.getPath().endsWith(".jar")) {
                         for (Asset asset : jtegranx.getAssets()) {
-                            if (GlobalSettings.OS_ARCH.equals("amd64")) {
+                            if (GlobalSettings.JRE_ARCH.equals("64")) {
                                 if (asset.getAssetName().equals("JTegraNX-x64.jar")) {
                                     jar = GitHandler.downloadAsset(asset, running.getAbsolutePath());
 
@@ -70,36 +70,45 @@ public class UpdateHandler {
                             } else {
                                 if (asset.getAssetName().equals("JTegraNX-x86.jar")) {
                                     jar = GitHandler.downloadAsset(asset, running.getAbsolutePath());
-                                    
+
                                     if (jar.exists()) {
                                         updated = true;
                                     }
                                 }
                             }
+                        }
 
-                            if (updated) {
-                                UIGlobal.appendLog("Download complete");
-                                boolean restart = AlertHandler.showConfirmationDialog("JTegraNX updater", "JTegraNX has been updated and needs to be restarted for the changes to apply", "Restart now?");
+                        if (updated) {
+                            UIGlobal.appendLog("Download complete");
+                            boolean restart = AlertHandler.showConfirmationDialog("JTegraNX updater", "JTegraNX has been updated and needs to be restarted for the changes to apply.", "Restart now?");
 
-                                if (restart) {
+                            if (restart) {
+                                Platform.runLater(() -> {
                                     UIGlobal.restartJTegraNX();
-                                } else {
-                                    GlobalSettings.restartPending = true;
-                                    JTegraNX.getController().getCheckJTegraNXUpdatesMenuItem().setText("Restart JTegraNX to finish update");
-                                }
+                                });
                             } else {
-                                if (jar == null) {
-                                    AlertHandler.showErrorMessage("JTegraNX updater", "A GitHandler error occured", "Unable to locate valid asset");
-                                }
+                                GlobalSettings.restartPending = true;
+
+                                Platform.runLater(() -> {
+                                    JTegraNX.getController().getJTegraNXUpdateMenuItem().setText("Restart JTegraNX to finish update");
+                                });
+                            }
+                        } else {
+                            if (jar == null) {
+                                AlertHandler.showErrorMessage("JTegraNX updater", "A GitHandler error occured.", "Unable to locate valid asset.");
                             }
                         }
                     } else {
-                        AlertHandler.showErrorMessage("JTegraNX updater", "Unable to update JTegraNX", "JTegraNX is running from an IDE or a non-JAR build");
+                        AlertHandler.showErrorMessage("JTegraNX updater", "JTegraNX can't be updated.", "JTegraNX is running from an IDE or a non-JAR build.");
                     }
                 }
             } else {
                 UIGlobal.appendLog("JTegraNX is up to date");
             }
         });
+    }
+
+    public static String getCurrentVersion() {
+        return currentVersion;
     }
 }

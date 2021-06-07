@@ -18,34 +18,10 @@
 
 <Pane fx:id="pane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" stylesheets="@style.css" xmlns="http://javafx.com/javafx/16" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ui.fx.MainUIController">
    <children>
-      <MenuBar fx:id="menuBar" prefHeight="40.0" prefWidth="141.0">
+      <MenuBar fx:id="menuBar" prefHeight="40.0" prefWidth="299.0">
         <menus>
           <Menu mnemonicParsing="false">
             <items>
-              <MenuItem mnemonicParsing="false" onAction="#checkForJTegraNXUpdates" text="Check for JTegraNX updates">
-                     <graphic>
-                        <ImageView fitHeight="32.0" fitWidth="32.0" pickOnBounds="true" preserveRatio="true">
-                           <effect>
-                              <DropShadow />
-                           </effect>
-                           <image>
-                              <Image url="@../images/update.png" />
-                           </image>
-                        </ImageView>
-                     </graphic>
-                  </MenuItem>
-                  <MenuItem mnemonicParsing="false" onAction="#checkForPayloadUpdates" text="Check for payload updates">
-                     <graphic>
-                        <ImageView fitHeight="32.0" fitWidth="32.0" pickOnBounds="true" preserveRatio="true">
-                           <effect>
-                              <DropShadow />
-                           </effect>
-                           <image>
-                              <Image url="@../images/update.png" />
-                           </image>
-                        </ImageView>
-                     </graphic>
-                  </MenuItem>
                   <MenuItem mnemonicParsing="false" onAction="#clearLog" text="Clear log">
                      <graphic>
                         <ImageView fitHeight="32.0" fitWidth="32.0" pickOnBounds="true" preserveRatio="true">
@@ -130,30 +106,6 @@
                   </ImageView>
                </graphic>
                <items>
-                  <CheckMenuItem fx:id="autoCheckJTegraNXUpdates" mnemonicParsing="false" onAction="#changeSetting" selected="true" text="Automatically check for JTegraNX updates">
-                     <graphic>
-                        <ImageView fitHeight="32.0" fitWidth="32.0" pickOnBounds="true" preserveRatio="true">
-                           <image>
-                              <Image url="@../images/update.png" />
-                           </image>
-                           <effect>
-                              <DropShadow />
-                           </effect>
-                        </ImageView>
-                     </graphic>
-                  </CheckMenuItem>
-                  <CheckMenuItem fx:id="autoCheckPayloadUpdates" mnemonicParsing="false" onAction="#changeSetting" selected="true" text="Automatically check for payload updates">
-                     <graphic>
-                        <ImageView fitHeight="32.0" fitWidth="32.0" pickOnBounds="true" preserveRatio="true">
-                           <image>
-                              <Image url="@../images/update.png" />
-                           </image>
-                           <effect>
-                              <DropShadow />
-                           </effect>
-                        </ImageView>
-                     </graphic>
-                  </CheckMenuItem>
                   <CheckMenuItem fx:id="autoInjectItem" mnemonicParsing="false" onAction="#changeSetting" text="Auto-inject">
                      <graphic>
                         <ImageView fitHeight="32.0" fitWidth="32.0" pickOnBounds="true" preserveRatio="true">
@@ -290,8 +242,96 @@
                         </ImageView>
                      </graphic>
                   </CheckMenuItem>
+                  <Menu mnemonicParsing="false" text="Update settings">
+                    <items>
+                        <CheckMenuItem fx:id="autoCheckJTegraNXUpdates" mnemonicParsing="false" onAction="#changeSetting" selected="true" text="Automatically check for JTegraNX updates">
+                           <graphic>
+                              <ImageView fitHeight="32.0" fitWidth="32.0" pickOnBounds="true" preserveRatio="true">
+                                 <image>
+                                    <Image url="@../images/update.png" />
+                                 </image>
+                                 <effect>
+                                    <DropShadow />
+                                 </effect>
+                              </ImageView>
+                           </graphic>
+                        </CheckMenuItem>
+                        <CheckMenuItem fx:id="autoCheckPayloadUpdates" mnemonicParsing="false" onAction="#changeSetting" selected="true" text="Automatically check for payload updates">
+                           <graphic>
+                              <ImageView fitHeight="32.0" fitWidth="32.0" pickOnBounds="true" preserveRatio="true">
+                                 <image>
+                                    <Image url="@../images/update.png" />
+                                 </image>
+                                 <effect>
+                                    <DropShadow />
+                                 </effect>
+                              </ImageView>
+                           </graphic>
+                        </CheckMenuItem>
+                    </items>
+                     <graphic>
+                        <ImageView fitHeight="32.0" fitWidth="32.0" pickOnBounds="true" preserveRatio="true">
+                           <image>
+                              <Image url="@../images/update.png" />
+                           </image>
+                           <effect>
+                              <DropShadow />
+                           </effect>
+                        </ImageView>
+                     </graphic>
+                  </Menu>
                </items>
           </Menu>
+            <Menu mnemonicParsing="false">
+               <graphic>
+                  <ImageView fitHeight="32.0" fitWidth="32.0" pickOnBounds="true" preserveRatio="true">
+                     <image>
+                        <Image url="@../images/help.png" />
+                     </image>
+                     <effect>
+                        <DropShadow />
+                     </effect>
+                  </ImageView>
+               </graphic>
+               <items>
+                  <MenuItem mnemonicParsing="false" onAction="#showAboutDialog" text="About JTegraNX">
+                     <graphic>
+                        <ImageView fitHeight="32.0" fitWidth="32.0" pickOnBounds="true" preserveRatio="true">
+                           <image>
+                              <Image url="@../images/help.png" />
+                           </image>
+                           <effect>
+                              <DropShadow />
+                           </effect>
+                        </ImageView>
+                     </graphic>
+                  </MenuItem>
+              <MenuItem fx:id="checkJTegraNXUpdates" mnemonicParsing="false" onAction="#checkForJTegraNXUpdates" text="Check for JTegraNX updates">
+                     <graphic>
+                        <ImageView fitHeight="32.0" fitWidth="32.0" pickOnBounds="true" preserveRatio="true">
+                           <effect>
+                              <DropShadow />
+                           </effect>
+                           <image>
+                              <Image url="@../images/update.png" />
+                           </image>
+                        </ImageView>
+                     </graphic>
+                  </MenuItem>
+                  <MenuItem mnemonicParsing="false" onAction="#checkForPayloadUpdates" text="Check for payload updates">
+                     <graphic>
+                        <ImageView fitHeight="32.0" fitWidth="32.0" pickOnBounds="true" preserveRatio="true">
+                           <effect>
+                              <DropShadow />
+                           </effect>
+                           <image>
+                              <Image url="@../images/update.png" />
+                           </image>
+                        </ImageView>
+                     </graphic>
+                  </MenuItem>
+               </items>
+            </Menu>
         </menus>
       </MenuBar>
       <ImageView fitHeight="88.0" fitWidth="400.0" layoutX="100.0" layoutY="46.0" pickOnBounds="true" preserveRatio="true">

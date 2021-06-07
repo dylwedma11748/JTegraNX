@@ -2,7 +2,7 @@
 
 JTegraNX - Another RCM payload injector
 
-Copyright (C) 2021 Dylan Wedman
+Copyright (C) 2019-2021 Dylan Wedman
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -23,6 +23,7 @@ package ui.fx;
 
 import configs.Config;
 import configs.ConfigManager;
+import handlers.AlertHandler;
 import handlers.PayloadHandler;
 import handlers.UpdateHandler;
 import java.io.File;
@@ -102,7 +103,7 @@ public class MainUIController implements Initializable {
 
     @FXML
     private CheckMenuItem includeTegraExplorer;
-    
+
     @FXML
     private CheckMenuItem standardMode;
 
@@ -117,6 +118,9 @@ public class MainUIController implements Initializable {
 
     @FXML
     private MenuItem installDriver;
+
+    @FXML
+    private MenuItem checkJTegraNXUpdates;
 
     double xOffset;
     double yOffset;
@@ -240,7 +244,7 @@ public class MainUIController implements Initializable {
                     Logger.getLogger(MainUIController.class.getName()).log(Level.SEVERE, null, ex);
                 }
             }
-            
+
             if (GlobalSettings.PORTABLE_MODE_JTEGRANX_PAYLOAD_DIR.exists()) {
                 try {
                     FileUtils.deleteDirectory(GlobalSettings.PORTABLE_MODE_JTEGRANX_PAYLOAD_DIR);
@@ -248,11 +252,11 @@ public class MainUIController implements Initializable {
                     Logger.getLogger(MainUIController.class.getName()).log(Level.SEVERE, null, ex);
                 }
             }
-            
+
             UIGlobal.appendLog("Using standard mode");
             GlobalSettings.portableMode = false;
             portableMode.setSelected(false);
-            
+
             PayloadHandler.updatePayloads();
 
             if (GlobalSettings.enableTrayIcon) {
@@ -266,7 +270,7 @@ public class MainUIController implements Initializable {
                     Logger.getLogger(MainUIController.class.getName()).log(Level.SEVERE, null, ex);
                 }
             }
-            
+
             if (GlobalSettings.STANDARD_MODE_JTEGRANX_PAYLOAD_DIR.exists()) {
                 try {
                     FileUtils.deleteDirectory(GlobalSettings.STANDARD_MODE_JTEGRANX_PAYLOAD_DIR);
@@ -274,11 +278,11 @@ public class MainUIController implements Initializable {
                     Logger.getLogger(MainUIController.class.getName()).log(Level.SEVERE, null, ex);
                 }
             }
-            
+
             UIGlobal.appendLog("Using portable mode");
             GlobalSettings.portableMode = true;
             standardMode.setSelected(false);
-            
+
             PayloadHandler.updatePayloads();
 
             if (GlobalSettings.enableTrayIcon) {
@@ -299,6 +303,11 @@ public class MainUIController implements Initializable {
         } else {
             UIGlobal.restartJTegraNX();
         }
+    }
+
+    @FXML
+    private void showAboutDialog() {
+        AlertHandler.showAboutDialog();
     }
 
     @FXML
@@ -479,7 +488,7 @@ public class MainUIController implements Initializable {
     public CheckMenuItem getIncludeTegraExplorerItem() {
         return includeTegraExplorer;
     }
-    
+
     public CheckMenuItem getStandardModeMenuItem() {
         return standardMode;
     }
@@ -494,6 +503,10 @@ public class MainUIController implements Initializable {
 
     public MenuItem getInstallAPXDriverMenuItem() {
         return installDriver;
+    }
+
+    public MenuItem getJTegraNXUpdateMenuItem() {
+        return checkJTegraNXUpdates;
     }
 
     @Override

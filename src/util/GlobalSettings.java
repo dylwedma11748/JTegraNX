@@ -2,7 +2,7 @@
 
 JTegraNX - Another RCM payload injector
 
-Copyright (C) 2021 Dylan Wedman
+Copyright (C) 2019-2021 Dylan Wedman
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -25,14 +25,14 @@ import java.io.File;
 
 public class GlobalSettings {
 
-    public static final String OS_ARCH = System.getProperty("os.arch");
+    public static final String JRE_ARCH = System.getProperty("sun.arch.data.model");
 
     public static final String STANDARD_MODE_JTEGRANX_DIR_PATH = System.getProperty("user.home") + File.separator + "Documents" + File.separator + "JTegraNX";
     public static final File STANDARD_MODE_JTEGRANX_DIR = new File(STANDARD_MODE_JTEGRANX_DIR_PATH);
     public static final String STANDARD_MODE_JTEGRANX_PAYLOAD_DIR_PATH = STANDARD_MODE_JTEGRANX_DIR_PATH + File.separator + "Payloads";
     public static final File STANDARD_MODE_JTEGRANX_PAYLOAD_DIR = new File(STANDARD_MODE_JTEGRANX_PAYLOAD_DIR_PATH);
     public static final File STANDARD_MODE_JTEGRANX_CONFIG_FILE = new File(STANDARD_MODE_JTEGRANX_DIR_PATH + File.separator + "JTegraNX.ini");
-    
+
     public static final String PORTABLE_MODE_JTEGRANX_DIR_PATH = System.getProperty("user.dir");
     public static final File PORTABLE_MODE_JTEGRANX_DIR = new File(PORTABLE_MODE_JTEGRANX_DIR_PATH);
     public static final String PORTABLE_MODE_JTEGRANX_PAYLOAD_DIR_PATH = PORTABLE_MODE_JTEGRANX_DIR_PATH + File.separator + "Payloads";

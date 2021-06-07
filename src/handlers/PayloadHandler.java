@@ -2,7 +2,7 @@
 
 JTegraNX - Another RCM payload injector
 
-Copyright (C) 2021 Dylan Wedman
+Copyright (C) 2019-2021 Dylan Wedman
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -251,7 +251,7 @@ public class PayloadHandler {
                 JTegraNX.getController().getPayloadMenu().getItems().add(item);
             } else {
                 File payload;
-                
+
                 if (!GlobalSettings.portableMode) {
                     payload = new File(GlobalSettings.STANDARD_MODE_JTEGRANX_PAYLOAD_DIR_PATH + File.separator + "Hekate.bin");
                 } else {
@@ -280,7 +280,7 @@ public class PayloadHandler {
                         GitHandler.downloadAsset(asset, GlobalSettings.STANDARD_MODE_JTEGRANX_PAYLOAD_DIR_PATH + File.separator + "Lockpick_RCM.bin");
                     });
                 }
-                
+
                 if (GlobalSettings.lockpickRCMTag != null && !GlobalSettings.lockpickRCMTag.equals(lockpickRCM.getTag()) && GlobalSettings.portableMode) {
                     lockpickRCM.getAssets().stream().filter((asset) -> (asset.getAssetName().equals("Lockpick_RCM.bin"))).forEachOrdered((asset) -> {
                         GitHandler.downloadAsset(asset, GlobalSettings.PORTABLE_MODE_JTEGRANX_PAYLOAD_DIR_PATH + File.separator + "Lockpick_RCM.bin");
@@ -314,7 +314,7 @@ public class PayloadHandler {
                 JTegraNX.getController().getPayloadMenu().getItems().add(item);
             } else {
                 File payload;
-                
+
                 if (!GlobalSettings.portableMode) {
                     payload = new File(GlobalSettings.STANDARD_MODE_JTEGRANX_PAYLOAD_DIR_PATH + File.separator + "Lockpick_RCM.bin");
                 } else {
@@ -343,7 +343,7 @@ public class PayloadHandler {
                         GitHandler.downloadAsset(asset, GlobalSettings.STANDARD_MODE_JTEGRANX_PAYLOAD_DIR_PATH + File.separator + "TegraExplorer.bin");
                     });
                 }
-                
+
                 if (GlobalSettings.tegraExplorerTag != null && !GlobalSettings.tegraExplorerTag.equals(tegraExplorer.getTag()) && GlobalSettings.portableMode) {
                     tegraExplorer.getAssets().stream().filter((asset) -> (asset.getAssetName().equals("TegraExplorer.bin"))).forEachOrdered((asset) -> {
                         GitHandler.downloadAsset(asset, GlobalSettings.PORTABLE_MODE_JTEGRANX_PAYLOAD_DIR_PATH + File.separator + "TegraExplorer.bin");
@@ -377,7 +377,7 @@ public class PayloadHandler {
                 JTegraNX.getController().getPayloadMenu().getItems().add(item);
             } else {
                 File payload;
-                
+
                 if (!GlobalSettings.portableMode) {
                     payload = new File(GlobalSettings.STANDARD_MODE_JTEGRANX_PAYLOAD_DIR_PATH + File.separator + "TegraExplorer.bin");
                 } else {

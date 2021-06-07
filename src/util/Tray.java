@@ -2,7 +2,7 @@
 
 JTegraNX - Another RCM payload injector
 
-Copyright (C) 2021 Dylan Wedman
+Copyright (C) 2019-2021 Dylan Wedman
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -255,7 +255,9 @@ public class Tray {
         exitItem = new MenuItem("Exit");
 
         exitItem.addActionListener((ActionEvent e) -> {
-            UIGlobal.closeJTegraNX();
+            Platform.runLater(() -> {
+                UIGlobal.closeJTegraNX();
+            });
         });
 
         menu.add(autoInjectItem);
