@@ -68,9 +68,9 @@ JTegraNX in it's current state is made of two projects, a Netbeans project that 
 
 Creating the Netbeans project isn't that complicated.
 1. Create a new Netbeans Java project and name it JTegraNX.
-2. Download [usb4java](https://github.com/usb4java/usb4java/releases), [Apache Commons Lang](https://commons.apache.org/proper/commons-lang/download_lang.cgi), and [GitHandler](https://github.com/dylwedma11748/GitHandler/releases).
+2. Download [usb4java](https://github.com/usb4java/usb4java/releases), [Apache Commons IO](https://commons.apache.org/proper/commons-io/), and [GitHandler](https://github.com/dylwedma11748/GitHandler/releases).
 3. Extract the usb4java and Apache Commons Lang archives.
-4. On Netbeans, Projects -> JTegraNX -> Libraries, right-click and select "Add JAR/Folder" and add "usb4java-version.jar", "commons-lang3-version.jar", the usb4java native JAR that corresponds with your OS architecture (Located where you extracted the usb4java archive), "commons-lang3-version.jar" (Located where you extracted the Apache Commons Lang archive), and GitHandler.jar (Located wherever you saved GitHandler when you downloaded it).
+4. On Netbeans, Projects -> JTegraNX -> Libraries, right-click and select "Add JAR/Folder" and add "usb4java-version.jar", "commons-lang3-version.jar", the usb4java native JAR that corresponds with your OS architecture (Located where you extracted the usb4java archive), "commons-io-version.jar" (Located where you extracted the Apache Commons IO archive), and GitHandler.jar (Located wherever you saved GitHandler when you downloaded it).
 5. Add the Java source files from this repository.
 6. Now would be a good time to follow the instructions for the Visual Studio Solution.
 7. Copy libusbK.dll from the libusbK-dev-kit to the directory of the Netbeans project.
