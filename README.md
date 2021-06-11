@@ -102,7 +102,7 @@ The libusbk-dev-kit is required for building the native. Download it [here](http
 16. Build the Release configuration corresponding to your system's OS architecture.
 
 # Credits
-- [suchmememanyskill](https://github.com/suchmememanyskill) for allowing me to include [TegraExplorer](https://github.com/suchmememanyskill/TegraExplorer) and for [this guide](https://nh-server.github.io/switch-guide/user_guide/emummc/sd_preparation/) that the SD preperation feature relies on.
+- [suchmememanyskill](https://github.com/suchmememanyskill) for [TegraExplorer](https://github.com/suchmememanyskill/TegraExplorer).
 - [rajkosto](https://github.com/rajkosto) for [memloader](https://github.com/rajkosto/memloader) and [TegraRcmSmash](https://github.com/rajkosto/TegraRcmSmash) (No longer being used in v1.6+).
 - [shchmue](https://github.com/shchmue) for [Lockpick_RCM](https://github.com/shchmue/Lockpick_RCM).
 - [eliboa](https://github.com/eliboa) for the images from [TegraRcmGUI](https://github.com/eliboa/TegraRcmGUI).
