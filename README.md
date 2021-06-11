@@ -3,6 +3,7 @@
 ![GitHub](https://img.shields.io/badge/License-GPL--2.0%20or%20later-green)
 ![GitHub All Releases](https://img.shields.io/github/downloads/dylwedma11748/JTegraNX/total)
 ![GitHub repo size](https://img.shields.io/github/repo-size/dylwedma11748/JTegraNX)
+[![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2Fdylwedma11748%2FJTegraNX.svg?type=small)](https://app.fossa.com/projects/git%2Bgithub.com%2Fdylwedma11748%2FJTegraNX?ref=badge_small)
 ###
 ![Png](src/ui/images/banner.png)
 # JTegraNX - Another RCM payload injector
