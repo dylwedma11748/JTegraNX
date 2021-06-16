@@ -9,6 +9,7 @@
 # JTegraNX - Another RCM payload injector
 
 In order to run this program, you need Java 8 or higher installed on your computer. You can download Java [here](https://www.java.com/en/).
+
 JTegraNX will not run on Java 11 or higher due to JavaFX not being included. Anyone who wishes to use Java 11 or higher with JTegraNX will need to build from source.
 
 JTegraNX is currently only supported on Windows, but I plan to add support for Linux and macOS.
