@@ -15,7 +15,7 @@ JTegraNX will not run on Java 11 or higher due to JavaFX not being included. Any
 JTegraNX is currently only supported on Windows, but I plan to add support for Linux and macOS.
 
 ## Preview
-![Png](preview.png)
+![Png](Preview.png)
 
 ## Features
 - RCM payload injection
