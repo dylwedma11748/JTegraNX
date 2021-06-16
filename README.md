@@ -10,7 +10,7 @@
 
 In order to run this program, you need Java 8 or higher installed on your computer. You can download Java [here](https://www.java.com/en/).
 
-JTegraNX will not run on Java 11 or higher due to JavaFX not being included. Anyone who wishes to use Java 11 or higher with JTegraNX will need to build from source.
+My builds of JTegraNX will not run on Java 11 or higher due to JavaFX not being included. Anyone who wishes to use JTegraNX on Java 11 or higher will need to build it from the source code.
 
 JTegraNX is currently only supported on Windows, but I plan to add support for Linux and macOS.
 
@@ -39,7 +39,7 @@ The config system allows you to save what you entered in the "Payload Path" fiel
 Simply click on "Load Config" to reveal the config list, then select the config you wish to use.
 
 ### Saving a config:
-Simple click on "Save Config", input a name for the config and hit enter.
+Simple click on "Save Config", input a name for the config, and hit enter.
 
 ## Custom Settings
 You can now customize JTegraNX's settings to your liking.
@@ -58,7 +58,7 @@ JTegraNX can detect if the APX driver is missing or incorrect, and if this is th
 JTegraNX's old behavior for handling data files has been re-implemented as a secondary option. Portable mode make it to where the "Payloads" directory and the main config file are created in the working directory of where the JAR is executed. You can switch between standard and portable mode using the Settings menu.
 
 ## Bundled Payloads
-For any bundled payloads, JTegraNX will download them automatically, place them in the "Payloads" directory, and optionaly check for updates on them each time the program is launched. If updates are enabled and an update for a payload is found, it will be taken care of.
+For any bundled payloads, JTegraNX will download them automatically, place them in the "Payloads" directory, and optionally check for updates on them each time the program is launched. If updates are enabled and an update for a payload is found, it will be taken care of.
 
 ### Currently bundled payloads:
 - [fusee-primary](https://github.com/Atmosphere-NX/Atmosphere/releases)
@@ -67,7 +67,7 @@ For any bundled payloads, JTegraNX will download them automatically, place them 
 - [Incognito_RCM](https://github.com/jimzrt/Incognito_RCM)
 - [TegraExplorer](https://github.com/suchmememanyskill/TegraExplorer)
 
-## Bulding from source
+## Building from source
 JTegraNX in it's current state is made of two projects, a Netbeans project that has all the Java bits and a Visual Studio 2019 solution that handles the native code.
 
 Creating the Netbeans project isn't that complicated.
@@ -80,7 +80,7 @@ Creating the Netbeans project isn't that complicated.
 7. Copy libusbK.dll from the libusbK-dev-kit to the directory of the Netbeans project.
 8. Do a test run to make sure everything is running correctly.
 9. If everything is working properly build the project.
-10. Download [jarsplice](http://www.java2s.com/Code/Jar/j/Downloadjarsplice040jar.htm) and use it to combine the main JAR file, the library JAR files, the compiled Native and libusbK.dll into one executable JAR file.
+10. Download [jarsplice](http://www.java2s.com/Code/Jar/j/Downloadjarsplice040jar.htm) and use it to combine the main JAR file, the library JAR files, the compiled Native, and libusbK.dll into one executable JAR file.
 
 To make changes to the UI, open MainUI.fxml using [Scene Builder](https://gluonhq.com/products/scene-builder/).
 
@@ -95,13 +95,13 @@ The libusbk-dev-kit is required for building the native. Download it [here](http
 6. Switch platform to Win32.
 7. In Linker -> General -> Additional Library Directories, add C:\libusbK-dev-kit\bin\lib\x86 if that's where you installed the libusbK-dev-kit and apply.
 8. Switch platform to All Platforms.
-9. In Configuration Properties -> General -> Output Directory, set the output directory to where the Netbeans project has been created, (Example: C:\Users\user\Documents\NetBeansProjects\JTegraNX) and apply. This step is optional but makes it to where you won't have to copy the compiled native to the Netbeans project directory every time you build it.
+9. In Configuration Properties -> General -> Output Directory set the output directory to where the Netbeans project has been created, (Example: C:\Users\user\Documents\NetBeansProjects\JTegraNX) and apply. This step is optional but makes it to where you won't have to copy the compiled native to the Netbeans project directory every time you build it.
 10. In Linker -> Input -> Additional Dependencies, add SetupAPI.lib and libusbK.lib.
 11. Delete "framework.h", "pch.h", "dllmain.ccp", and "pch.cpp" from the project.
-12. Copy the Native's soruce files from this repository to the directory of the Visual Studio Project.
+12. Copy the Native's source files from this repository to the directory of the Visual Studio Project.
 13. Copy libusbK.dll from the libusbK-dev-kit to the directory of the Visual Studio Project.
-14. In the Soluition Explorer, right click on Header Files and select Add -> Exisiting Item... and add all the header files.
-15. In the Soluition Explorer, right click on Source Files and select Add -> Exisiting Item... and add all the source files.
+14. In the Solution Explorer, right click on Header Files and select Add -> Existing Item... and add all the header files.
+15. In the Solution Explorer, right click on Source Files and select Add -> Existing Item... and add all the source files.
 16. Build the Release configuration corresponding to your system's OS architecture.
 
 # Credits
