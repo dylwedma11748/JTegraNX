@@ -92,6 +92,8 @@ public class JTegraNX extends Application {
         }
 
         controller.getPayloadPathField().textProperty().addListener((observable, oldValue, newValue) -> {
+            UIGlobal.checkIfSpecifiedPayloadExists();
+            
             if (GlobalSettings.enableTrayIcon) {
                 Tray.updateMenuItems();
             }

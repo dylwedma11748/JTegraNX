@@ -70,6 +70,16 @@ public class UIGlobal {
         RCM.injectPayload(payloadPath);
     }
 
+    public static void checkIfSpecifiedPayloadExists() {
+        File payload = new File(JTegraNX.getController().getPayloadPathField().getText());
+
+        if (payload.exists() && payload.getPath().endsWith(".bin")) {
+            JTegraNX.getController().getInjectButton().setDisable(false);
+        } else {
+            JTegraNX.getController().getInjectButton().setDisable(true);
+        }
+    }
+
     public static void setRCMStatus(String status) {
         previous_rcm_status = rcm_status;
         rcm_status = status;
@@ -77,7 +87,7 @@ public class UIGlobal {
         switch (rcm_status) {
             case "RCM_DETECTED":
                 JTegraNX.getController().getRCMImageView().setImage(RCM_DETECTED);
-                JTegraNX.getController().getInjectButton().setDisable(false);
+                checkIfSpecifiedPayloadExists();
 
                 if (GlobalSettings.autoInject) {
                     injectPayload(JTegraNX.getController().getPayloadPathField().getText());
@@ -105,11 +115,11 @@ public class UIGlobal {
             case "RCM_UNDETECTED":
                 JTegraNX.getController().getRCMImageView().setImage(RCM_UNDETECTED);
                 JTegraNX.getController().getInjectButton().setDisable(true);
-                
+
                 if (previous_rcm_status.equals("RCM_LOADED")) {
                     GlobalSettings.driverUpdatedNeedsReconnect = false;
                 }
-                
+
                 break;
 
             case "RCM_LOADING":
@@ -205,6 +215,7 @@ public class UIGlobal {
         JTegraNX.getController().getEnableTrayIconMenuItem().setSelected(GlobalSettings.enableTrayIcon);
         JTegraNX.getController().getIncludeFuseePrimaryMenuItem().setSelected(GlobalSettings.includeFuseePrimary);
         JTegraNX.getController().getIncludeHekateMenuItem().setSelected(GlobalSettings.includeHekate);
+        JTegraNX.getController().getIncludeIncognitoRCMItem().setSelected(GlobalSettings.includeIncognitoRCM);
         JTegraNX.getController().getIncludeLockpickRCMMenuItem().setSelected(GlobalSettings.includeLockpickRCM);
         JTegraNX.getController().getIncludeTegraExplorerItem().setSelected(GlobalSettings.includeTegraExplorer);
 
@@ -269,7 +280,7 @@ public class UIGlobal {
                     if (line.contains("includeTegraExplorer")) {
                         GlobalSettings.includeTegraExplorer = Boolean.valueOf(line.substring(line.indexOf("=") + 1));
                     }
-                    
+
                     if (line.contains("includeIncognitoRCM")) {
                         GlobalSettings.includeIncognitoRCM = Boolean.valueOf(line.substring(line.indexOf("=") + 1));
                     }
@@ -298,7 +309,7 @@ public class UIGlobal {
                             line = bReader.readLine();
                             GlobalSettings.tegraExplorerTag = line.substring(line.indexOf("=") + 1);
                         }
-                        
+
                         if (GlobalSettings.includeIncognitoRCM) {
                             line = bReader.readLine();
                             GlobalSettings.incognitoRCMTag = line.substring(line.indexOf("=") + 1);
@@ -368,7 +379,7 @@ public class UIGlobal {
                     if (line.contains("includeTegraExplorer")) {
                         GlobalSettings.includeTegraExplorer = Boolean.valueOf(line.substring(line.indexOf("=") + 1));
                     }
-                    
+
                     if (line.contains("includeIncognitoRCM")) {
                         GlobalSettings.includeIncognitoRCM = Boolean.valueOf(line.substring(line.indexOf("=") + 1));
                     }
@@ -387,7 +398,7 @@ public class UIGlobal {
                             line = bReader.readLine();
                             GlobalSettings.hekateTag = line.substring(line.indexOf("=") + 1);
                         }
-                        
+
                         if (GlobalSettings.includeIncognitoRCM) {
                             line = bReader.readLine();
                             GlobalSettings.incognitoRCMTag = line.substring(line.indexOf("=") + 1);

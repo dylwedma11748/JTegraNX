@@ -101,7 +101,7 @@ public class Tray {
 
         if (GlobalSettings.selectedPayloadCount > 0) {
             if (GlobalSettings.includeFuseePrimary) {
-                MenuItem fuseePrimary = new MenuItem("fusee-primary v" + GlobalSettings.fuseePrimaryTag);
+                MenuItem fuseePrimary = new MenuItem("fusee-primary (Atmosphère " + GlobalSettings.fuseePrimaryTag + ")");
 
                 fuseePrimary.addActionListener((ActionEvent e) -> {
                     Platform.runLater(() -> {
@@ -144,6 +144,29 @@ public class Tray {
                 });
 
                 menu.add(hekate);
+            }
+            
+            if (GlobalSettings.includeIncognitoRCM) {
+                MenuItem incognitoRCM = new MenuItem("Incognito_RCM " + GlobalSettings.incognitoRCMTag);
+
+                incognitoRCM.addActionListener((ActionEvent e) -> {
+                    Platform.runLater(() -> {
+                        if (!GlobalSettings.portableMode) {
+                            JTegraNX.getController().getPayloadPathField().setText(GlobalSettings.STANDARD_MODE_JTEGRANX_PAYLOAD_DIR_PATH + File.separator + "Incognito_RCM.bin");
+                        } else {
+                            JTegraNX.getController().getPayloadPathField().setText(GlobalSettings.PORTABLE_MODE_JTEGRANX_PAYLOAD_DIR_PATH + File.separator + "Incognito_RCM.bin");
+                        }
+
+                        try {
+                            if (!JTegraNX.getController().getConfigList().getSelectionModel().getSelectedItem().equals("No configs")) {
+                                JTegraNX.getController().getConfigList().getSelectionModel().clearSelection();
+                            }
+                        } catch (NullPointerException ex) {
+                        }
+                    });
+                });
+
+                menu.add(incognitoRCM);
             }
 
             if (GlobalSettings.includeLockpickRCM) {

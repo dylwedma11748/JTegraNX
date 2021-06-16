@@ -36,7 +36,7 @@ import util.GlobalSettings;
 public class UpdateHandler {
 
     private static Release jtegranx;
-    private static final String currentVersion = "1.6.4";
+    private static final String currentVersion = "1.6.5";
 
     public static void checkForUpdates() {
         Platform.runLater(() -> {

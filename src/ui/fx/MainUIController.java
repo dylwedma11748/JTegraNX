@@ -212,6 +212,11 @@ public class MainUIController implements Initializable {
         } else if (source.equals(includeFuseePrimary)) {
             GlobalSettings.includeFuseePrimary = includeFuseePrimary.isSelected();
             PayloadHandler.updatePayloads();
+            UIGlobal.checkIfSpecifiedPayloadExists();
+            
+            if (payloadPath.getText().contains("JTegraNX\\Payloads\\fusee-primary.bin")) {
+                payloadPath.clear();
+            }
 
             if (GlobalSettings.enableTrayIcon) {
                 Tray.updateMenuItems();
@@ -219,6 +224,11 @@ public class MainUIController implements Initializable {
         } else if (source.equals(includehekate)) {
             GlobalSettings.includeHekate = includehekate.isSelected();
             PayloadHandler.updatePayloads();
+            UIGlobal.checkIfSpecifiedPayloadExists();
+            
+            if (payloadPath.getText().contains("JTegraNX\\Payloads\\Hekate.bin")) {
+                payloadPath.clear();
+            }
 
             if (GlobalSettings.enableTrayIcon) {
                 Tray.updateMenuItems();
@@ -226,6 +236,11 @@ public class MainUIController implements Initializable {
         } else if (source.equals(includeLockpickRCM)) {
             GlobalSettings.includeLockpickRCM = includeLockpickRCM.isSelected();
             PayloadHandler.updatePayloads();
+            UIGlobal.checkIfSpecifiedPayloadExists();
+            
+            if (payloadPath.getText().contains("JTegraNX\\Payloads\\Lockpick_RCM.bin")) {
+                payloadPath.clear();
+            }
 
             if (GlobalSettings.enableTrayIcon) {
                 Tray.updateMenuItems();
@@ -233,6 +248,11 @@ public class MainUIController implements Initializable {
         } else if (source.equals(includeTegraExplorer)) {
             GlobalSettings.includeTegraExplorer = includeTegraExplorer.isSelected();
             PayloadHandler.updatePayloads();
+            UIGlobal.checkIfSpecifiedPayloadExists();
+            
+            if (payloadPath.getText().contains("JTegraNX\\Payloads\\TegraExplorer.bin")) {
+                payloadPath.clear();
+            }
 
             if (GlobalSettings.enableTrayIcon) {
                 Tray.updateMenuItems();
@@ -240,6 +260,11 @@ public class MainUIController implements Initializable {
         } else if (source.equals(includeIncognitoRCM)) {
             GlobalSettings.includeIncognitoRCM = includeIncognitoRCM.isSelected();
             PayloadHandler.updatePayloads();
+            UIGlobal.checkIfSpecifiedPayloadExists();
+            
+            if (payloadPath.getText().contains("JTegraNX\\Payloads\\Incognito_RCM.bin")) {
+                payloadPath.clear();
+            }
             
             if (GlobalSettings.enableTrayIcon) {
                 Tray.updateMenuItems();
