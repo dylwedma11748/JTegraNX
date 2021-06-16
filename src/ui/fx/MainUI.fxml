@@ -1,0 +1,349 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.CheckMenuItem?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Menu?>
+<?import javafx.scene.control.MenuBar?>
+<?import javafx.scene.control.MenuItem?>
+<?import javafx.scene.control.TextArea?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.control.Tooltip?>
+<?import javafx.scene.effect.ColorAdjust?>
+<?import javafx.scene.effect.DropShadow?>
+<?import javafx.scene.effect.Reflection?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Pane?>
+
+<Pane fx:id="pane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="411.0" prefWidth="778.0" stylesheets="@style.css" xmlns="http://javafx.com/javafx/16" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ui.fx.MainUIController">
+   <children>
+      <MenuBar fx:id="menuBar" prefHeight="40.0" prefWidth="375.0">
+        <menus>
+          <Menu mnemonicParsing="false" text="Menu">
+            <items>
+                  <MenuItem mnemonicParsing="false" onAction="#clearLog" text="Clear log">
+                     <graphic>
+                        <ImageView fitHeight="32.0" fitWidth="32.0" pickOnBounds="true" preserveRatio="true">
+                           <image>
+                              <Image url="@../images/clear.png" />
+                           </image>
+                           <effect>
+                              <ColorAdjust brightness="-1.0" />
+                           </effect>
+                        </ImageView>
+                     </graphic>
+                  </MenuItem>
+                  <MenuItem mnemonicParsing="false" onAction="#deleteSelectedConfig" text="Delete selected config">
+                     <graphic>
+                        <ImageView fitHeight="32.0" fitWidth="32.0" pickOnBounds="true" preserveRatio="true">
+                           <image>
+                              <Image url="@../images/delete.png" />
+                           </image>
+                        </ImageView>
+                     </graphic>
+                  </MenuItem>
+                  <MenuItem mnemonicParsing="false" onAction="#prepareSDCard" text="Prepare SD card">
+                     <graphic>
+                        <ImageView fitHeight="32.0" fitWidth="32.0" pickOnBounds="true" preserveRatio="true">
+                           <image>
+                              <Image url="@../images/sdcard.png" />
+                           </image>
+                        </ImageView>
+                     </graphic>
+                  </MenuItem>
+                  <MenuItem fx:id="installDriver" mnemonicParsing="false" onAction="#installAPXDriver" text="Install APX driver">
+                     <graphic>
+                        <ImageView fitHeight="32.0" fitWidth="32.0" pickOnBounds="true" preserveRatio="true">
+                           <image>
+                              <Image url="@../images/usb.png" />
+                           </image>
+                        </ImageView>
+                     </graphic>
+                  </MenuItem>
+            </items>
+               <graphic>
+                  <ImageView fitHeight="32.0" fitWidth="32.0" pickOnBounds="true" preserveRatio="true">
+                     <image>
+                        <Image url="@../images/menu.png" />
+                     </image>
+                     <effect>
+                        <ColorAdjust brightness="-1.0" />
+                     </effect>
+                  </ImageView>
+               </graphic>
+          </Menu>
+          <Menu fx:id="payloadMenu" mnemonicParsing="false" text="Payloads">
+               <graphic>
+                  <ImageView fitHeight="32.0" fitWidth="32.0" pickOnBounds="true" preserveRatio="true">
+                     <image>
+                        <Image url="@../images/payload.png" />
+                     </image>
+                  </ImageView>
+               </graphic>
+          </Menu>
+          <Menu mnemonicParsing="false" text="Settings">
+               <graphic>
+                  <ImageView fitHeight="32.0" fitWidth="32.0" pickOnBounds="true" preserveRatio="true">
+                     <image>
+                        <Image url="@../images/settings.png" />
+                     </image>
+                  </ImageView>
+               </graphic>
+               <items>
+                  <CheckMenuItem fx:id="autoInjectItem" mnemonicParsing="false" onAction="#changeSetting" text="Auto-inject">
+                     <graphic>
+                        <ImageView fitHeight="32.0" fitWidth="32.0" pickOnBounds="true" preserveRatio="true">
+                           <image>
+                              <Image url="@../images/inject.png" />
+                           </image>
+                        </ImageView>
+                     </graphic>
+                  </CheckMenuItem>
+                  <Menu mnemonicParsing="false" text="Change bundled payloads">
+                    <items>
+                        <CheckMenuItem fx:id="includeFuseePrimary" mnemonicParsing="false" onAction="#changeSetting" selected="true" text="Include fusee-primary">
+                           <graphic>
+                              <ImageView fitHeight="32.0" fitWidth="32.0" pickOnBounds="true" preserveRatio="true">
+                                 <image>
+                                    <Image url="@../images/plus.png" />
+                                 </image>
+                              </ImageView>
+                           </graphic>
+                        </CheckMenuItem>
+                        <CheckMenuItem fx:id="includehekate" mnemonicParsing="false" onAction="#changeSetting" selected="true" text="Include Hekate">
+                           <graphic>
+                              <ImageView fitHeight="32.0" fitWidth="32.0" pickOnBounds="true" preserveRatio="true">
+                                 <image>
+                                    <Image url="@../images/plus.png" />
+                                 </image>
+                              </ImageView>
+                           </graphic>
+                        </CheckMenuItem>
+                        <CheckMenuItem fx:id="includeIncognitoRCM" mnemonicParsing="false" onAction="#changeSetting" selected="true" text="Include Incognito_RCM">
+                           <graphic>
+                              <ImageView fitHeight="32.0" fitWidth="32.0" pickOnBounds="true" preserveRatio="true">
+                                 <image>
+                                    <Image url="@../images/plus.png" />
+                                 </image>
+                              </ImageView>
+                           </graphic>
+                        </CheckMenuItem>
+                        <CheckMenuItem fx:id="includeLockpickRCM" mnemonicParsing="false" onAction="#changeSetting" selected="true" text="Include L:ockpick_RCM">
+                           <graphic>
+                              <ImageView fitHeight="32.0" fitWidth="32.0" pickOnBounds="true" preserveRatio="true">
+                                 <image>
+                                    <Image url="@../images/plus.png" />
+                                 </image>
+                              </ImageView>
+                           </graphic>
+                        </CheckMenuItem>
+                        <CheckMenuItem fx:id="includeTegraExplorer" mnemonicParsing="false" onAction="#changeSetting" selected="true" text="Include TegraExplorer">
+                           <graphic>
+                              <ImageView fitHeight="32.0" fitWidth="32.0" pickOnBounds="true" preserveRatio="true">
+                                 <image>
+                                    <Image url="@../images/plus.png" />
+                                 </image>
+                              </ImageView>
+                           </graphic>
+                        </CheckMenuItem>
+                    </items>
+                     <graphic>
+                        <ImageView fitHeight="32.0" fitWidth="32.0" pickOnBounds="true" preserveRatio="true">
+                           <image>
+                              <Image url="@../images/payload.png" />
+                           </image>
+                        </ImageView>
+                     </graphic>
+                  </Menu>
+                  <Menu mnemonicParsing="false" text="Configuration mode">
+                     <graphic>
+                        <ImageView fitHeight="32.0" fitWidth="32.0" pickOnBounds="true" preserveRatio="true">
+                           <image>
+                              <Image url="@../images/loadConfig.png" />
+                           </image>
+                        </ImageView>
+                     </graphic>
+                     <items>
+                        <CheckMenuItem fx:id="standardMode" mnemonicParsing="false" onAction="#changeSetting" text="Standard mode">
+                           <graphic>
+                              <ImageView fitHeight="32.0" fitWidth="32.0" pickOnBounds="true" preserveRatio="true">
+                                 <image>
+                                    <Image url="@../images/loadConfig.png" />
+                                 </image>
+                              </ImageView>
+                           </graphic>
+                        </CheckMenuItem>
+                        <CheckMenuItem fx:id="portableMode" mnemonicParsing="false" onAction="#changeSetting" text="Portable mode">
+                           <graphic>
+                              <ImageView fitHeight="32.0" fitWidth="32.0" pickOnBounds="true" preserveRatio="true">
+                                 <image>
+                                    <Image url="@../images/loadConfig.png" />
+                                 </image>
+                              </ImageView>
+                           </graphic>
+                        </CheckMenuItem>
+                     </items>
+                  </Menu>
+                  <CheckMenuItem fx:id="enableTrayIcon" mnemonicParsing="false" onAction="#changeSetting" text="Enable tray icon">
+                     <graphic>
+                        <ImageView fitHeight="32.0" fitWidth="32.0" pickOnBounds="true" preserveRatio="true">
+                           <image>
+                              <Image url="@../images/tray.png" />
+                           </image>
+                        </ImageView>
+                     </graphic>
+                  </CheckMenuItem>
+                  <CheckMenuItem fx:id="minimizeToTray" disable="true" mnemonicParsing="false" onAction="#changeSetting" text="Minimize to tray">
+                     <graphic>
+                        <ImageView fitHeight="32.0" fitWidth="32.0" pickOnBounds="true" preserveRatio="true">
+                           <image>
+                              <Image url="@../images/minimize.png" />
+                           </image>
+                        </ImageView>
+                     </graphic>
+                  </CheckMenuItem>
+                  <Menu mnemonicParsing="false" text="Update settings">
+                    <items>
+                        <CheckMenuItem fx:id="autoCheckJTegraNXUpdates" mnemonicParsing="false" onAction="#changeSetting" selected="true" text="Automatically check for JTegraNX updates">
+                           <graphic>
+                              <ImageView fitHeight="32.0" fitWidth="32.0" pickOnBounds="true" preserveRatio="true">
+                                 <image>
+                                    <Image url="@../images/update.png" />
+                                 </image>
+                              </ImageView>
+                           </graphic>
+                        </CheckMenuItem>
+                        <CheckMenuItem fx:id="autoCheckPayloadUpdates" mnemonicParsing="false" onAction="#changeSetting" selected="true" text="Automatically check for payload updates">
+                           <graphic>
+                              <ImageView fitHeight="32.0" fitWidth="32.0" pickOnBounds="true" preserveRatio="true">
+                                 <image>
+                                    <Image url="@../images/update.png" />
+                                 </image>
+                              </ImageView>
+                           </graphic>
+                        </CheckMenuItem>
+                    </items>
+                     <graphic>
+                        <ImageView fitHeight="32.0" fitWidth="32.0" pickOnBounds="true" preserveRatio="true">
+                           <image>
+                              <Image url="@../images/update.png" />
+                           </image>
+                        </ImageView>
+                     </graphic>
+                  </Menu>
+               </items>
+          </Menu>
+            <Menu mnemonicParsing="false" text="Help">
+               <graphic>
+                  <ImageView fitHeight="32.0" fitWidth="32.0" pickOnBounds="true" preserveRatio="true">
+                     <image>
+                        <Image url="@../images/help.png" />
+                     </image>
+                  </ImageView>
+               </graphic>
+               <items>
+                  <MenuItem mnemonicParsing="false" onAction="#showAboutDialog" text="About JTegraNX">
+                     <graphic>
+                        <ImageView fitHeight="32.0" fitWidth="32.0" pickOnBounds="true" preserveRatio="true">
+                           <image>
+                              <Image url="@../images/help.png" />
+                           </image>
+                        </ImageView>
+                     </graphic>
+                  </MenuItem>
+              <MenuItem fx:id="checkJTegraNXUpdates" mnemonicParsing="false" onAction="#checkForJTegraNXUpdates" text="Check for JTegraNX updates">
+                     <graphic>
+                        <ImageView fitHeight="32.0" fitWidth="32.0" pickOnBounds="true" preserveRatio="true">
+                           <image>
+                              <Image url="@../images/update.png" />
+                           </image>
+                        </ImageView>
+                     </graphic>
+                  </MenuItem>
+                  <MenuItem mnemonicParsing="false" onAction="#checkForPayloadUpdates" text="Check for payload updates">
+                     <graphic>
+                        <ImageView fitHeight="32.0" fitWidth="32.0" pickOnBounds="true" preserveRatio="true">
+                           <image>
+                              <Image url="@../images/update.png" />
+                           </image>
+                        </ImageView>
+                     </graphic>
+                  </MenuItem>
+               </items>
+            </Menu>
+        </menus>
+      </MenuBar>
+      <ImageView fitHeight="88.0" fitWidth="400.0" layoutX="193.0" layoutY="48.0" pickOnBounds="true" preserveRatio="true">
+         <image>
+            <Image url="@../images/banner.png" />
+         </image>
+         <effect>
+            <Reflection fraction="0.45" topOpacity="0.26" />
+         </effect>
+      </ImageView>
+      <TextField fx:id="payloadPath" layoutX="26.0" layoutY="135.0" prefHeight="26.0" prefWidth="734.0" />
+      <Label layoutX="26.0" layoutY="108.0" text="Payload path:" />
+      <TextArea fx:id="log" editable="false" layoutX="14.0" layoutY="247.0" prefHeight="149.0" prefWidth="531.0" />
+      <ImageView fx:id="rcmStatus" fitHeight="102.0" fitWidth="176.0" layoutX="575.0" layoutY="279.0" pickOnBounds="true" preserveRatio="true">
+         <image>
+            <Image url="@../images/rcm_undetected.png" />
+         </image>
+         <effect>
+            <Reflection fraction="0.43" topOffset="-10.0" />
+         </effect>
+      </ImageView>
+      <Button fx:id="close" layoutX="746.0" layoutY="3.0" mnemonicParsing="false" onAction="#close" prefHeight="32.0" prefWidth="32.0">
+         <effect>
+            <DropShadow />
+         </effect>
+         <tooltip>
+            <Tooltip text="Close" />
+         </tooltip>
+      </Button>
+      <Button fx:id="minimize" layoutX="714.0" layoutY="13.0" mnemonicParsing="false" onAction="#minimize" prefHeight="9.0" prefWidth="32.0">
+         <effect>
+            <DropShadow />
+         </effect>
+         <tooltip>
+            <Tooltip text="Minimize" />
+         </tooltip>
+      </Button>
+      <HBox alignment="CENTER" layoutX="25.0" layoutY="179.0" prefHeight="48.0" prefWidth="728.0" spacing="6.0">
+         <children>
+            <Button mnemonicParsing="false" onAction="#browseForPayload" prefHeight="40.0" prefWidth="169.0" text="Browse for payload">
+               <effect>
+                  <DropShadow />
+               </effect>
+               <tooltip>
+                  <Tooltip text="Browse for payload" />
+               </tooltip>
+               <graphic>
+                  <ImageView fitHeight="32.0" fitWidth="32.0" pickOnBounds="true" preserveRatio="true">
+                     <image>
+                        <Image url="@../images/browse.png" />
+                     </image>
+                  </ImageView>
+               </graphic>
+            </Button>
+            <Button fx:id="inject" disable="true" mnemonicParsing="false" onAction="#injectPayload" prefHeight="40.0" prefWidth="135.0" text="Inject payload">
+               <graphic>
+                  <ImageView fitHeight="32.0" fitWidth="32.0" pickOnBounds="true" preserveRatio="true">
+                     <image>
+                        <Image url="@../images/inject.png" />
+                     </image>
+                  </ImageView>
+               </graphic>
+            </Button>
+            <ComboBox fx:id="configList" onAction="#selectConfig" prefWidth="150.0" />
+            <TextField fx:id="configName" alignment="TOP_LEFT" onAction="#saveConfig" onMouseClicked="#clearSelectConfigText" prefHeight="25.0" prefWidth="150.0" text="Save config as" />
+         </children>
+         <opaqueInsets>
+            <Insets />
+         </opaqueInsets>
+      </HBox>
+   </children>
+</Pane>

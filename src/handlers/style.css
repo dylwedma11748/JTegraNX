@@ -1,0 +1,153 @@
+/*
+
+JTegraNX - Another RCM payload injector
+
+Copyright (C) 2019-2021 Dylan Wedman
+
+This program is free software; you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation; either version 2 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License along
+with this program; if not, write to the Free Software Foundation, Inc.,
+51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+
+ */
+
+.root{
+    -fx-background: #2d2d2d;
+}
+
+.alert {
+    -fx-background-color: #4f4f4f;
+}
+.dialog > .button-bar > .container{
+    -fx-background-color: #2d2d2d;
+}
+
+.dialog > .label{
+    -fx-padding: 10 5 10 5;
+}
+
+.combo-box {
+    -fx-background-color: #4f4f4f;
+    -fx-border-color: #4f4f4f;
+    -fx-border-radius: 3;
+    -fx-border-width: 2;
+    -fx-mark-color: #289de8;
+}
+
+.combo-box .context-menu {
+    -fx-background-color: #4f4f4f;
+}
+
+.combo-box .context-menu .menu-item:focused {
+    -fx-background-color: #eea11e;
+
+}
+.combo-box .context-menu .menu-item:focused .label {
+    -fx-text-fill: #2c2c2c;
+}
+
+.button, .buttonUp, .buttonStop, .buttonSelect{
+    -fx-background-color: #4f4f4f;
+    -fx-border-radius: 3;
+    -fx-border-width: 2;
+    -fx-text-fill: #f7fafa;
+    -fx-effect: none;
+}
+
+.button:hover, .buttonStop:hover, .buttonUp:hover, .choice-box:hover, .button:focused:hover, .buttonStop:focused:hover, .buttonUp:focused:hover, .buttonSelect:focused:hover, .choice-box:focused:hover{
+    -fx-background-color: #4f4f4f;
+    -fx-border-color: #a4ffff;
+    -fx-border-radius: 3;
+    -fx-border-width: 2;
+    -fx-text-fill: #f7fafa;
+}
+
+.button {
+	-fx-background-color: transparent;
+}
+
+.menu-item:hover {
+	-fx-opacity: 1;
+}
+
+.menu:hover {
+	-fx-opacity: 1;
+}
+
+.tab-pane .tab {
+    -fx-background-color: transparent;
+    -fx-focus-color: transparent;
+    -fx-faint-focus-color: transparent;
+    -fx-border-radius: 0 0 0 0;
+    -fx-border-width: 3 0 0 0;
+    -fx-border-color: transparent;
+}
+
+.tab-pane .tab:selected {
+    -fx-background-color: transparent;
+    -fx-focus-color: transparent;
+    -fx-faint-focus-color: transparent;
+    -fx-border-radius: 0 0 0 0;
+    -fx-border-width: 3 0 0 0;
+    -fx-border-color: #08f3ff;
+}
+
+.tab-pane > .tab-header-area {
+    -fx-background-insets: 0.0;
+    -fx-padding: 5 5 5 5;
+}
+
+.text-field {
+    -fx-prompt-text-fill: #40596c;
+    -fx-border-color: #289de8;
+    -fx-border-width: 0 0 1 0;
+    -fx-background-color: transparent;
+    -fx-text-fill: white;
+}
+
+.text-area{
+    -fx-background-color: transparent;
+    -fx-control-inner-background: #4f4f4f;
+    -fx-border-color: #289de8;
+    -fx-border-radius: 3;
+    -fx-border-width: 2;
+    -fx-text-fill: #f7fafa;
+}
+
+.tab-pane > .tab-header-area > .headers-region > .tab {
+    -fx-padding: 10;
+}
+
+.context-menu {
+  -fx-background-color: #2d2d2d;
+  -fx-cursor: hand;
+}
+
+.context-menu .menu-item .label {
+  -fx-text-fill: #f7fafa;
+}
+
+.context-menu .menu-item:focused .label {
+  -fx-text-fill: white;
+}
+
+.menu-bar {
+	-fx-background-color: transparent;
+}
+
+#close {
+	-fx-background-image: url("../images/close.png");
+}
+
+#minimize {
+	-fx-background-image: url("../images/minimize.png");
+}
