@@ -61,10 +61,11 @@ JTegraNX's old behavior for handling data files has been re-implemented as a sec
 For any bundled payloads, JTegraNX will download them automatically, place them in the "Payloads" directory, and optionaly check for updates on them each time the program is launched. If updates are enabled and an update for a payload is found, it will be taken care of.
 
 ### Currently bundled payloads:
-- [TegraExplorer](https://github.com/suchmememanyskill/TegraExplorer)
-- [Lockpick_RCM](https://github.com/shchmue/Lockpick_RCM)
 - [fusee-primary](https://github.com/Atmosphere-NX/Atmosphere/releases)
 - [Hekate](https://github.com/CTCaer/hekate)
+- [Lockpick_RCM](https://github.com/shchmue/Lockpick_RCM)
+- [Incognito_RCM](https://github.com/jimzrt/Incognito_RCM)
+- [TegraExplorer](https://github.com/suchmememanyskill/TegraExplorer)
 
 ## Bulding from source
 JTegraNX in it's current state is made of two projects, a Netbeans project that has all the Java bits and a Visual Studio 2019 solution that handles the native code.
@@ -110,3 +111,4 @@ The libusbk-dev-kit is required for building the native. Download it [here](http
 - [eliboa](https://github.com/eliboa) for the images from [TegraRcmGUI](https://github.com/eliboa/TegraRcmGUI).
 - The creators of Atmosphère for [fusee-primary](https://github.com/Atmosphere-NX/Atmosphere/releases).
 - [CTCaer](https://github.com/CTCaer) for [Hekate](https://github.com/CTCaer/hekate).
+- [jimzrt](https://github.com/jimzrt) for [Incognito_RCM](https://github.com/jimzrt/Incognito_RCM)
