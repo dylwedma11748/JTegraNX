@@ -1,4 +1,4 @@
-![Png](https://img.shields.io/badge/Platform-Windows%20x86--x64%20Linux%20x86--x64-green)
+![Png](https://img.shields.io/badge/Platforms-Windows%20x86--x64%20Linux%20x86--x64-green)
 ![Png](https://img.shields.io/badge/Latest%20release-1.6.6-green)
 ![GitHub](https://img.shields.io/badge/License-GPL--2.0%20or%20later-green)
 ![GitHub All Releases](https://img.shields.io/github/downloads/dylwedma11748/JTegraNX/total)
