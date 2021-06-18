@@ -36,7 +36,7 @@ import util.GlobalSettings;
 public class UpdateHandler {
 
     private static Release jtegranx;
-    private static final String currentVersion = "1.6.5";
+    private static final String currentVersion = "1.6.6";
 
     public static void checkForUpdates() {
         Platform.runLater(() -> {
@@ -59,21 +59,11 @@ public class UpdateHandler {
 
                     if (running.getPath().endsWith(".jar")) {
                         for (Asset asset : jtegranx.getAssets()) {
-                            if (GlobalSettings.JRE_ARCH.equals("64")) {
-                                if (asset.getAssetName().equals("JTegraNX-x64.jar")) {
-                                    jar = GitHandler.downloadAsset(asset, running.getAbsolutePath());
+                            if (asset.getAssetName().equals("JTegraNX.jar")) {
+                                jar = GitHandler.downloadAsset(asset, running.getAbsolutePath());
 
-                                    if (jar.exists()) {
-                                        updated = true;
-                                    }
-                                }
-                            } else {
-                                if (asset.getAssetName().equals("JTegraNX-x86.jar")) {
-                                    jar = GitHandler.downloadAsset(asset, running.getAbsolutePath());
-
-                                    if (jar.exists()) {
-                                        updated = true;
-                                    }
+                                if (jar.exists()) {
+                                    updated = true;
                                 }
                             }
                         }

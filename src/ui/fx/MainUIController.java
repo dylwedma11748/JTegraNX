@@ -48,7 +48,7 @@ import javafx.scene.layout.Pane;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
 import org.apache.commons.io.FileUtils;
-import rcm.DriverInstaller;
+import windows.DriverInstaller;
 import rcm.RCM;
 import ui.UIGlobal;
 import util.GlobalSettings;
@@ -196,7 +196,10 @@ public class MainUIController implements Initializable {
 
             if (GlobalSettings.enableTrayIcon) {
                 Tray.enableTrayIcon();
-                minimizeToTray.setDisable(false);
+                
+                if (GlobalSettings.enableTrayIcon) {
+                    minimizeToTray.setDisable(false);
+                }
 
                 if (GlobalSettings.minimizeToTray) {
                     minimizeToTray.setSelected(true);
@@ -214,7 +217,7 @@ public class MainUIController implements Initializable {
             PayloadHandler.updatePayloads();
             UIGlobal.checkIfSpecifiedPayloadExists();
             
-            if (payloadPath.getText().contains("JTegraNX\\Payloads\\fusee-primary.bin")) {
+            if (payloadPath.getText().contains("Payloads" + File.separator + "fusee-primary.bin")) {
                 payloadPath.clear();
             }
 
@@ -226,7 +229,7 @@ public class MainUIController implements Initializable {
             PayloadHandler.updatePayloads();
             UIGlobal.checkIfSpecifiedPayloadExists();
             
-            if (payloadPath.getText().contains("JTegraNX\\Payloads\\Hekate.bin")) {
+            if (payloadPath.getText().contains("Payloads" + File.separator + "Hekate.bin")) {
                 payloadPath.clear();
             }
 
@@ -238,7 +241,7 @@ public class MainUIController implements Initializable {
             PayloadHandler.updatePayloads();
             UIGlobal.checkIfSpecifiedPayloadExists();
             
-            if (payloadPath.getText().contains("JTegraNX\\Payloads\\Lockpick_RCM.bin")) {
+            if (payloadPath.getText().contains("Payloads" + File.separator + "Lockpick_RCM.bin")) {
                 payloadPath.clear();
             }
 
@@ -250,7 +253,7 @@ public class MainUIController implements Initializable {
             PayloadHandler.updatePayloads();
             UIGlobal.checkIfSpecifiedPayloadExists();
             
-            if (payloadPath.getText().contains("JTegraNX\\Payloads\\TegraExplorer.bin")) {
+            if (payloadPath.getText().contains("Payloads" + File.separator + "TegraExplorer.bin")) {
                 payloadPath.clear();
             }
 
@@ -262,7 +265,7 @@ public class MainUIController implements Initializable {
             PayloadHandler.updatePayloads();
             UIGlobal.checkIfSpecifiedPayloadExists();
             
-            if (payloadPath.getText().contains("JTegraNX\\Payloads\\Incognito_RCM.bin")) {
+            if (payloadPath.getText().contains("Payloads" + File.separator + "Incognito_RCM.bin")) {
                 payloadPath.clear();
             }
             
@@ -375,10 +378,6 @@ public class MainUIController implements Initializable {
                 GlobalSettings.driverUpdatedNeedsReconnect = true;
                 UIGlobal.appendLog("APX driver installed");
                 UIGlobal.appendLog("RCM device needs to be reconnected");
-
-                if (UIGlobal.getRCMStatus().equals("RCM_LOADED")) {
-                    RCM.promptDeviceReconnect();
-                }
             }
         } else {
             UIGlobal.appendLog("APX driver installed");

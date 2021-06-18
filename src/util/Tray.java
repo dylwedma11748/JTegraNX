@@ -56,7 +56,7 @@ public class Tray {
 
     public static void enableTrayIcon() {
         if (!SystemTray.isSupported()) {
-            System.out.println("System tray not supported");
+            UIGlobal.appendLog("System tray is not supported on your system");
 
             GlobalSettings.enableTrayIcon = !GlobalSettings.enableTrayIcon;
 

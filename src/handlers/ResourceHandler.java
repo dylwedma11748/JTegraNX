@@ -40,7 +40,7 @@ public class ResourceHandler {
 
     public static File load(String resource) {
         try {
-            input = ResourceHandler.class.getResourceAsStream("/rcm/" + resource);
+            input = ResourceHandler.class.getResourceAsStream(resource);
             bInput = new BufferedInputStream(input);
             output = File.createTempFile(resource, null);
             fos = new FileOutputStream(output);

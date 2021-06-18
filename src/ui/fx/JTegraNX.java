@@ -36,13 +36,17 @@ import javafx.stage.StageStyle;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
 import handlers.PayloadHandler;
+import handlers.ResourceHandler;
+import java.io.File;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
 import javafx.application.Platform;
+import javax.swing.JOptionPane;
 import ui.UIGlobal;
 import util.GlobalSettings;
 import util.Tray;
+import windows.libusbKInstaller;
 
 public class JTegraNX extends Application {
 
@@ -102,6 +106,16 @@ public class JTegraNX extends Application {
         stage.show();
         
         controller.configName.getParent().requestFocus();
+        
+        if (!System.getProperty("os.name").contains("Windows")) {
+            controller.getInstallAPXDriverMenuItem().setDisable(true);
+            controller.getInstallAPXDriverMenuItem().setVisible(false);
+            
+            if (!System.getProperty("user.name").equals("root")) {
+                UIGlobal.appendLog("Linux support requires either root access or udev rules configured");
+                AlertHandler.showInformationMessage("JTegraNX on Linux", "Linux support requires either root access or udev rules configured", "You are currently running as " + System.getProperty("user.name"));
+            }
+        }
 
         if (configFileFoundAndRead) {
             if (GlobalSettings.portableMode) {
@@ -146,11 +160,44 @@ public class JTegraNX extends Application {
         }
 
         if (System.getProperty("os.name").contains("Windows")) {
-            System.loadLibrary("JTegraNX");
+            File libusbk = new File(System.getenv("SystemDrive") + File.separator + "Windows" + File.separator + "System32" + File.separator + "libusbK.dll");
+            
+            if (!libusbk.exists()) {
+                int install = AlertHandler.showSwingConformationDialog("libusbK missing", "libusbK was not found on your system.\nlibusbK is required for JTegraNX to launch.\nRunning the included installer will fix this issue.\nInstall now?\nSelecting \"No\" will close JTegraNX.", 0);
+                
+                if (install == JOptionPane.YES_OPTION) {
+                    libusbKInstaller.installLibusbK();
+                } else {
+                    System.exit(0);
+                }
+            }
+            
+            File library;
+            
+            if (GlobalSettings.JRE_ARCH.equals("64")) {
+                library = ResourceHandler.load("/windows/natives/JTegraNX_x64.dll");
+            } else {
+                library = ResourceHandler.load("/windows/natives/JTegraNX_x86.dll");
+            }
+            
+            library.deleteOnExit();
+            System.load(library.getAbsolutePath());
+            launch();
+        } else if (System.getProperty("os.name").contains("Linux")) {
+            File library;
+            
+            if (GlobalSettings.JRE_ARCH.equals("64")) {
+                library = ResourceHandler.load("/linux/natives/JTegraNX_x64.so");
+            } else {
+                library = ResourceHandler.load("/linux/natives/JTegraNX_x86.so");
+            }
+            
+            library.deleteOnExit();
+            System.load(library.getAbsolutePath());
             launch();
         } else {
             Platform.runLater(() -> {
-                AlertHandler.showErrorMessage("Unsupported Platform", "JTegraNX is only supported on Windows", "Your OS: " + System.getProperty("os.name"));
+                AlertHandler.showErrorMessage("Unsupported Platform", "JTegraNX is only supported on Windows and Linux", "Your OS: " + System.getProperty("os.name"));
             });
         }
     }

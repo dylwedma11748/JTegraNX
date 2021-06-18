@@ -38,6 +38,7 @@ import javafx.application.Platform;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
 import rcm.RCM;
+import linux.LinuxDeviceListener;
 import ui.fx.JTegraNX;
 import util.GlobalSettings;
 import util.Tray;
@@ -57,12 +58,16 @@ public class UIGlobal {
     private static Alert deviceAlert;
 
     public static void startDeviceListener() {
-        new Thread("Device listener") {
-            @Override
-            public void run() {
-                RCM.startDeviceListener();
-            }
-        }.start();
+        if (System.getProperty("os.name").contains("Windows")) {
+            new Thread("Windows Device listener") {
+                @Override
+                public void run() {
+                    RCM.startDeviceListener();
+                }
+            }.start();
+        } else if (System.getProperty("os.name").contains("Linux")) {
+            LinuxDeviceListener.startLinuxDeviceListener();
+        }
     }
 
     public static void injectPayload(String payloadPath) {
@@ -73,7 +78,7 @@ public class UIGlobal {
     public static void checkIfSpecifiedPayloadExists() {
         File payload = new File(JTegraNX.getController().getPayloadPathField().getText());
 
-        if (payload.exists() && payload.getPath().endsWith(".bin")) {
+        if (payload.exists() && payload.getPath().endsWith(".bin") && rcm_status.equals("RCM_DETECTED")) {
             JTegraNX.getController().getInjectButton().setDisable(false);
         } else {
             JTegraNX.getController().getInjectButton().setDisable(true);
@@ -103,7 +108,7 @@ public class UIGlobal {
                     GlobalSettings.driverUpdatedNeedsReconnect = false;
                 }
 
-                if (previous_rcm_status.equals("RCM_UNDETECTED") && deviceAlert.isShowing()) {
+                if (previous_rcm_status.equals("RCM_UNDETECTED") && deviceAlert != null && deviceAlert.isShowing()) {
                     Platform.runLater(() -> {
                         deviceAlert.getDialogPane().getButtonTypes().add(ButtonType.OK);
                         deviceAlert.close();
@@ -148,6 +153,10 @@ public class UIGlobal {
     public static String getRCMStatus() {
         return rcm_status;
     }
+    
+    public static String getPreviousRCMStatus() {
+        return previous_rcm_status;
+    }
 
     public static void setDeviceAlert(Alert alert) {
         deviceAlert = alert;
@@ -175,6 +184,10 @@ public class UIGlobal {
 
         if (GlobalSettings.enableTrayIcon) {
             Tray.disableTrayIcon();
+        }
+        
+        if (System.getProperty("os.name").contains("Linux")) {
+            LinuxDeviceListener.closeLinuxDeviceListener();
         }
 
         saveMainConfigFile();

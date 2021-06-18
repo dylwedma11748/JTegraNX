@@ -28,6 +28,7 @@ import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.ChoiceDialog;
 import javafx.scene.control.TextArea;
+import javax.swing.JOptionPane;
 import ui.fx.JTegraNX;
 
 public class AlertHandler {
@@ -43,6 +44,24 @@ public class AlertHandler {
         Optional<ButtonType> result = alert.showAndWait();
 
         return result.get() == ButtonType.OK;
+    }
+
+    public static int showSwingConformationDialog(String title, String message, int messageType) {
+        return JOptionPane.showConfirmDialog(null, message, title, JOptionPane.YES_NO_OPTION, messageType);
+    }
+
+    public static void showInformationMessage(String title, String headerText, String contentText) {
+        Alert alert = new Alert(AlertType.INFORMATION);
+
+        alert.setTitle(title);
+        alert.setHeaderText(headerText);
+        alert.setContentText(contentText);
+
+        if (JTegraNX.getStage() != null) {
+            alert.initOwner(JTegraNX.getStage());
+        }
+
+        alert.showAndWait();
     }
 
     public static void showErrorMessage(String title, String headerText, String contentText) {
@@ -93,17 +112,16 @@ public class AlertHandler {
         TextArea aboutTextBox = new TextArea();
         aboutTextBox.setEditable(false);
         aboutTextBox.setWrapText(true);
-        aboutTextBox.setText("JTegraNX is another Nintendo Switch RCM payload injector for Windows. "
+        aboutTextBox.setText("JTegraNX is a Nintendo Switch RCM payload injector for Windows and Linux. "
                 + "I started this project back in 2019 when I tried using TegraRCMGUI and it didn't "
                 + "work because of corrupted Visual C++ files. Back then JTegraNX started "
                 + "off as just a simple TegraRCMSmash GUI with no special features of any kind. "
                 + "Later I then started adding more features on par with some of the features that TegraRCMGUI has and then "
                 + "JTegraNX became what it is today."
                 + "\n\nCurrent release: " + UpdateHandler.getCurrentVersion() + "\n\nChangelog:"
-                + "\n\u2022 Added Incognito_RCM to tray because I forgot to do it before."
-                + "\n\u2022 Fixed a bug with the include Incognito_RCM button."
-                + "\n\u2022 The payload path field now checks if the specified payload exists and enables/disables the Inject button accordingly."
-                + "\n\u2022 Disabling a bundled payload now clears the payload path field if it contains the path for it."
+                + "\n\u2022 Linux support has arrived and is ready for use."
+                + "\n\u2022 Added the libusbK installer for those who can't launch JTegraNX on Windows."
+                + "\n\u2022 Fixed a bug with the payload path field text change listener."
                 + "\n\u2022 General system stability improvements to enhance the user's experience."
                 + "\n\nCopyright (C) 2019-2021 Dylan Wedman\n"
                 + "\n"

@@ -19,9 +19,9 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.Pane?>
 
-<Pane fx:id="pane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="411.0" prefWidth="778.0" stylesheets="@style.css" xmlns="http://javafx.com/javafx/16" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ui.fx.MainUIController">
+<Pane fx:id="pane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="411.0" prefWidth="830.0" stylesheets="@style.css" xmlns="http://javafx.com/javafx/16" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ui.fx.MainUIController">
    <children>
-      <MenuBar fx:id="menuBar" prefHeight="40.0" prefWidth="375.0">
+      <MenuBar fx:id="menuBar" prefHeight="40.0" prefWidth="418.0">
         <menus>
           <Menu mnemonicParsing="false" text="Menu">
             <items>
@@ -277,7 +277,7 @@
             </Menu>
         </menus>
       </MenuBar>
-      <ImageView fitHeight="88.0" fitWidth="400.0" layoutX="193.0" layoutY="48.0" pickOnBounds="true" preserveRatio="true">
+      <ImageView fitHeight="88.0" fitWidth="400.0" layoutX="218.0" layoutY="49.0" pickOnBounds="true" preserveRatio="true">
          <image>
             <Image url="@../images/banner.png" />
          </image>
@@ -285,10 +285,10 @@
             <Reflection fraction="0.45" topOpacity="0.26" />
          </effect>
       </ImageView>
-      <TextField fx:id="payloadPath" layoutX="26.0" layoutY="135.0" prefHeight="26.0" prefWidth="734.0" />
+      <TextField fx:id="payloadPath" layoutX="26.0" layoutY="135.0" prefHeight="26.0" prefWidth="776.0" />
       <Label layoutX="26.0" layoutY="108.0" text="Payload path:" />
-      <TextArea fx:id="log" editable="false" layoutX="14.0" layoutY="247.0" prefHeight="149.0" prefWidth="531.0" />
-      <ImageView fx:id="rcmStatus" fitHeight="102.0" fitWidth="176.0" layoutX="575.0" layoutY="279.0" pickOnBounds="true" preserveRatio="true">
+      <TextArea fx:id="log" editable="false" layoutX="14.0" layoutY="247.0" prefHeight="149.0" prefWidth="576.0" />
+      <ImageView fx:id="rcmStatus" fitHeight="102.0" fitWidth="176.0" layoutX="622.0" layoutY="271.0" pickOnBounds="true" preserveRatio="true">
          <image>
             <Image url="@../images/rcm_undetected.png" />
          </image>
@@ -296,7 +296,7 @@
             <Reflection fraction="0.43" topOffset="-10.0" />
          </effect>
       </ImageView>
-      <Button fx:id="close" layoutX="746.0" layoutY="3.0" mnemonicParsing="false" onAction="#close" prefHeight="32.0" prefWidth="32.0">
+      <Button fx:id="close" layoutX="792.0" layoutY="3.0" mnemonicParsing="false" onAction="#close" prefHeight="32.0" prefWidth="32.0">
          <effect>
             <DropShadow />
          </effect>
@@ -304,7 +304,7 @@
             <Tooltip text="Close" />
          </tooltip>
       </Button>
-      <Button fx:id="minimize" layoutX="714.0" layoutY="13.0" mnemonicParsing="false" onAction="#minimize" prefHeight="9.0" prefWidth="32.0">
+      <Button fx:id="minimize" layoutX="760.0" layoutY="13.0" mnemonicParsing="false" onAction="#minimize" prefHeight="9.0" prefWidth="32.0">
          <effect>
             <DropShadow />
          </effect>
@@ -312,9 +312,9 @@
             <Tooltip text="Minimize" />
          </tooltip>
       </Button>
-      <HBox alignment="CENTER" layoutX="25.0" layoutY="179.0" prefHeight="48.0" prefWidth="728.0" spacing="6.0">
+      <HBox alignment="CENTER" layoutX="25.0" layoutY="179.0" prefHeight="48.0" prefWidth="776.0" spacing="6.0">
          <children>
-            <Button mnemonicParsing="false" onAction="#browseForPayload" prefHeight="40.0" prefWidth="169.0" text="Browse for payload">
+            <Button mnemonicParsing="false" onAction="#browseForPayload" prefHeight="40.0" prefWidth="191.0" text="Browse for payload">
                <effect>
                   <DropShadow />
                </effect>
@@ -329,7 +329,7 @@
                   </ImageView>
                </graphic>
             </Button>
-            <Button fx:id="inject" disable="true" mnemonicParsing="false" onAction="#injectPayload" prefHeight="40.0" prefWidth="135.0" text="Inject payload">
+            <Button fx:id="inject" disable="true" mnemonicParsing="false" onAction="#injectPayload" prefHeight="40.0" prefWidth="154.0" text="Inject payload">
                <graphic>
                   <ImageView fitHeight="32.0" fitWidth="32.0" pickOnBounds="true" preserveRatio="true">
                      <image>

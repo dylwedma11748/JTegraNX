@@ -64,10 +64,15 @@ public class RCM {
     };
 
     private static final byte[] spreadPattern = {0x00, 0x00, 0x01, 0x40};
-
+    
+    // Device listener for Windows
     public static native void startDeviceListener();
 
+    // Smash stack for Windows
     private static native boolean smashTheStack();
+
+    // Smash stack for Linux
+    private static native boolean smashTheStack(final int bus_id, final int device_address);
 
     public static void setRCMStatus(String status) {
         UIGlobal.setRCMStatus(status);
@@ -157,13 +162,25 @@ public class RCM {
                                 appendLog("Sent " + writeBlockCount + " out of " + targetBlockCount + " target blocks");
                                 appendLog("Payload sent to device\nSmashing the stack");
 
-                                if (smashTheStack()) {
-                                    if (GlobalSettings.enableTrayIcon && JTegraNX.getStage().isIconified()) {
-                                        Tray.showNotification(new File(payloadPath).getName() + " injected", Tray.info);
+                                if (System.getProperty("os.name").contains("Windows")) {
+                                    if (smashTheStack()) {
+                                        if (GlobalSettings.enableTrayIcon && JTegraNX.getStage().isIconified()) {
+                                            Tray.showNotification(new File(payloadPath).getName() + " injected", Tray.info);
+                                        }
+                                    } else {
+                                        if (GlobalSettings.enableTrayIcon && JTegraNX.getStage().isIconified()) {
+                                            Tray.showNotification(new File(payloadPath).getName() + " injection failed\nFailed to smash to smash the stack", Tray.error);
+                                        }
                                     }
-                                } else {
-                                    if (GlobalSettings.enableTrayIcon && JTegraNX.getStage().isIconified()) {
-                                        Tray.showNotification(new File(payloadPath).getName() + " injection failed\nFailed to smash to smash the stack", Tray.error);
+                                } else if (System.getProperty("os.name").contains("Linux")) {
+                                    if (smashTheStack(LibUsb.getBusNumber(device), LibUsb.getDeviceAddress(device))) {
+                                        if (GlobalSettings.enableTrayIcon && JTegraNX.getStage().isIconified()) {
+                                            Tray.showNotification(new File(payloadPath).getName() + " injected", Tray.info);
+                                        }
+                                    } else {
+                                        if (GlobalSettings.enableTrayIcon && JTegraNX.getStage().isIconified()) {
+                                            Tray.showNotification(new File(payloadPath).getName() + " injection failed\nFailed to smash to smash the stack", Tray.error);
+                                        }
                                     }
                                 }
                             } else {
@@ -181,13 +198,25 @@ public class RCM {
                                 appendLog("Sent " + writeBlockCount + " out of " + targetBlockCount + " target blocks");
                                 appendLog("Payload sent to device\nSmashing the stack");
 
-                                if (smashTheStack()) {
-                                    if (GlobalSettings.enableTrayIcon && JTegraNX.getStage().isIconified()) {
-                                        Tray.showNotification(new File(payloadPath).getName() + " injected", Tray.info);
+                                if (System.getProperty("os.name").contains("Windows")) {
+                                    if (smashTheStack()) {
+                                        if (GlobalSettings.enableTrayIcon && JTegraNX.getStage().isIconified()) {
+                                            Tray.showNotification(new File(payloadPath).getName() + " injected", Tray.info);
+                                        }
+                                    } else {
+                                        if (GlobalSettings.enableTrayIcon && JTegraNX.getStage().isIconified()) {
+                                            Tray.showNotification(new File(payloadPath).getName() + " injection failed\nFailed to smash to smash the stack", Tray.error);
+                                        }
                                     }
-                                } else {
-                                    if (GlobalSettings.enableTrayIcon && JTegraNX.getStage().isIconified()) {
-                                        Tray.showNotification(new File(payloadPath).getName() + " injection failed\nFailed to smash to smash the stack", Tray.error);
+                                } else if (System.getProperty("os.name").contains("Linux")) {
+                                    if (smashTheStack(LibUsb.getBusNumber(device), LibUsb.getDeviceAddress(device))) {
+                                        if (GlobalSettings.enableTrayIcon && JTegraNX.getStage().isIconified()) {
+                                            Tray.showNotification(new File(payloadPath).getName() + " injected", Tray.info);
+                                        }
+                                    } else {
+                                        if (GlobalSettings.enableTrayIcon && JTegraNX.getStage().isIconified()) {
+                                            Tray.showNotification(new File(payloadPath).getName() + " injection failed\nFailed to smash to smash the stack", Tray.error);
+                                        }
                                     }
                                 }
                             } else {
@@ -204,7 +233,6 @@ public class RCM {
                     }
                 } else {
                     setRCMStatus("ERROR");
-                    appendLog("Failed to get open device");
 
                     if (GlobalSettings.enableTrayIcon && JTegraNX.getStage().isIconified()) {
                         Tray.showNotification(new File(payloadPath).getName() + " injection failed\nFailed to open device", Tray.error);
