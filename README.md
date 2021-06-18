@@ -106,7 +106,7 @@ The libusbk-dev-kit is required for building this native. Download it [here](htt
 12. Copy libusbK.dll from the libusbK-dev-kit to the directory of the Visual Studio Project.
 13. In the Solution Explorer, right click on Header Files and select Add -> Existing Item... and add all the header files.
 14. In the Solution Explorer, right click on Source Files and select Add -> Existing Item... and add all the source files.
-15. Build the Release configuration of both x86 and x64 platforms.
+15. Build the Release configuration of both platforms.
 16. Copy the compiled x86 native to src\windows\natives and rename it to "JTegraNX_x86.dll".
 17. Copy the compiled x64 native to src\windows\natives and rename it to "JTegraNX_x64.dll".
 
