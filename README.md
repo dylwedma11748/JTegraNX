@@ -38,6 +38,9 @@ Linux support has been added in v1.6.6, to use JTegraNX on Linux some preperatio
 - Payload injection on Linux requires the RCM device connecting to a port handled by xhci_hcd or a port with a patched EHCI driver.
   - My way of getting past this was creating an Ubuntu 21.04 VM in VMware with USB 3.1 enabled.
 
+## macOS support
+macOS support for JTegraNX is planned but unfortunately, I will not be able to add it by myself, my idea of creating a macOS VM in VMware didn't work as expected. While I was able to create the VM properly and get JDK 8 and Netbeans installed on it, I was met with the bug in JavaFX where it shows blank stages on a macOS VM, making me unable to progress with development. So for macOS support, I will need the help of macOS Java developers. If you believe you can help, send me an email at dylwedma14@gmail.com.
+
 ## Using configs
 The config system allows you to save what you entered in the "Payload Path" field and load it again in another session.
 
