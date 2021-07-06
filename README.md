@@ -101,7 +101,6 @@ For any bundled payloads, JTegraNX will download them automatically, place them 
 - [fusee-primary](https://github.com/Atmosphere-NX/Atmosphere/releases)
 - [Hekate](https://github.com/CTCaer/hekate)
 - [Lockpick_RCM](https://github.com/shchmue/Lockpick_RCM)
-- [Incognito_RCM](https://github.com/jimzrt/Incognito_RCM)
 - [TegraExplorer](https://github.com/suchmememanyskill/TegraExplorer)
 
 ## Building from source
