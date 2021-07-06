@@ -64,7 +64,7 @@ public class RCM {
     };
 
     private static final byte[] spreadPattern = {0x00, 0x00, 0x01, 0x40};
-    
+
     // Device listener for Windows
     public static native void startDeviceListener();
 
@@ -74,8 +74,16 @@ public class RCM {
     // Smash stack for Linux
     private static native boolean smashTheStack(final int bus_id, final int device_address);
 
+    // Smash stack for macOS
+    private static int smashTheStack(DeviceHandle handle) {
+        ByteBuffer writeBuffer = ByteBuffer.allocateDirect(28672);
+        return LibUsb.controlTransfer(handle, (byte) 0x82, LibUsb.REQUEST_GET_STATUS, (short) 0, (short) 0, writeBuffer, 1000);
+    }
+
     public static void setRCMStatus(String status) {
-        UIGlobal.setRCMStatus(status);
+        if (!GlobalSettings.commandLineMode) {
+            UIGlobal.setRCMStatus(status);
+        }
     }
 
     public static void appendLog(String line) {
@@ -83,13 +91,18 @@ public class RCM {
     }
 
     public static void promptDriverInstall() {
-        Platform.runLater(() -> {
-            boolean install = AlertHandler.showConfirmationDialog("APX driver missing", "An RCM device was detected but the APX driver is not installed. Install now?", "This driver is required to inject a payload.");
+        System.out.println("called");
+        if (!GlobalSettings.commandLineMode) {
+            Platform.runLater(() -> {
+                boolean install = AlertHandler.showConfirmationDialog("APX driver missing", "An RCM device was detected but the APX driver is not installed. Install now?", "This driver is required to inject a payload.");
 
-            if (install) {
-                JTegraNX.getController().getInstallAPXDriverMenuItem().fire();
-            }
-        });
+                if (install) {
+                    JTegraNX.getController().getInstallAPXDriverMenuItem().fire();
+                }
+            });
+        } else {
+            System.out.println("Type \"install apx\" to install the driver");
+        }
     }
 
     public static void promptDeviceReconnect() {
@@ -108,12 +121,16 @@ public class RCM {
     }
 
     public static void injectPayload(String payloadPath) {
-        new Thread("RCM") {
-            @Override
-            public void run() {
-                inject(payloadPath);
-            }
-        }.start();
+        if (!GlobalSettings.commandLineMode) {
+            new Thread("RCM") {
+                @Override
+                public void run() {
+                    inject(payloadPath);
+                }
+            }.start();
+        } else {
+            inject(payloadPath);
+        }
     }
 
     private static void inject(String payloadPath) {
@@ -182,6 +199,23 @@ public class RCM {
                                             Tray.showNotification(new File(payloadPath).getName() + " injection failed\nFailed to smash to smash the stack", Tray.error);
                                         }
                                     }
+                                } else if (System.getProperty("os.name").contains("Mac OS X")) {
+                                    if (getErrorCode(smashTheStack(handle)).equals("LIBUSB_ERROR_TIMEOUT")) {
+                                        setRCMStatus("RCM_LOADED");
+                                        appendLog("Smashed the stack");
+
+                                        if (!GlobalSettings.commandLineMode) {
+                                            if (GlobalSettings.enableTrayIcon && JTegraNX.getStage().isIconified()) {
+                                                Tray.showNotification(new File(payloadPath).getName() + " injected", Tray.info);
+                                            }
+                                        }
+                                    } else {
+                                        if (!GlobalSettings.commandLineMode) {
+                                            if (GlobalSettings.enableTrayIcon && JTegraNX.getStage().isIconified()) {
+                                                Tray.showNotification(new File(payloadPath).getName() + " injection failed\nFailed to smash to smash the stack", Tray.error);
+                                            }
+                                        }
+                                    }
                                 }
                             } else {
                                 setRCMStatus("ERROR");
@@ -200,22 +234,47 @@ public class RCM {
 
                                 if (System.getProperty("os.name").contains("Windows")) {
                                     if (smashTheStack()) {
-                                        if (GlobalSettings.enableTrayIcon && JTegraNX.getStage().isIconified()) {
-                                            Tray.showNotification(new File(payloadPath).getName() + " injected", Tray.info);
+                                        if (!GlobalSettings.commandLineMode) {
+                                            if (GlobalSettings.enableTrayIcon && JTegraNX.getStage().isIconified()) {
+                                                Tray.showNotification(new File(payloadPath).getName() + " injected", Tray.info);
+                                            }
                                         }
                                     } else {
-                                        if (GlobalSettings.enableTrayIcon && JTegraNX.getStage().isIconified()) {
-                                            Tray.showNotification(new File(payloadPath).getName() + " injection failed\nFailed to smash to smash the stack", Tray.error);
+                                        if (!GlobalSettings.commandLineMode) {
+                                            if (GlobalSettings.enableTrayIcon && JTegraNX.getStage().isIconified()) {
+                                                Tray.showNotification(new File(payloadPath).getName() + " injection failed\nFailed to smash to smash the stack", Tray.error);
+                                            }
                                         }
                                     }
                                 } else if (System.getProperty("os.name").contains("Linux")) {
                                     if (smashTheStack(LibUsb.getBusNumber(device), LibUsb.getDeviceAddress(device))) {
-                                        if (GlobalSettings.enableTrayIcon && JTegraNX.getStage().isIconified()) {
-                                            Tray.showNotification(new File(payloadPath).getName() + " injected", Tray.info);
+                                        if (!GlobalSettings.commandLineMode) {
+                                            if (GlobalSettings.enableTrayIcon && JTegraNX.getStage().isIconified()) {
+                                                Tray.showNotification(new File(payloadPath).getName() + " injected", Tray.info);
+                                            }
                                         }
                                     } else {
-                                        if (GlobalSettings.enableTrayIcon && JTegraNX.getStage().isIconified()) {
-                                            Tray.showNotification(new File(payloadPath).getName() + " injection failed\nFailed to smash to smash the stack", Tray.error);
+                                        if (!GlobalSettings.commandLineMode) {
+                                            if (GlobalSettings.enableTrayIcon && JTegraNX.getStage().isIconified()) {
+                                                Tray.showNotification(new File(payloadPath).getName() + " injection failed\nFailed to smash to smash the stack", Tray.error);
+                                            }
+                                        }
+                                    }
+                                } else if (System.getProperty("os.name").contains("Mac OS X")) {
+                                    if (getErrorCode(smashTheStack(handle)).equals("LIBUSB_ERROR_TIMEOUT")) {
+                                        setRCMStatus("RCM_LOADED");
+                                        appendLog("Smashed the stack");
+
+                                        if (!GlobalSettings.commandLineMode) {
+                                            if (GlobalSettings.enableTrayIcon && JTegraNX.getStage().isIconified()) {
+                                                Tray.showNotification(new File(payloadPath).getName() + " injected", Tray.info);
+                                            }
+                                        }
+                                    } else {
+                                        if (!GlobalSettings.commandLineMode) {
+                                            if (GlobalSettings.enableTrayIcon && JTegraNX.getStage().isIconified()) {
+                                                Tray.showNotification(new File(payloadPath).getName() + " injection failed\nFailed to smash to smash the stack", Tray.error);
+                                            }
                                         }
                                     }
                                 }
@@ -225,8 +284,10 @@ public class RCM {
                                 appendLog("Sent " + writeBlockCount + " out of " + targetBlockCount + " target blocks");
                                 appendLog("Failed to send payload to device");
 
-                                if (GlobalSettings.enableTrayIcon && JTegraNX.getStage().isIconified()) {
-                                    Tray.showNotification(new File(payloadPath).getName() + " injection failed\nFailed to send payload to device", Tray.error);
+                                if (!GlobalSettings.commandLineMode) {
+                                    if (GlobalSettings.enableTrayIcon && JTegraNX.getStage().isIconified()) {
+                                        Tray.showNotification(new File(payloadPath).getName() + " injection failed\nFailed to send payload to device", Tray.error);
+                                    }
                                 }
                             }
                         }
@@ -234,24 +295,30 @@ public class RCM {
                 } else {
                     setRCMStatus("ERROR");
 
-                    if (GlobalSettings.enableTrayIcon && JTegraNX.getStage().isIconified()) {
-                        Tray.showNotification(new File(payloadPath).getName() + " injection failed\nFailed to open device", Tray.error);
+                    if (!GlobalSettings.commandLineMode) {
+                        if (GlobalSettings.enableTrayIcon && JTegraNX.getStage().isIconified()) {
+                            Tray.showNotification(new File(payloadPath).getName() + " injection failed\nFailed to open device", Tray.error);
+                        }
                     }
                 }
             } else {
                 setRCMStatus("ERROR");
                 appendLog("Failed to get RCM device");
 
-                if (GlobalSettings.enableTrayIcon && JTegraNX.getStage().isIconified()) {
-                    Tray.showNotification(new File(payloadPath).getName() + " injection failed\nFailed to get RCM device", Tray.error);
+                if (!GlobalSettings.commandLineMode) {
+                    if (GlobalSettings.enableTrayIcon && JTegraNX.getStage().isIconified()) {
+                        Tray.showNotification(new File(payloadPath).getName() + " injection failed\nFailed to get RCM device", Tray.error);
+                    }
                 }
             }
         } else {
             setRCMStatus("ERROR");
             appendLog("Failed to create RCM payload");
 
-            if (GlobalSettings.enableTrayIcon && JTegraNX.getStage().isIconified()) {
-                Tray.showNotification(new File(payloadPath).getName() + " injection failed\nFailed to create RCM payload", Tray.error);
+            if (!GlobalSettings.commandLineMode) {
+                if (GlobalSettings.enableTrayIcon && JTegraNX.getStage().isIconified()) {
+                    Tray.showNotification(new File(payloadPath).getName() + " injection failed\nFailed to create RCM payload", Tray.error);
+                }
             }
         }
     }

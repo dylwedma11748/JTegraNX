@@ -19,7 +19,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
  */
-package linux;
+package macOS;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -31,9 +31,9 @@ import org.usb4java.LibUsb;
 import org.usb4java.LibUsbException;
 import ui.UIGlobal;
 
-public class LinuxDeviceListener {
+public class macOSDeviceListener {
 
-    private static LinuxDeviceListener.EventHandlingThread globalThread;
+    private static macOSDeviceListener.EventHandlingThread globalThread;
     private static HotplugCallbackHandle callbackHandle;
 
     private static final short vendorID = 0x0955;
@@ -81,13 +81,13 @@ public class LinuxDeviceListener {
         }
 
         if (!LibUsb.hasCapability(LibUsb.CAP_HAS_HOTPLUG)) {
-            UIGlobal.appendLog("Hotplug not supported on this system\nUnable to start Linux Device Listener\nRCM functionality is unavailable");
+            UIGlobal.appendLog("Hotplug not supported on this system\nUnable to start macOS Device Listener\nRCM functionality is unavailable");
         } else {
-            globalThread = new LinuxDeviceListener.EventHandlingThread();
+            globalThread = new macOSDeviceListener.EventHandlingThread();
             globalThread.start();
 
             callbackHandle = new HotplugCallbackHandle();
-            result = LibUsb.hotplugRegisterCallback(null, LibUsb.HOTPLUG_EVENT_DEVICE_ARRIVED | LibUsb.HOTPLUG_EVENT_DEVICE_LEFT, LibUsb.HOTPLUG_ENUMERATE, vendorID, productID, LibUsb.HOTPLUG_MATCH_ANY, new LinuxDeviceListener.Callback(), null, callbackHandle);
+            result = LibUsb.hotplugRegisterCallback(null, LibUsb.HOTPLUG_EVENT_DEVICE_ARRIVED | LibUsb.HOTPLUG_EVENT_DEVICE_LEFT, LibUsb.HOTPLUG_ENUMERATE, vendorID, productID, LibUsb.HOTPLUG_MATCH_ANY, new macOSDeviceListener.Callback(), null, callbackHandle);
 
             if (result != LibUsb.SUCCESS) {
                 throw new LibUsbException("Unable to register hotplug callback", result);
@@ -102,7 +102,7 @@ public class LinuxDeviceListener {
             globalThread.join();
             LibUsb.exit(null);
         } catch (InterruptedException ex) {
-            Logger.getLogger(LinuxDeviceListener.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(macOSDeviceListener.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 }

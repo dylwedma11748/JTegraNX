@@ -38,14 +38,15 @@ import javax.swing.UnsupportedLookAndFeelException;
 import handlers.PayloadHandler;
 import handlers.ResourceHandler;
 import java.io.File;
-import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Scanner;
 import javafx.application.Platform;
 import javax.swing.JOptionPane;
 import ui.UIGlobal;
 import util.GlobalSettings;
 import util.Tray;
+import windows.DriverInstaller;
 import windows.libusbKInstaller;
 
 public class JTegraNX extends Application {
@@ -89,7 +90,7 @@ public class JTegraNX extends Application {
             }
 
             if (GlobalSettings.checkJTegraNXUpdates) {
-                UpdateHandler.checkForUpdates();
+                UpdateHandler.checkForUpdates(null);
             }
 
             ConfigManager.updateConfigList();
@@ -97,24 +98,31 @@ public class JTegraNX extends Application {
 
         controller.getPayloadPathField().textProperty().addListener((observable, oldValue, newValue) -> {
             UIGlobal.checkIfSpecifiedPayloadExists();
-            
+
             if (GlobalSettings.enableTrayIcon) {
                 Tray.updateMenuItems();
             }
         });
 
         stage.show();
-        
+
         controller.configName.getParent().requestFocus();
-        
+
         if (!System.getProperty("os.name").contains("Windows")) {
             controller.getInstallAPXDriverMenuItem().setDisable(true);
             controller.getInstallAPXDriverMenuItem().setVisible(false);
-            
+        }
+
+        if (System.getProperty("os.name").contains("Linux")) {
             if (!System.getProperty("user.name").equals("root")) {
                 UIGlobal.appendLog("Linux support requires either root access or udev rules configured");
                 AlertHandler.showInformationMessage("JTegraNX on Linux", "Linux support requires either root access or udev rules configured", "You are currently running as " + System.getProperty("user.name"));
             }
+        }
+
+        if (System.getProperty("os.name").contains("Mac OS X")) {
+            UIGlobal.appendLog("Mac OS X support is not perfect.\nRCM functionality should work, but there may be issues with other features.");
+            AlertHandler.showInformationMessage("JTegraNX on Mac OS X", "Mac OS X support is not perfect", "RCM functionality should work, but there may be some issues with other features.");
         }
 
         if (configFileFoundAndRead) {
@@ -146,59 +154,317 @@ public class JTegraNX extends Application {
             }
 
             PayloadHandler.updatePayloads();
-            UpdateHandler.checkForUpdates();
+            UpdateHandler.checkForUpdates(null);
             UIGlobal.startDeviceListener();
             ConfigManager.updateConfigList();
         }
     }
 
-    public static void main(String[] args) throws URISyntaxException {
+    public static void main(String[] args) {
         try {
             UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
         } catch (ClassNotFoundException | InstantiationException | IllegalAccessException | UnsupportedLookAndFeelException ex) {
             Logger.getLogger(JTegraNX.class.getName()).log(Level.SEVERE, null, ex);
         }
 
-        if (System.getProperty("os.name").contains("Windows")) {
-            File libusbk = new File(System.getenv("SystemDrive") + File.separator + "Windows" + File.separator + "System32" + File.separator + "libusbK.dll");
-            
-            if (!libusbk.exists()) {
-                int install = AlertHandler.showSwingConformationDialog("libusbK missing", "libusbK was not found on your system.\nlibusbK is required for JTegraNX to launch.\nRunning the included installer will fix this issue.\nInstall now?\nSelecting \"No\" will close JTegraNX.", 0);
-                
-                if (install == JOptionPane.YES_OPTION) {
-                    libusbKInstaller.installLibusbK();
-                } else {
-                    System.exit(0);
+        if (args.length > 0 && args[0].equals("-cml")) {
+            Scanner scanner = new Scanner(System.in);
+            extractAndLoadNatives(true);
+            System.out.println("JTegraNX - Another RCM payload injector\nCopyright (C) 2019-2021 Dylan Wedman");
+            GlobalSettings.commandLineMode = true;
+
+            if (UIGlobal.readMainConfigFile()) {
+                if (GlobalSettings.checkPayloadUpdates) {
+                    System.out.println("Checking for payload updates");
+                    PayloadHandler.updatePayloads();
+                }
+
+                if (GlobalSettings.checkJTegraNXUpdates) {
+                    System.out.println("Checking for JTegraNX updates");
+                    UpdateHandler.checkForUpdates(scanner);
                 }
             }
-            
+
+            System.out.println("Command line mode ready\nFor help, type \"help\"");
+            commandLineModeLoop(scanner);
+        } else {
+            extractAndLoadNatives(false);
+            launch();
+        }
+    }
+
+    private static void commandLineModeLoop(Scanner scanner) {
+        System.out.append("> ");
+        String command = scanner.nextLine();
+
+        if (command.equals("help")) {
+            System.out.println("inject      Inject a payload, if used with -bp flag, will use specified bundled payload");
+            System.out.println("update      Runs the specifed updater, available updaters are -payloads and -jtegranx");
+            System.out.println("apx         Runs the APX driver installer (Windows only)");
+            System.out.println("set         Changes specified setting, available settings are -bp and -autoupdate");
+            System.out.println("exit        Closes JTegraNX");
+            commandLineModeLoop(scanner);
+        } else if (command.contains("inject")) {
+            if (command.contains("-bp")) {
+                if (!GlobalSettings.payloadsUpdatedThisSession) {
+                    System.out.println("Bundled payloads haven't been updated this session.\nType \"update -payloads\" to update them.");
+                }
+                
+                String bp = "";
+                
+                try {
+                    bp = command.substring(command.indexOf("-bp") + 4);
+                } catch (StringIndexOutOfBoundsException e) {
+                    System.out.println("Invalid use of inject -bp; must include target payload");
+                }
+                
+                if (bp.equalsIgnoreCase("fusee-primary")) {
+                    if (GlobalSettings.includeFuseePrimary) {
+                        if (GlobalSettings.portableMode) {
+                            UIGlobal.injectPayload(GlobalSettings.PORTABLE_MODE_JTEGRANX_PAYLOAD_DIR_PATH + File.separator + "fusee-primary.bin");
+                        } else {
+                            UIGlobal.injectPayload(GlobalSettings.STANDARD_MODE_JTEGRANX_PAYLOAD_DIR_PATH + File.separator + "fusee-primary.bin");
+                        }
+                    } else {
+                        System.out.println("fusee-primary bundled payload is disabled");
+                    }
+                } else if (bp.equalsIgnoreCase("Hekate")) {
+                    if (GlobalSettings.includeHekate) {
+                        if (GlobalSettings.portableMode) {
+                            UIGlobal.injectPayload(GlobalSettings.PORTABLE_MODE_JTEGRANX_PAYLOAD_DIR_PATH + File.separator + "Hekate.bin");
+                        } else {
+                            UIGlobal.injectPayload(GlobalSettings.STANDARD_MODE_JTEGRANX_PAYLOAD_DIR_PATH + File.separator + "Hekate.bin");
+                        }
+                    } else {
+                        System.out.println("Hekate bundled payload is disabled");
+                    }
+                } else if (bp.equalsIgnoreCase("Lockpick_RCM")) {
+                    if (GlobalSettings.includeLockpickRCM) {
+                        if (GlobalSettings.portableMode) {
+                            UIGlobal.injectPayload(GlobalSettings.PORTABLE_MODE_JTEGRANX_PAYLOAD_DIR_PATH + File.separator + "Lockpick_RCM.bin");
+                        } else {
+                            UIGlobal.injectPayload(GlobalSettings.STANDARD_MODE_JTEGRANX_PAYLOAD_DIR_PATH + File.separator + "Lockpick_RCM.bin");
+                        }
+                    } else {
+                        System.out.println("Lockpick_RCM bundled payload is disabled");
+                    }
+                } else if (bp.equalsIgnoreCase("TegraExplorer")) {
+                    if (GlobalSettings.includeTegraExplorer) {
+                        if (GlobalSettings.portableMode) {
+                            UIGlobal.injectPayload(GlobalSettings.PORTABLE_MODE_JTEGRANX_PAYLOAD_DIR_PATH + File.separator + "TegraExplorer.bin");
+                        } else {
+                            UIGlobal.injectPayload(GlobalSettings.STANDARD_MODE_JTEGRANX_PAYLOAD_DIR_PATH + File.separator + "TegraExplorer.bin");
+                        }
+                    } else {
+                        System.out.println("TegraExplorer bundled payload is disabled");
+                    }
+                }
+
+                commandLineModeLoop(scanner);
+            } else {
+                String payloadPath = command.substring(command.indexOf(" ") + 1);
+                UIGlobal.injectPayload(payloadPath);
+                commandLineModeLoop(scanner);
+            }
+        } else if (command.contains("update") && !command.contains("-autoupdate")) {
+            if (command.contains("-payloads")) {
+                PayloadHandler.updatePayloads();
+                commandLineModeLoop(scanner);
+            } else if (command.contains("-jtegranx")) {
+                UpdateHandler.checkForUpdates(scanner);
+                commandLineModeLoop(scanner);
+            } else {
+                System.out.println("Invalid use of command\n\"update\" requires a flag");
+                commandLineModeLoop(scanner);
+            }
+        } else if (command.equals("apx")) {
+            if (System.getProperty("os.name").contains("Windows")) {
+                int result = DriverInstaller.installDriver();
+
+                switch (result) {
+                    case DriverInstaller.CANCELED:
+                        UIGlobal.appendLog("APX Driver install canceled by user");
+                        break;
+                    case DriverInstaller.DEVICE_UPDATED:
+                        UIGlobal.appendLog("APX Driver installed\nRCM device needs to be reconnected");
+                        break;
+                    case DriverInstaller.READY_FOR_USE:
+                        UIGlobal.appendLog("APX Driver installed\nRCM device ready for use");
+                        break;
+                    case DriverInstaller.UAC_CANCEL:
+                        UIGlobal.appendLog("APX Driver install canceled from UAC");
+                        break;
+                }
+            } else {
+                System.out.println("APX driver can only be installed on Windows");
+            }
+
+            commandLineModeLoop(scanner);
+        } else if (command.contains("set")) {
+            String setting = "";
+
+            try {
+                setting = command.substring(command.indexOf("set") + 4);
+            } catch (StringIndexOutOfBoundsException e) {
+                System.out.println("Invalid use of set; must include a flag");
+                commandLineModeLoop(scanner);
+            }
+
+            if (setting.contains("-bp")) {
+                String payloadSetting = "";
+
+                try {
+                    payloadSetting = command.substring(command.indexOf("-bp") + 4);
+                } catch (StringIndexOutOfBoundsException e) {
+                    System.out.println("Invalid use of set -bp; must include target payload");
+                    commandLineModeLoop(scanner);
+                }
+
+                String targetPayload = "";
+                boolean setTrue = payloadSetting.contains("true");
+                boolean setFalse = payloadSetting.contains("false");
+
+                if (setTrue && setFalse) {
+                    System.out.println("Invalid use of set -bp; can't specify true and false at the same time\nThat's just common sense");
+                } else if (setTrue) {
+                    try {
+                        targetPayload = payloadSetting.substring(0, payloadSetting.indexOf("true") - 1);
+                    } catch (StringIndexOutOfBoundsException e) {
+                        System.out.println("Invalid use of set; must contain -bp or -autoupdate");
+                        commandLineModeLoop(scanner);
+                    }
+                } else if (setFalse) {
+                    try {
+                        targetPayload = payloadSetting.substring(0, payloadSetting.indexOf("false") - 1);
+                    } catch (StringIndexOutOfBoundsException e) {
+                        System.out.println("Invalid use of set -bp; must include target payload");
+                        commandLineModeLoop(scanner);
+                    }
+                } else {
+                    System.out.println("Invalid use of set -bp; must include true or false");
+                    commandLineModeLoop(scanner);
+                }
+
+                if (targetPayload.equalsIgnoreCase("fusee-primary")) {
+                    GlobalSettings.includeFuseePrimary = setTrue;
+                    PayloadHandler.updatePayloads();
+                } else if (targetPayload.equalsIgnoreCase("hekate")) {
+                    GlobalSettings.includeHekate = setTrue;
+                    PayloadHandler.updatePayloads();
+                } else if (targetPayload.equalsIgnoreCase("lockpick_rcm")) {
+                    GlobalSettings.includeLockpickRCM = setTrue;
+                    PayloadHandler.updatePayloads();
+                } else if (targetPayload.equalsIgnoreCase("tegraexplorer")) {
+                    GlobalSettings.includeTegraExplorer = setTrue;
+                    PayloadHandler.updatePayloads();
+                }
+            } else if (setting.contains("-autoupdate")) {
+                String target = "";
+
+                try {
+                    target = setting.substring(setting.indexOf("-autoupdate") + 12);
+                } catch (StringIndexOutOfBoundsException e) {
+                    System.out.println("Invalid use of set -autoupdate; must include target updater");
+                    commandLineModeLoop(scanner);
+                }
+
+                String updater = "";
+                boolean setTrue = target.contains("true");
+                boolean setFalse = target.contains("false");
+
+                if (setTrue && setFalse) {
+                    System.out.println("Invalid use of set -autoupdate; can't specify true and false at the same time\nThat's just common sense");
+                    commandLineModeLoop(scanner);
+                } else if (setTrue) {
+                    try {
+                        updater = target.substring(0, target.indexOf("true") - 1);
+                    } catch (StringIndexOutOfBoundsException e) {
+                        System.out.println("Invalid use of set -bp; must include target payload");
+                        commandLineModeLoop(scanner);
+                    }
+                } else if (setFalse) {
+                    try {
+                        updater = target.substring(0, target.indexOf("false") - 1);
+                    } catch (StringIndexOutOfBoundsException e) {
+                        System.out.println("Invalid use of set -bp; must include target payload");
+                        commandLineModeLoop(scanner);
+                    }
+                } else {
+                    System.out.println("Invalid use of set -autoupdate; must include true or false");
+                    commandLineModeLoop(scanner);
+                }
+
+                if (updater.equalsIgnoreCase("payloads")) {
+                    GlobalSettings.checkPayloadUpdates = setTrue;
+                    System.out.println("Payload update checks set to " + setTrue);
+                } else if (updater.equalsIgnoreCase("jtegranx")) {
+                    GlobalSettings.checkJTegraNXUpdates = setTrue;
+                    System.out.println("JTegraNX update checks set to " + setTrue);
+                } else {
+                    System.out.println("Invalid use of set -autoupdate; invalid updater specifed; available updaters are payloads and jtegranx; these cannot be specified at the same time");
+                }
+            } else {
+                System.out.println("Invalid use of set; must contain -bp or -autoupdate");
+                commandLineModeLoop(scanner);
+            }
+
+            commandLineModeLoop(scanner);
+        } else if (command.equals("exit")) {
+            UIGlobal.saveMainConfigFile();
+            System.exit(0);
+        } else {
+            System.out.println("Invalid command \"" + command + "\"");
+            commandLineModeLoop(scanner);
+        }
+    }
+
+    private static void extractAndLoadNatives(boolean commandLine) {
+        if (System.getProperty("os.name").contains("Windows")) {
+            File libusbk = new File(System.getenv("SystemDrive") + File.separator + "Windows" + File.separator + "System32" + File.separator + "libusbK.dll");
+
+            if (!libusbk.exists()) {
+                if (commandLine) {
+                    System.out.println("libusbK was not found on your system.\nlibusbK is required for JTegraNX to launch.\nRunning the included installer will fix this issue.\nInstall now?\nEntering \"No\" will close JTegraNX.");
+                    Scanner in = new Scanner(System.in);
+                    String answer = in.nextLine();
+
+                    if (answer.equalsIgnoreCase("yes") || answer.equalsIgnoreCase("y")) {
+                        libusbKInstaller.installLibusbK();
+                    } else {
+                        System.exit(0);
+                    }
+                } else {
+                    int install = AlertHandler.showSwingConformationDialog("libusbK missing", "libusbK was not found on your system.\nlibusbK is required for JTegraNX to launch.\nRunning the included installer will fix this issue.\nInstall now?\nSelecting \"No\" will close JTegraNX.", 0);
+
+                    if (install == JOptionPane.YES_OPTION) {
+                        libusbKInstaller.installLibusbK();
+                    } else {
+                        System.exit(0);
+                    }
+                }
+            }
+
             File library;
-            
+
             if (GlobalSettings.JRE_ARCH.equals("64")) {
                 library = ResourceHandler.load("/windows/natives/JTegraNX_x64.dll");
             } else {
                 library = ResourceHandler.load("/windows/natives/JTegraNX_x86.dll");
             }
-            
+
             library.deleteOnExit();
             System.load(library.getAbsolutePath());
-            launch();
         } else if (System.getProperty("os.name").contains("Linux")) {
             File library;
-            
+
             if (GlobalSettings.JRE_ARCH.equals("64")) {
                 library = ResourceHandler.load("/linux/natives/JTegraNX_x64.so");
             } else {
                 library = ResourceHandler.load("/linux/natives/JTegraNX_x86.so");
             }
-            
+
             library.deleteOnExit();
             System.load(library.getAbsolutePath());
-            launch();
-        } else {
-            Platform.runLater(() -> {
-                AlertHandler.showErrorMessage("Unsupported Platform", "JTegraNX is only supported on Windows and Linux", "Your OS: " + System.getProperty("os.name"));
-            });
         }
     }
 

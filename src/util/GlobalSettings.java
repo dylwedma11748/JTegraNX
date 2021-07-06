@@ -49,7 +49,6 @@ public class GlobalSettings {
     public static String hekateTag;
     public static String lockpickRCMTag;
     public static String tegraExplorerTag;
-    public static String incognitoRCMTag;
 
     public static boolean autoInject = false;
     public static boolean checkJTegraNXUpdates = true;
@@ -59,10 +58,10 @@ public class GlobalSettings {
     public static boolean includeHekate = true;
     public static boolean includeLockpickRCM = true;
     public static boolean includeTegraExplorer = true;
-    public static boolean includeIncognitoRCM = true;
     public static boolean minimizeToTray = false;
     public static boolean payloadsUpdatedThisSession = false;
     public static boolean portableMode = false;
     public static boolean driverUpdatedNeedsReconnect = false;
     public static boolean restartPending = false;
+    public static boolean commandLineMode = false;
 }

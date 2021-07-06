@@ -145,29 +145,6 @@ public class Tray {
 
                 menu.add(hekate);
             }
-            
-            if (GlobalSettings.includeIncognitoRCM) {
-                MenuItem incognitoRCM = new MenuItem("Incognito_RCM " + GlobalSettings.incognitoRCMTag);
-
-                incognitoRCM.addActionListener((ActionEvent e) -> {
-                    Platform.runLater(() -> {
-                        if (!GlobalSettings.portableMode) {
-                            JTegraNX.getController().getPayloadPathField().setText(GlobalSettings.STANDARD_MODE_JTEGRANX_PAYLOAD_DIR_PATH + File.separator + "Incognito_RCM.bin");
-                        } else {
-                            JTegraNX.getController().getPayloadPathField().setText(GlobalSettings.PORTABLE_MODE_JTEGRANX_PAYLOAD_DIR_PATH + File.separator + "Incognito_RCM.bin");
-                        }
-
-                        try {
-                            if (!JTegraNX.getController().getConfigList().getSelectionModel().getSelectedItem().equals("No configs")) {
-                                JTegraNX.getController().getConfigList().getSelectionModel().clearSelection();
-                            }
-                        } catch (NullPointerException ex) {
-                        }
-                    });
-                });
-
-                menu.add(incognitoRCM);
-            }
 
             if (GlobalSettings.includeLockpickRCM) {
                 MenuItem lockpickRCM = new MenuItem("Lockpick_RCM " + GlobalSettings.lockpickRCMTag);
@@ -315,7 +292,12 @@ public class Tray {
     }
 
     public static void disableTrayIcon() {
-        systemTray.remove(trayIcon);
+        new Thread() {
+            @Override
+            public void run() {
+                systemTray.remove(trayIcon);
+            }
+        }.start();
     }
 
     protected static Image createIcon(String path, String desc) {

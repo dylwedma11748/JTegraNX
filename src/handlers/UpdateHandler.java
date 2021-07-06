@@ -25,7 +25,9 @@ import git.Asset;
 import git.GitHandler;
 import git.Release;
 import java.io.File;
+import java.io.IOException;
 import java.net.URISyntaxException;
+import java.util.Scanner;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.application.Platform;
@@ -36,66 +38,115 @@ import util.GlobalSettings;
 public class UpdateHandler {
 
     private static Release jtegranx;
-    private static final String currentVersion = "1.6.6";
+    private static final String currentVersion = "1.6.7";
 
-    public static void checkForUpdates() {
-        Platform.runLater(() -> {
-            jtegranx = GitHandler.generateLatestRelease("https://github.com/dylwedma11748/JTegraNX/releases");
+    public static void checkForUpdates(Scanner scanner) {
+        if (GlobalSettings.commandLineMode) {
+            if (scanner != null) {
+                jtegranx = GitHandler.generateLatestRelease("https://github.com/dylwedma11748/JTegraNX/releases");
 
-            if (!jtegranx.getTag().equals(currentVersion)) {
-                boolean update = AlertHandler.showConfirmationDialog("JTegraNX updater", "A new release of JTegraNX has been found. Download now?\n\nCurrent release: JTegraNX v" + currentVersion + "\nLatest release: " + jtegranx.getReleaseName(), "");
+                if (!jtegranx.getTag().equals(currentVersion)) {
+                    System.out.println("An update for JTegraNX was found, download now?\nCurrent release: JTegraNX v" + currentVersion + "\nLatest release: " + jtegranx.getReleaseName());
+                    System.out.append("> ");
+                    String response = scanner.nextLine();
 
-                if (update) {
-                    File running = new File("");
+                    if (response.equalsIgnoreCase("y") || response.equalsIgnoreCase("yes")) {
+                        File running = new File("");
 
-                    try {
-                        running = new File(UpdateHandler.class.getProtectionDomain().getCodeSource().getLocation().toURI());
-                    } catch (URISyntaxException ex) {
-                        Logger.getLogger(UpdateHandler.class.getName()).log(Level.SEVERE, null, ex);
-                    }
+                        try {
+                            running = new File(UpdateHandler.class.getProtectionDomain().getCodeSource().getLocation().toURI());
+                        } catch (URISyntaxException ex) {
+                            Logger.getLogger(UpdateHandler.class.getName()).log(Level.SEVERE, null, ex);
+                        }
 
-                    boolean updated = false;
-                    File jar = null;
+                        boolean updated = false;
+                        File jar = null;
 
-                    if (running.getPath().endsWith(".jar")) {
-                        for (Asset asset : jtegranx.getAssets()) {
-                            if (asset.getAssetName().equals("JTegraNX.jar")) {
-                                jar = GitHandler.downloadAsset(asset, running.getAbsolutePath());
+                        if (running.getPath().endsWith(".jar")) {
+                            for (Asset asset : jtegranx.getAssets()) {
+                                if (asset.getAssetName().equals("JTegraNX.jar")) {
+                                    jar = GitHandler.downloadAsset(asset, running.getAbsolutePath());
 
-                                if (jar.exists()) {
-                                    updated = true;
+                                    if (jar.exists()) {
+                                        updated = true;
+                                    }
                                 }
                             }
-                        }
 
-                        if (updated) {
-                            UIGlobal.appendLog("Download complete");
-                            boolean restart = AlertHandler.showConfirmationDialog("JTegraNX updater", "JTegraNX has been updated and needs to be restarted for the changes to apply.", "Restart now?");
-
-                            if (restart) {
-                                Platform.runLater(() -> {
-                                    UIGlobal.restartJTegraNX();
-                                });
-                            } else {
-                                GlobalSettings.restartPending = true;
-
-                                Platform.runLater(() -> {
-                                    JTegraNX.getController().getJTegraNXUpdateMenuItem().setText("Restart JTegraNX to finish update");
-                                });
+                            if (updated) {
+                                System.out.println("JTegraNX has been updated and needs to be restarted for the changes to apply.\nJTegraNX can't be restarted from command line mode.");
                             }
                         } else {
-                            if (jar == null) {
-                                AlertHandler.showErrorMessage("JTegraNX updater", "A GitHandler error occured.", "Unable to locate valid asset.");
-                            }
+                            System.out.println("JTegraNX is running from an IDE or a non-JAR build and can't be updated using the built-in updater.");
                         }
+                    } else if (response.equalsIgnoreCase("n") || response.equalsIgnoreCase("n")) {
+                        System.out.println("Update canceled");
                     } else {
-                        AlertHandler.showErrorMessage("JTegraNX updater", "JTegraNX can't be updated.", "JTegraNX is running from an IDE or a non-JAR build.");
+                        System.out.println("Invalid response, canceling update");
                     }
                 }
             } else {
-                UIGlobal.appendLog("JTegraNX is up to date");
+                throw new NullPointerException("Unable to check for JTegraNX updates. Scanner must not be null in command line mode.");
             }
-        });
+        } else {
+            Platform.runLater(() -> {
+                jtegranx = GitHandler.generateLatestRelease("https://github.com/dylwedma11748/JTegraNX/releases");
+
+                if (!jtegranx.getTag().equals(currentVersion)) {
+                    boolean update = AlertHandler.showConfirmationDialog("JTegraNX updater", "A new release of JTegraNX has been found. Download now?\n\nCurrent release: JTegraNX v" + currentVersion + "\nLatest release: " + jtegranx.getReleaseName(), "");
+
+                    if (update) {
+                        File running = new File("");
+
+                        try {
+                            running = new File(UpdateHandler.class.getProtectionDomain().getCodeSource().getLocation().toURI());
+                        } catch (URISyntaxException ex) {
+                            Logger.getLogger(UpdateHandler.class.getName()).log(Level.SEVERE, null, ex);
+                        }
+
+                        boolean updated = false;
+                        File jar = null;
+
+                        if (running.getPath().endsWith(".jar")) {
+                            for (Asset asset : jtegranx.getAssets()) {
+                                if (asset.getAssetName().equals("JTegraNX.jar")) {
+                                    jar = GitHandler.downloadAsset(asset, running.getAbsolutePath());
+
+                                    if (jar.exists()) {
+                                        updated = true;
+                                    }
+                                }
+                            }
+
+                            if (updated) {
+                                UIGlobal.appendLog("Download complete");
+                                boolean restart = AlertHandler.showConfirmationDialog("JTegraNX updater", "JTegraNX has been updated and needs to be restarted for the changes to apply.", "Restart now?");
+
+                                if (restart) {
+                                    Platform.runLater(() -> {
+                                        UIGlobal.restartJTegraNX();
+                                    });
+                                } else {
+                                    GlobalSettings.restartPending = true;
+
+                                    Platform.runLater(() -> {
+                                        JTegraNX.getController().getJTegraNXUpdateMenuItem().setText("Restart JTegraNX to finish update");
+                                    });
+                                }
+                            } else {
+                                if (jar == null) {
+                                    AlertHandler.showErrorMessage("JTegraNX updater", "A GitHandler error occured.", "Unable to locate valid asset.");
+                                }
+                            }
+                        } else {
+                            AlertHandler.showErrorMessage("JTegraNX updater", "JTegraNX can't be updated.", "JTegraNX is running from an IDE or a non-JAR build.");
+                        }
+                    }
+                } else {
+                    UIGlobal.appendLog("JTegraNX is up to date");
+                }
+            });
+        }
     }
 
     public static String getCurrentVersion() {

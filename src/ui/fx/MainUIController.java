@@ -48,8 +48,8 @@ import javafx.scene.layout.Pane;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
 import org.apache.commons.io.FileUtils;
-import windows.DriverInstaller;
 import rcm.RCM;
+import windows.DriverInstaller;
 import ui.UIGlobal;
 import util.GlobalSettings;
 import util.SDPrepare;
@@ -196,7 +196,7 @@ public class MainUIController implements Initializable {
 
             if (GlobalSettings.enableTrayIcon) {
                 Tray.enableTrayIcon();
-                
+
                 if (GlobalSettings.enableTrayIcon) {
                     minimizeToTray.setDisable(false);
                 }
@@ -216,7 +216,7 @@ public class MainUIController implements Initializable {
             GlobalSettings.includeFuseePrimary = includeFuseePrimary.isSelected();
             PayloadHandler.updatePayloads();
             UIGlobal.checkIfSpecifiedPayloadExists();
-            
+
             if (payloadPath.getText().contains("Payloads" + File.separator + "fusee-primary.bin")) {
                 payloadPath.clear();
             }
@@ -228,7 +228,7 @@ public class MainUIController implements Initializable {
             GlobalSettings.includeHekate = includehekate.isSelected();
             PayloadHandler.updatePayloads();
             UIGlobal.checkIfSpecifiedPayloadExists();
-            
+
             if (payloadPath.getText().contains("Payloads" + File.separator + "Hekate.bin")) {
                 payloadPath.clear();
             }
@@ -240,7 +240,7 @@ public class MainUIController implements Initializable {
             GlobalSettings.includeLockpickRCM = includeLockpickRCM.isSelected();
             PayloadHandler.updatePayloads();
             UIGlobal.checkIfSpecifiedPayloadExists();
-            
+
             if (payloadPath.getText().contains("Payloads" + File.separator + "Lockpick_RCM.bin")) {
                 payloadPath.clear();
             }
@@ -252,23 +252,11 @@ public class MainUIController implements Initializable {
             GlobalSettings.includeTegraExplorer = includeTegraExplorer.isSelected();
             PayloadHandler.updatePayloads();
             UIGlobal.checkIfSpecifiedPayloadExists();
-            
+
             if (payloadPath.getText().contains("Payloads" + File.separator + "TegraExplorer.bin")) {
                 payloadPath.clear();
             }
 
-            if (GlobalSettings.enableTrayIcon) {
-                Tray.updateMenuItems();
-            }
-        } else if (source.equals(includeIncognitoRCM)) {
-            GlobalSettings.includeIncognitoRCM = includeIncognitoRCM.isSelected();
-            PayloadHandler.updatePayloads();
-            UIGlobal.checkIfSpecifiedPayloadExists();
-            
-            if (payloadPath.getText().contains("Payloads" + File.separator + "Incognito_RCM.bin")) {
-                payloadPath.clear();
-            }
-            
             if (GlobalSettings.enableTrayIcon) {
                 Tray.updateMenuItems();
             }
@@ -335,7 +323,7 @@ public class MainUIController implements Initializable {
     @FXML
     private void checkForJTegraNXUpdates() {
         if (!GlobalSettings.restartPending) {
-            UpdateHandler.checkForUpdates();
+            UpdateHandler.checkForUpdates(null);
         } else {
             UIGlobal.restartJTegraNX();
         }
@@ -371,17 +359,26 @@ public class MainUIController implements Initializable {
     private void installAPXDriver() {
         int result = DriverInstaller.installDriver();
 
-        if (result == DriverInstaller.CANCELED) {
-            UIGlobal.appendLog("Driver installation canceled");
-        } else if (result != DriverInstaller.READY_FOR_USE) {
-            if (!UIGlobal.getRCMStatus().equals("RCM_DETECTED")) {
+        switch (result) {
+            case DriverInstaller.CANCELED:
+                UIGlobal.appendLog("APX Driver install canceled by user");
+                break;
+            case DriverInstaller.DEVICE_UPDATED:
+                UIGlobal.appendLog("APX Driver installed\nRCM device needs to be reconnected");
                 GlobalSettings.driverUpdatedNeedsReconnect = true;
-                UIGlobal.appendLog("APX driver installed");
-                UIGlobal.appendLog("RCM device needs to be reconnected");
-            }
-        } else {
-            UIGlobal.appendLog("APX driver installed");
-            UIGlobal.appendLog("RCM device ready for use");
+
+                if (UIGlobal.getRCMStatus().equals("RCM_DETECTED")) {
+                    RCM.promptDeviceReconnect();
+                    GlobalSettings.driverUpdatedNeedsReconnect = false;
+                }
+
+                break;
+            case DriverInstaller.READY_FOR_USE:
+                UIGlobal.appendLog("APX Driver installed\nRCM device ready for use");
+                break;
+            case DriverInstaller.UAC_CANCEL:
+                UIGlobal.appendLog("APX Driver install canceled from UAC");
+                break;
         }
     }
 

@@ -28,31 +28,79 @@ import java.util.logging.Logger;
 import org.apache.commons.io.FileUtils;
 import util.GlobalSettings;
 import handlers.ResourceHandler;
+import handlers.ZipHandler;
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
 
 public class DriverInstaller {
 
     public static final int CANCELED = -2147483648;
     public static final int READY_FOR_USE = 256;
+    public static final int DEVICE_UPDATED = 1;
+    public static final int UAC_CANCEL = 1223;
 
     public static int installDriver() {
-        try {
-            File driverInstaller;
+        int exitCode = 0;
+        File driverArchive;
+        File outputDir;
 
-            if (!GlobalSettings.portableMode) {
-                driverInstaller = ResourceHandler.rename(ResourceHandler.load("/windows/APX-Driver.exe"), GlobalSettings.STANDARD_MODE_JTEGRANX_DIR_PATH + File.separator + "APX-Driver.exe");
+        if (!GlobalSettings.portableMode) {
+            outputDir = new File(GlobalSettings.STANDARD_MODE_JTEGRANX_DIR_PATH + File.separator + "Driver");
+            
+            if (outputDir.exists()) {
+                try {
+                    FileUtils.deleteDirectory(outputDir);
+                } catch (IOException ex) {
+                    Logger.getLogger(DriverInstaller.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+            
+            driverArchive = ResourceHandler.rename(ResourceHandler.load("/windows/APX-Driver.zip"), outputDir + File.separator + "APX-Driver.zip");
+        } else {
+            outputDir = new File(GlobalSettings.PORTABLE_MODE_JTEGRANX_DIR_PATH + File.separator + "Driver");
+            
+            if (outputDir.exists()) {
+                try {
+                    FileUtils.deleteDirectory(outputDir);
+                } catch (IOException ex) {
+                    Logger.getLogger(DriverInstaller.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+            
+            driverArchive = ResourceHandler.rename(ResourceHandler.load("/windows/APX-Driver.zip"), outputDir + File.separator + "APX-Driver.zip");
+        }
+
+        ZipHandler.unzip(driverArchive.getAbsolutePath(), driverArchive.getParentFile().getAbsolutePath());
+
+        try {
+            Process install;
+
+            if (System.getProperty("os.arch").equals("amd64")) {
+                install = Runtime.getRuntime().exec("cmd /c " + driverArchive.getParentFile().getAbsolutePath() + File.separator + "dpinst64.exe");
             } else {
-                driverInstaller = ResourceHandler.rename(ResourceHandler.load("/windows/APX-Driver.exe"), GlobalSettings.PORTABLE_MODE_JTEGRANX_DIR_PATH + File.separator + "APX-Driver.exe");
+                install = Runtime.getRuntime().exec("cmd /c " + driverArchive.getParentFile().getAbsolutePath() + File.separator + "dpinst32.exe");
             }
 
-            Process install = Runtime.getRuntime().exec("cmd /c \"" + driverInstaller.getAbsolutePath() + "\"");
-            int exitCode = install.waitFor();
-            System.out.println(exitCode);
-            FileUtils.forceDelete(driverInstaller);
-            return exitCode;
+            exitCode = install.waitFor();
+
+            InputStreamReader reader = new InputStreamReader(install.getErrorStream());
+            BufferedReader bReader = new BufferedReader(reader);
+            
+            String line;
+
+            while ((line = bReader.readLine()) != null) {
+                if (line.equals("Access is denied.")) {
+                    FileUtils.deleteDirectory(outputDir);
+
+                    return UAC_CANCEL;
+                }
+            }
+
+            FileUtils.deleteDirectory(outputDir);
         } catch (IOException | InterruptedException ex) {
             Logger.getLogger(DriverInstaller.class.getName()).log(Level.SEVERE, null, ex);
         }
 
-        return -1;
+        return exitCode;
     }
 }

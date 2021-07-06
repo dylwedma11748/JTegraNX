@@ -21,9 +21,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
  */
 package util;
 
-import handlers.ZipHandler;
 import git.GitHandler;
 import git.Release;
+import handlers.ZipHandler;
 import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileOutputStream;

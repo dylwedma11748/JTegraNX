@@ -39,6 +39,7 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
 import rcm.RCM;
 import linux.LinuxDeviceListener;
+import macOS.macOSDeviceListener;
 import ui.fx.JTegraNX;
 import util.GlobalSettings;
 import util.Tray;
@@ -66,12 +67,17 @@ public class UIGlobal {
                 }
             }.start();
         } else if (System.getProperty("os.name").contains("Linux")) {
-            LinuxDeviceListener.startLinuxDeviceListener();
+            LinuxDeviceListener.startDeviceListener();
+        } else if (System.getProperty("os.name").contains("Mac OS X")) {
+            macOSDeviceListener.startDeviceListener();
         }
     }
 
     public static void injectPayload(String payloadPath) {
-        clearLog();
+        if (!GlobalSettings.commandLineMode) {
+            clearLog();
+        }
+        
         RCM.injectPayload(payloadPath);
     }
 
@@ -153,10 +159,6 @@ public class UIGlobal {
     public static String getRCMStatus() {
         return rcm_status;
     }
-    
-    public static String getPreviousRCMStatus() {
-        return previous_rcm_status;
-    }
 
     public static void setDeviceAlert(Alert alert) {
         deviceAlert = alert;
@@ -167,7 +169,11 @@ public class UIGlobal {
     }
 
     public static void appendLog(String line) {
-        JTegraNX.getController().getLog().appendText(line + "\n");
+        if (GlobalSettings.commandLineMode) {
+            System.out.println(line);
+        } else {
+            JTegraNX.getController().getLog().appendText(line + "\n");
+        }
     }
 
     public static void clearLog() {
@@ -206,10 +212,8 @@ public class UIGlobal {
         saveMainConfigFile();
         Platform.exit();
 
-        File runningJAR;
-
         try {
-            runningJAR = new File(UIGlobal.class.getProtectionDomain().getCodeSource().getLocation().toURI());
+            File runningJAR = new File(UIGlobal.class.getProtectionDomain().getCodeSource().getLocation().toURI());
             Runtime.getRuntime().exec("java -jar \"" + runningJAR.getAbsolutePath() + "\"");
         } catch (IOException | URISyntaxException ex) {
             Logger.getLogger(UIGlobal.class.getName()).log(Level.SEVERE, null, ex);
@@ -228,7 +232,6 @@ public class UIGlobal {
         JTegraNX.getController().getEnableTrayIconMenuItem().setSelected(GlobalSettings.enableTrayIcon);
         JTegraNX.getController().getIncludeFuseePrimaryMenuItem().setSelected(GlobalSettings.includeFuseePrimary);
         JTegraNX.getController().getIncludeHekateMenuItem().setSelected(GlobalSettings.includeHekate);
-        JTegraNX.getController().getIncludeIncognitoRCMItem().setSelected(GlobalSettings.includeIncognitoRCM);
         JTegraNX.getController().getIncludeLockpickRCMMenuItem().setSelected(GlobalSettings.includeLockpickRCM);
         JTegraNX.getController().getIncludeTegraExplorerItem().setSelected(GlobalSettings.includeTegraExplorer);
 
@@ -294,10 +297,6 @@ public class UIGlobal {
                         GlobalSettings.includeTegraExplorer = Boolean.valueOf(line.substring(line.indexOf("=") + 1));
                     }
 
-                    if (line.contains("includeIncognitoRCM")) {
-                        GlobalSettings.includeIncognitoRCM = Boolean.valueOf(line.substring(line.indexOf("=") + 1));
-                    }
-
                     if (line.contains("minimizeToTray")) {
                         GlobalSettings.minimizeToTray = Boolean.valueOf(line.substring(line.indexOf("=") + 1));
                     }
@@ -321,11 +320,6 @@ public class UIGlobal {
                         if (GlobalSettings.includeTegraExplorer) {
                             line = bReader.readLine();
                             GlobalSettings.tegraExplorerTag = line.substring(line.indexOf("=") + 1);
-                        }
-
-                        if (GlobalSettings.includeIncognitoRCM) {
-                            line = bReader.readLine();
-                            GlobalSettings.incognitoRCMTag = line.substring(line.indexOf("=") + 1);
                         }
                     }
 
@@ -393,10 +387,6 @@ public class UIGlobal {
                         GlobalSettings.includeTegraExplorer = Boolean.valueOf(line.substring(line.indexOf("=") + 1));
                     }
 
-                    if (line.contains("includeIncognitoRCM")) {
-                        GlobalSettings.includeIncognitoRCM = Boolean.valueOf(line.substring(line.indexOf("=") + 1));
-                    }
-
                     if (line.contains("minimizeToTray")) {
                         GlobalSettings.minimizeToTray = Boolean.valueOf(line.substring(line.indexOf("=") + 1));
                     }
@@ -410,11 +400,6 @@ public class UIGlobal {
                         if (GlobalSettings.includeHekate) {
                             line = bReader.readLine();
                             GlobalSettings.hekateTag = line.substring(line.indexOf("=") + 1);
-                        }
-
-                        if (GlobalSettings.includeIncognitoRCM) {
-                            line = bReader.readLine();
-                            GlobalSettings.incognitoRCMTag = line.substring(line.indexOf("=") + 1);
                         }
 
                         if (GlobalSettings.includeLockpickRCM) {
@@ -463,7 +448,6 @@ public class UIGlobal {
                 writer.println("includeHekate=" + GlobalSettings.includeHekate);
                 writer.println("includeLockpickRCM=" + GlobalSettings.includeLockpickRCM);
                 writer.println("includeTegraExplorer=" + GlobalSettings.includeTegraExplorer);
-                writer.println("includeIncognitoRCM=" + GlobalSettings.includeIncognitoRCM);
                 writer.println("minimizeToTray=" + GlobalSettings.minimizeToTray);
                 writer.println();
                 writer.println(PayloadHandler.getPayloadInfoAsString());
@@ -489,7 +473,6 @@ public class UIGlobal {
                 writer.println("includeHekate=" + GlobalSettings.includeHekate);
                 writer.println("includeLockpickRCM=" + GlobalSettings.includeLockpickRCM);
                 writer.println("includeTegraExplorer=" + GlobalSettings.includeTegraExplorer);
-                writer.println("includeIncognitoRCM=" + GlobalSettings.includeIncognitoRCM);
                 writer.println("minimizeToTray=" + GlobalSettings.minimizeToTray);
                 writer.println();
                 writer.println(PayloadHandler.getPayloadInfoAsString());

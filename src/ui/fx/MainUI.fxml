@@ -123,15 +123,6 @@
                               </ImageView>
                            </graphic>
                         </CheckMenuItem>
-                        <CheckMenuItem fx:id="includeIncognitoRCM" mnemonicParsing="false" onAction="#changeSetting" selected="true" text="Include Incognito_RCM">
-                           <graphic>
-                              <ImageView fitHeight="32.0" fitWidth="32.0" pickOnBounds="true" preserveRatio="true">
-                                 <image>
-                                    <Image url="@../images/plus.png" />
-                                 </image>
-                              </ImageView>
-                           </graphic>
-                        </CheckMenuItem>
                         <CheckMenuItem fx:id="includeLockpickRCM" mnemonicParsing="false" onAction="#changeSetting" selected="true" text="Include L:ockpick_RCM">
                            <graphic>
                               <ImageView fitHeight="32.0" fitWidth="32.0" pickOnBounds="true" preserveRatio="true">

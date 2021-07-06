@@ -25,6 +25,7 @@ import java.util.ArrayList;
 import java.util.List;
 import javafx.application.Platform;
 import ui.fx.JTegraNX;
+import util.GlobalSettings;
 
 public class ConfigManager {
 
@@ -33,7 +34,9 @@ public class ConfigManager {
     public static void addConfig(Config... configs) {
         for (Config config : configs) {
             if (CONFIGS.add(config)) {
-                updateConfigList();
+                if (!GlobalSettings.commandLineMode) {
+                    updateConfigList();
+                }
             }
         }
     }

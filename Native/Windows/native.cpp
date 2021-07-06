@@ -16,6 +16,7 @@ typedef struct
 } getStatusRequest;
 
 JNIEXPORT jboolean JNICALL Java_rcm_RCM_smashTheStack(JNIEnv* env, jclass cl) {
+	setStaticJVM(env);
 	bool found = false;
 
 	HDEVINFO deviceInfo;
