@@ -1,5 +1,5 @@
-![Png](https://img.shields.io/badge/Platforms-Windows%20x86--x64%20Linux%20x86--x64-green)
-![Png](https://img.shields.io/badge/Latest%20release-1.6.6-green)
+![Png](https://img.shields.io/badge/Platforms-Windows%20x86--x64%20Linux%20x86--x64%20Mac%20OS%20X%20x86--x64-green)
+![Png](https://img.shields.io/badge/Latest%20release-1.6.7-green)
 ![GitHub](https://img.shields.io/badge/License-GPL--2.0%20or%20later-green)
 ![GitHub All Releases](https://img.shields.io/github/downloads/dylwedma11748/JTegraNX/total)
 ![GitHub repo size](https://img.shields.io/github/repo-size/dylwedma11748/JTegraNX)
@@ -12,7 +12,7 @@ In order to run this program, you need Java 8 or higher installed on your comput
 
 My builds of JTegraNX will not run on Java 11 or higher due to JavaFX not being included. Anyone who wishes to use JTegraNX on Java 11 or higher will need to build it from the source code.
 
-JTegraNX is currently only supported on Windows and Linux, but I plan to add support for macOS.
+JTegraNX is supported on Windows, Linux, and Mac OS X.
 
 ## Preview
 ![Png](preview.png)
@@ -27,10 +27,15 @@ JTegraNX is currently only supported on Windows and Linux, but I plan to add sup
 - SD card preparation
 - APX driver detection/installation
 - Portable mode
+- Command line mode
 
 ## Usage
-1. Choose payload or config
-2. Inject
+Normal mode:
+- Launch JTegraNX.jar normally to use the UI mode. Then select a payload and inject or use the other features if needed.
+
+Command line mode:
+- Launch JTegraNX.jar from the command line like this:
+  - `java -cp JTegraNX.jar ui.fx.JTegraNX -cml`
 
 ## Linux support
 Linux support has been added in v1.6.6, to use JTegraNX on Linux some preperation may be required.
@@ -38,8 +43,31 @@ Linux support has been added in v1.6.6, to use JTegraNX on Linux some preperatio
 - Payload injection on Linux requires the RCM device connecting to a port handled by xhci_hcd or a port with a patched EHCI driver.
   - My way of getting past this was creating an Ubuntu 21.04 VM in VMware with USB 3.1 enabled.
 
-## macOS support
-macOS support for JTegraNX is planned but unfortunately, I will not be able to add it by myself, my idea of creating a macOS VM in VMware didn't work as expected. While I was able to create the VM properly and get JDK 8 and Netbeans installed on it, I was met with the bug in JavaFX where it shows blank stages on a macOS VM, making me unable to progress with development. So for macOS support, I will need the help of macOS Java developers. If you believe you can help, send me an email at dylwedma14@gmail.com.
+## Mac OS X support
+Mac OS X support has been added in v1.6.7, some things to take note on though.
+- While JTegraNX's core functionality worked in my testing on a VM, I ran into some issues. You may or may not encounter these.
+  - If you try to use the browse payload function or prepare SD card function and it fails, open JTegraNX using the terminal and check for errors. If you recieve this error or something similar to it:
+    - `java[2748:110752] +[NSXPCSharedListener endpointForReply:withListenerName:]: an error occurred while attempting to obtain endpoint for listener 'com.apple.view-bridge': Connection interrupted`
+    - This error occures when trying to open the FileChooser or DirectoryChooser respectively, I don't know what's causing it but I do know that it's an issue with Mac OS X, not JTegraNX. I've seen on a thread that someone encountered the same kind of issue while using OBS Studio on Mac OS X. For me it could be that I was running Catalina in a VM but I'm not sure because I don't own a Mac.
+  - When a notification gets sent to the tray, it doesn't show JTegraNX's icon. While a minor issue, I'd perfer it did.
+
+- JTegraNX on Mac OS X doesn't require any prior set up and *should* work out of the box. No drivers, no patches, nothing. Just download and go.
+
+## Command line mode
+Command line mode is a new feature added in v1.6.7. This mode has most of JTegraNX's functionality stuffed into the command line.
+- To access command line mode, run JTegraNX.jar like this:
+  - `java -cp JTegraNX.jar ui.fx.JTegraNX -cml`
+
+These features are not usable in command line mode:
+- Device listeners (JTegraNX's inject function already checks for the device anyway).
+  - Becuase of this, Auto-inject won't work either.
+- Changing configuration mode from standard to portable or vice versa.
+- Browsing for payloads using a dialog (it *is* a command line).
+- Restarting JTegraNX after an update.
+  - This is due to how the restart function works.
+    - It gets the running JAR file's path and executes it using `Runime.getRuntime().exec()`. In theory, I could launch command line mode in Runtime but I would then need to simultaneously have the Input, Output, and maybe even Error streams being monitored and used, but doing that while running a JVM inside a JVM would be very tedious. So I opted out of it.
+ - Config system (Other than setting updates or bundled payloads).
+ - Tray icon (again, it's a command line).
 
 ## Using configs
 The config system allows you to save what you entered in the "Payload Path" field and load it again in another session.
@@ -48,7 +76,7 @@ The config system allows you to save what you entered in the "Payload Path" fiel
 Simply click on "Load Config" to reveal the config list, then select the config you wish to use.
 
 ### Saving a config:
-Simple click on "Save Config", input a name for the config, and hit enter.
+Simply click on "Save Config", input a name for the config, and hit enter.
 
 ## Custom Settings
 You can now customize JTegraNX's settings to your liking.
@@ -120,6 +148,8 @@ The Linux Native isn't so complicated.
 4. Copy the compiled x86 native to src\linux\natives and rename it to "JTegraNX_x86.so".
 5. Copy the compiled x64 native to src\linux\natives and rename it to "JTegraNX_x64.so".
 
+Mac OS X doesn't need a native since fusee-gelee works out of the box with it.
+
 # Credits
 - [suchmememanyskill](https://github.com/suchmememanyskill) for [TegraExplorer](https://github.com/suchmememanyskill/TegraExplorer).
 - [rajkosto](https://github.com/rajkosto) for [memloader](https://github.com/rajkosto/memloader) and [TegraRcmSmash](https://github.com/rajkosto/TegraRcmSmash) (No longer being used in v1.6+).
@@ -127,4 +157,3 @@ The Linux Native isn't so complicated.
 - [eliboa](https://github.com/eliboa) for the images from [TegraRcmGUI](https://github.com/eliboa/TegraRcmGUI).
 - The creators of Atmosphère for [fusee-primary](https://github.com/Atmosphere-NX/Atmosphere/releases).
 - [CTCaer](https://github.com/CTCaer) for [Hekate](https://github.com/CTCaer/hekate).
-- [jimzrt](https://github.com/jimzrt) for [Incognito_RCM](https://github.com/jimzrt/Incognito_RCM)
