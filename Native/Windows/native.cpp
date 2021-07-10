@@ -6,6 +6,8 @@ static GUID rcmDeviceInterface = {0xA5DCBF10L, 0x6530, 0x11D2, {0x90, 0x1F, 0x00
 static TCHAR deviceVIDPID[] = _T("vid_0955&pid_7321");
 
 WinHandle getDevice;
+KHOT_HANDLE hotplugHandle;
+KHOT_PARAMS hotplugParameters;
 
 typedef struct
 {
@@ -151,7 +153,7 @@ bool checkForDeviceUsingLstK() {
 }
 
 void KUSB_API hotplugCallback(KHOT_HANDLE deviceHandle, KLST_DEVINFO_HANDLE deviceInfo, KLST_SYNC_FLAG notificationType) {
-	if (notificationType == KLST_SYNC_FLAG_ADDED && deviceInfo->Common.Vid == 0x0955 && deviceInfo->Common.Pid == 0x7321) {
+	if (notificationType == KLST_SYNC_FLAG_ADDED && deviceInfo -> Common.Vid == 0x0955 && deviceInfo -> Common.Pid == 0x7321) {
 		if (deviceInfo -> DriverID != KUSB_DRVID_LIBUSBK) {
 			setRCMStatus("DRIVER_MISSING");
 			appendLog("Incorrect APX driver installed\nPlease install libusbK (v3.0.7.0)");
@@ -160,7 +162,7 @@ void KUSB_API hotplugCallback(KHOT_HANDLE deviceHandle, KLST_DEVINFO_HANDLE devi
 		}
 	}
 
-	if (notificationType == KLST_SYNC_FLAG_REMOVED && deviceInfo->Common.Vid == 0x0955 && deviceInfo->Common.Pid == 0x7321) {
+	if (notificationType == KLST_SYNC_FLAG_REMOVED && deviceInfo -> Common.Vid == 0x0955 && deviceInfo -> Common.Pid == 0x7321) {
 		setRCMStatus("RCM_UNDETECTED");
 	}
 }
@@ -171,9 +173,6 @@ JNIEXPORT void JNICALL Java_rcm_RCM_startDeviceListener(JNIEnv* env, jclass cl) 
 	if (checkForDeviceUsingLstK()) {
 		setRCMStatus("RCM_DETECTED");
 	}
-
-	KHOT_HANDLE hotplugHandle;
-	KHOT_PARAMS hotplugParameters;
 
 	memset(&hotplugParameters, 0, sizeof(hotplugParameters));
 	hotplugParameters.OnHotPlug = hotplugCallback;
@@ -187,4 +186,8 @@ JNIEXPORT void JNICALL Java_rcm_RCM_startDeviceListener(JNIEnv* env, jclass cl) 
 		getDevice = CreateEvent(nullptr, TRUE, FALSE, nullptr);
 		WaitForSingleObject(getDevice.get(), INFINITE);
 	}
+}
+
+JNIEXPORT void JNICALL Java_rcm_RCM_closeDeviceListener(JNIEnv* env, jclass cl) {
+	HotK_Free(&hotplugHandle);
 }

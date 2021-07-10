@@ -17,6 +17,7 @@ extern "C" {
 
 JNIEXPORT jboolean JNICALL Java_rcm_RCM_smashTheStack(JNIEnv* env, jclass cl);
 JNIEXPORT void JNICALL Java_rcm_RCM_startDeviceListener(JNIEnv* env, jclass cl);
+JNIEXPORT void JNICALL Java_rcm_RCM_closeDeviceListener(JNIEnv* env, jclass cl);
 
 #ifdef __cplusplus
 }
