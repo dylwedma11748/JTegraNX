@@ -24,7 +24,7 @@ package util;
 import java.io.File;
 
 public class GlobalSettings {
-
+    
     public static final String JRE_ARCH = System.getProperty("sun.arch.data.model");
 
     public static final String STANDARD_MODE_JTEGRANX_DIR_PATH = System.getProperty("user.home") + File.separator + "Documents" + File.separator + "JTegraNX";

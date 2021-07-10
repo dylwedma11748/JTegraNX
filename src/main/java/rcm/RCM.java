@@ -32,7 +32,6 @@ import java.util.Arrays;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.application.Platform;
-import org.usb4java.Context;
 import org.usb4java.Device;
 import org.usb4java.DeviceDescriptor;
 import org.usb4java.DeviceHandle;
@@ -67,6 +66,7 @@ public class RCM {
 
     // Device listener for Windows
     public static native void startDeviceListener();
+    public static native void closeDeviceListener();
 
     // Smash stack for Windows
     private static native boolean smashTheStack();
@@ -358,7 +358,7 @@ public class RCM {
             int readSize;
 
             if ((readSize = bis.read(payloadBytes)) != payloadFileSize) {
-                appendLog("Failed to read full payload");
+                appendLog("Failed to read full payload\nRead " + readSize + " out of " + payloadFileSize + " bytes.");
                 return null;
             } else {
                 appendLog("Creating RCM payload");
@@ -382,8 +382,7 @@ public class RCM {
     }
 
     private static Device findRCMDevice() {
-        Context context = new Context();
-        int returnValue = LibUsb.init(context);
+        int returnValue = LibUsb.init(null);
 
         if (returnValue != LibUsb.SUCCESS) {
             appendLog("Failed to init libusb context");
@@ -396,7 +395,7 @@ public class RCM {
             return null;
         } else {
             DeviceList list = new DeviceList();
-            returnValue = LibUsb.getDeviceList(context, list);
+            returnValue = LibUsb.getDeviceList(null, list);
 
             if (returnValue < 0) {
                 appendLog("Failed to get device list");

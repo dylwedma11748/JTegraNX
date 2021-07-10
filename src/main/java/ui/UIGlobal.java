@@ -39,7 +39,7 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
 import rcm.RCM;
 import linux.LinuxDeviceListener;
-import macOS.macOSDeviceListener;
+import macOS.MacOSDeviceListener;
 import ui.fx.JTegraNX;
 import util.GlobalSettings;
 import util.Tray;
@@ -49,12 +49,12 @@ public class UIGlobal {
     private static String rcm_status = "NO_STATUS";
     private static String previous_rcm_status = "NO_STATUS";
 
-    private static final Image RCM_DETECTED = new Image("/ui/images/rcm_detected.png");
-    private static final Image RCM_UNDETECTED = new Image("/ui/images/rcm_undetected.png");
-    private static final Image RCM_LOADING = new Image("/ui/images/loading.png");
-    private static final Image RCM_LOADED = new Image("/ui/images/loaded.png");
-    private static final Image DRIVER_MISSING = new Image("/ui/images/driver.png");
-    private static final Image ERROR = new Image("/ui/images/error.png");
+    private static final Image RCM_DETECTED = new Image(UIGlobal.class.getResourceAsStream("/images/rcm_detected.png"));
+    private static final Image RCM_UNDETECTED = new Image(UIGlobal.class.getResourceAsStream("/images/rcm_undetected.png"));
+    private static final Image RCM_LOADING = new Image(UIGlobal.class.getResourceAsStream("/images/loading.png"));
+    private static final Image RCM_LOADED = new Image(UIGlobal.class.getResourceAsStream("/images/loaded.png"));
+    private static final Image DRIVER_MISSING = new Image(UIGlobal.class.getResourceAsStream("/images/driver.png"));
+    private static final Image ERROR = new Image(UIGlobal.class.getResourceAsStream("/images/error.png"));
 
     private static Alert deviceAlert;
 
@@ -69,7 +69,7 @@ public class UIGlobal {
         } else if (System.getProperty("os.name").contains("Linux")) {
             LinuxDeviceListener.startDeviceListener();
         } else if (System.getProperty("os.name").contains("Mac OS X")) {
-            macOSDeviceListener.startDeviceListener();
+            MacOSDeviceListener.startDeviceListener();
         }
     }
 
@@ -77,7 +77,7 @@ public class UIGlobal {
         if (!GlobalSettings.commandLineMode) {
             clearLog();
         }
-        
+
         RCM.injectPayload(payloadPath);
     }
 
@@ -191,9 +191,13 @@ public class UIGlobal {
         if (GlobalSettings.enableTrayIcon) {
             Tray.disableTrayIcon();
         }
-        
-        if (System.getProperty("os.name").contains("Linux")) {
+
+        if (System.getProperty("os.name").contains("Windows")) {
+            RCM.closeDeviceListener();
+        } else if (System.getProperty("os.name").contains("Linux")) {
             LinuxDeviceListener.closeLinuxDeviceListener();
+        } else if (System.getProperty("os.name").contains("Mac OS X")) {
+            MacOSDeviceListener.closeMacOSDeviceListener();
         }
 
         saveMainConfigFile();
@@ -222,7 +226,8 @@ public class UIGlobal {
         System.exit(0);
     }
 
-    public static void applyGlobalSettings() {
+    @SuppressWarnings("unchecked")
+	public static void applyGlobalSettings() {
         ConfigManager.selectConfig(GlobalSettings.selectedConfig);
 
         JTegraNX.getController().getPayloadPathField().setText(GlobalSettings.savedPayloadPath);

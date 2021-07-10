@@ -67,7 +67,7 @@ public class Tray {
         } else {
             menu = new PopupMenu();
 
-            trayIcon = new TrayIcon(createIcon("/ui/images/icon.png", "JTegraNX Tray Icon"));
+            trayIcon = new TrayIcon(createIcon("/images/icon.png", "JTegraNX Tray Icon"));
             trayIcon.setImageAutoSize(true);
             trayIcon.setPopupMenu(menu);
             trayIcon.setToolTip("JTegraNX");
@@ -101,7 +101,7 @@ public class Tray {
 
         if (GlobalSettings.selectedPayloadCount > 0) {
             if (GlobalSettings.includeFuseePrimary) {
-                MenuItem fuseePrimary = new MenuItem("fusee-primary (AtmosphÃ¨re " + GlobalSettings.fuseePrimaryTag + ")");
+                MenuItem fuseePrimary = new MenuItem("fusee-primary (Atmosphère " + GlobalSettings.fuseePrimaryTag + ")");
 
                 fuseePrimary.addActionListener((ActionEvent e) -> {
                     Platform.runLater(() -> {

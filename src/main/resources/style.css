@@ -82,9 +82,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 }
 
 #close {
-	-fx-background-image: url("../images/close.png");
+	-fx-background-image: url("./images/close.png");
 }
 
 #minimize {
-	-fx-background-image: url("../images/minimize.png");
+	-fx-background-image: url("./images/minimize.png");
 }

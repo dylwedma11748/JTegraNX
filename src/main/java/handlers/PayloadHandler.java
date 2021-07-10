@@ -105,8 +105,8 @@ public class PayloadHandler {
                 }
 
                 if (!GlobalSettings.commandLineMode) {
-                    MenuItem item = new MenuItem("fusee-primary (AtmosphÃ¨re " + fuseePrimary.getTag() + ")");
-                    ImageView image = new ImageView(PayloadHandler.class.getResource("/ui/images/payload.png").toString());
+                    MenuItem item = new MenuItem("fusee-primary (Atmosphère " + fuseePrimary.getTag() + ")");
+                    ImageView image = new ImageView(PayloadHandler.class.getResource("/images/payload.png").toString());
                     item.setGraphic(image);
 
                     item.setOnAction((ActionEvent event) -> {
@@ -158,6 +158,16 @@ public class PayloadHandler {
                 }
 
                 if (GlobalSettings.hekateTag != null && !GlobalSettings.hekateTag.equals(hekate.getTag()) && !GlobalSettings.portableMode) {
+                    File hekateBin = new File(GlobalSettings.STANDARD_MODE_JTEGRANX_PAYLOAD_DIR_PATH + File.separator + "Hekate.bin");
+                    
+                    if (hekateBin.exists()) {
+                        try {
+                            FileUtils.forceDelete(hekateBin);
+                        } catch (IOException ex) {
+                            Logger.getLogger(PayloadHandler.class.getName()).log(Level.SEVERE, null, ex);
+                        }
+                    }
+                    
                     hekate.getAssets().stream().filter((asset) -> (asset.getAssetName().contains("hekate_ctcaer"))).map((asset) -> GitHandler.downloadAsset(asset, GlobalSettings.STANDARD_MODE_JTEGRANX_PAYLOAD_DIR_PATH + File.separator + "hekate.zip")).map((zip) -> {
                         if (GlobalSettings.commandLineMode) {
                             System.out.println("Updating Hekate");
@@ -216,6 +226,16 @@ public class PayloadHandler {
                 }
 
                 if (GlobalSettings.hekateTag != null && !GlobalSettings.hekateTag.equals(hekate.getTag()) && GlobalSettings.portableMode) {
+                    File hekateBin = new File(GlobalSettings.PORTABLE_MODE_JTEGRANX_PAYLOAD_DIR_PATH + File.separator + "Hekate.bin");
+                    
+                    if (hekateBin.exists()) {
+                        try {
+                            FileUtils.forceDelete(hekateBin);
+                        } catch (IOException ex) {
+                            Logger.getLogger(PayloadHandler.class.getName()).log(Level.SEVERE, null, ex);
+                        }
+                    }
+                    
                     hekate.getAssets().stream().filter((asset) -> (asset.getAssetName().contains("hekate_ctcaer"))).map((asset) -> GitHandler.downloadAsset(asset, GlobalSettings.PORTABLE_MODE_JTEGRANX_PAYLOAD_DIR_PATH + File.separator + "hekate.zip")).map((zip) -> {
                         if (GlobalSettings.commandLineMode) {
                             System.out.println("Updating Hekate");
@@ -275,7 +295,7 @@ public class PayloadHandler {
 
                 if (!GlobalSettings.commandLineMode) {
                     MenuItem item = new MenuItem("Hekate " + hekate.getTag());
-                    ImageView image = new ImageView(PayloadHandler.class.getResource("/ui/images/payload.png").toString());
+                    ImageView image = new ImageView(PayloadHandler.class.getResource("/images/payload.png").toString());
                     item.setGraphic(image);
 
                     item.setOnAction((ActionEvent event) -> {
@@ -362,7 +382,7 @@ public class PayloadHandler {
 
                 if (!GlobalSettings.commandLineMode) {
                     MenuItem item = new MenuItem("Lockpick_RCM " + lockpickRCM.getTag());
-                    ImageView image = new ImageView(PayloadHandler.class.getResource("/ui/images/payload.png").toString());
+                    ImageView image = new ImageView(PayloadHandler.class.getResource("/images/payload.png").toString());
                     item.setGraphic(image);
 
                     item.setOnAction((ActionEvent event) -> {
@@ -449,7 +469,7 @@ public class PayloadHandler {
 
                 if (!GlobalSettings.commandLineMode) {
                     MenuItem item = new MenuItem("TegraExplorer v" + tegraExplorer.getTag());
-                    ImageView image = new ImageView(PayloadHandler.class.getResource("/ui/images/payload.png").toString());
+                    ImageView image = new ImageView(PayloadHandler.class.getResource("/images/payload.png").toString());
                     item.setGraphic(image);
 
                     item.setOnAction((ActionEvent event) -> {

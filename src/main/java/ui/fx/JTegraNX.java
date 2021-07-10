@@ -36,18 +36,16 @@ import javafx.stage.StageStyle;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
 import handlers.PayloadHandler;
-import handlers.ResourceHandler;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 import javafx.application.Platform;
-import javax.swing.JOptionPane;
 import ui.UIGlobal;
 import util.GlobalSettings;
+import util.NativeLoader;
 import util.Tray;
 import windows.DriverInstaller;
-import windows.libusbKInstaller;
 
 public class JTegraNX extends Application {
 
@@ -58,7 +56,7 @@ public class JTegraNX extends Application {
     @Override
     public void start(Stage stage) throws Exception {
         Platform.setImplicitExit(false);
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("MainUI.fxml"));
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("/MainUI.fxml"));
         Pane base = loader.load();
         controller = loader.getController();
 
@@ -67,7 +65,7 @@ public class JTegraNX extends Application {
         stage.initStyle(StageStyle.UNDECORATED);
         stage.setScene(scene);
         stage.setTitle("JTegraNX");
-        icon = new Image("/ui/images/icon.png");
+        icon = new Image(getClass().getResourceAsStream("/images/icon.png"));
         stage.getIcons().add(icon);
         stage.setResizable(false);
         JTegraNX.stage = stage;
@@ -168,10 +166,15 @@ public class JTegraNX extends Application {
         }
 
         if (args.length > 0 && args[0].equals("-cml")) {
-            Scanner scanner = new Scanner(System.in);
-            extractAndLoadNatives(true);
+        	GlobalSettings.commandLineMode = true;
+        	Scanner scanner = new Scanner(System.in);
+            
+        	if (!NativeLoader.loadNatives()) {
+        		System.err.println("Failed to load natives");
+        		System.exit(-1);
+        	}
+        	
             System.out.println("JTegraNX - Another RCM payload injector\nCopyright (C) 2019-2021 Dylan Wedman");
-            GlobalSettings.commandLineMode = true;
 
             if (UIGlobal.readMainConfigFile()) {
                 if (GlobalSettings.checkPayloadUpdates) {
@@ -188,7 +191,11 @@ public class JTegraNX extends Application {
             System.out.println("Command line mode ready\nFor help, type \"help\"");
             commandLineModeLoop(scanner);
         } else {
-            extractAndLoadNatives(false);
+        	if (!NativeLoader.loadNatives()) {
+        		System.err.println("Failed to load natives");
+        		System.exit(-1);
+        	}
+        	
             launch();
         }
     }
@@ -415,56 +422,6 @@ public class JTegraNX extends Application {
         } else {
             System.out.println("Invalid command \"" + command + "\"");
             commandLineModeLoop(scanner);
-        }
-    }
-
-    private static void extractAndLoadNatives(boolean commandLine) {
-        if (System.getProperty("os.name").contains("Windows")) {
-            File libusbk = new File(System.getenv("SystemDrive") + File.separator + "Windows" + File.separator + "System32" + File.separator + "libusbK.dll");
-
-            if (!libusbk.exists()) {
-                if (commandLine) {
-                    System.out.println("libusbK was not found on your system.\nlibusbK is required for JTegraNX to launch.\nRunning the included installer will fix this issue.\nInstall now?\nEntering \"No\" will close JTegraNX.");
-                    Scanner in = new Scanner(System.in);
-                    String answer = in.nextLine();
-
-                    if (answer.equalsIgnoreCase("yes") || answer.equalsIgnoreCase("y")) {
-                        libusbKInstaller.installLibusbK();
-                    } else {
-                        System.exit(0);
-                    }
-                } else {
-                    int install = AlertHandler.showSwingConformationDialog("libusbK missing", "libusbK was not found on your system.\nlibusbK is required for JTegraNX to launch.\nRunning the included installer will fix this issue.\nInstall now?\nSelecting \"No\" will close JTegraNX.", 0);
-
-                    if (install == JOptionPane.YES_OPTION) {
-                        libusbKInstaller.installLibusbK();
-                    } else {
-                        System.exit(0);
-                    }
-                }
-            }
-
-            File library;
-
-            if (GlobalSettings.JRE_ARCH.equals("64")) {
-                library = ResourceHandler.load("/windows/natives/JTegraNX_x64.dll");
-            } else {
-                library = ResourceHandler.load("/windows/natives/JTegraNX_x86.dll");
-            }
-
-            library.deleteOnExit();
-            System.load(library.getAbsolutePath());
-        } else if (System.getProperty("os.name").contains("Linux")) {
-            File library;
-
-            if (GlobalSettings.JRE_ARCH.equals("64")) {
-                library = ResourceHandler.load("/linux/natives/JTegraNX_x64.so");
-            } else {
-                library = ResourceHandler.load("/linux/natives/JTegraNX_x86.so");
-            }
-
-            library.deleteOnExit();
-            System.load(library.getAbsolutePath());
         }
     }
 

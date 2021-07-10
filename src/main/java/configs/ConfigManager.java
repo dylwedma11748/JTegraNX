@@ -58,7 +58,8 @@ public class ConfigManager {
         return null;
     }
 
-    public static void selectConfig(Object item) {
+    @SuppressWarnings("unchecked")
+	public static void selectConfig(Object item) {
         Platform.runLater(() -> {
             if (item != null) {
                 if (!item.equals("No configs")) {
@@ -73,7 +74,8 @@ public class ConfigManager {
         });
     }
 
-    public static void updateConfigList() {
+    @SuppressWarnings("unchecked")
+	public static void updateConfigList() {
         Platform.runLater(() -> {
             JTegraNX.getController().getConfigList().getItems().removeAll(JTegraNX.getController().getConfigList().getItems());
 

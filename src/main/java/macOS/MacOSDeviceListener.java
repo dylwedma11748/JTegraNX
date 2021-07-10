@@ -31,9 +31,9 @@ import org.usb4java.LibUsb;
 import org.usb4java.LibUsbException;
 import ui.UIGlobal;
 
-public class macOSDeviceListener {
+public class MacOSDeviceListener {
 
-    private static macOSDeviceListener.EventHandlingThread globalThread;
+    private static MacOSDeviceListener.EventHandlingThread globalThread;
     private static HotplugCallbackHandle callbackHandle;
 
     private static final short vendorID = 0x0955;
@@ -83,11 +83,11 @@ public class macOSDeviceListener {
         if (!LibUsb.hasCapability(LibUsb.CAP_HAS_HOTPLUG)) {
             UIGlobal.appendLog("Hotplug not supported on this system\nUnable to start macOS Device Listener\nRCM functionality is unavailable");
         } else {
-            globalThread = new macOSDeviceListener.EventHandlingThread();
+            globalThread = new MacOSDeviceListener.EventHandlingThread();
             globalThread.start();
 
             callbackHandle = new HotplugCallbackHandle();
-            result = LibUsb.hotplugRegisterCallback(null, LibUsb.HOTPLUG_EVENT_DEVICE_ARRIVED | LibUsb.HOTPLUG_EVENT_DEVICE_LEFT, LibUsb.HOTPLUG_ENUMERATE, vendorID, productID, LibUsb.HOTPLUG_MATCH_ANY, new macOSDeviceListener.Callback(), null, callbackHandle);
+            result = LibUsb.hotplugRegisterCallback(null, LibUsb.HOTPLUG_EVENT_DEVICE_ARRIVED | LibUsb.HOTPLUG_EVENT_DEVICE_LEFT, LibUsb.HOTPLUG_ENUMERATE, vendorID, productID, LibUsb.HOTPLUG_MATCH_ANY, new MacOSDeviceListener.Callback(), null, callbackHandle);
 
             if (result != LibUsb.SUCCESS) {
                 throw new LibUsbException("Unable to register hotplug callback", result);
@@ -95,14 +95,14 @@ public class macOSDeviceListener {
         }
     }
 
-    public static void closeLinuxDeviceListener() {
+    public static void closeMacOSDeviceListener() {
         try {
             globalThread.abort();
             LibUsb.hotplugDeregisterCallback(null, callbackHandle);
             globalThread.join();
             LibUsb.exit(null);
         } catch (InterruptedException ex) {
-            Logger.getLogger(macOSDeviceListener.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(MacOSDeviceListener.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 }

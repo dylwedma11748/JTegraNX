@@ -69,7 +69,8 @@ public class MainUIController implements Initializable {
     @FXML
     private TextArea log;
 
-    @FXML
+    @SuppressWarnings("rawtypes")
+	@FXML
     private ComboBox configList;
 
     @FXML
@@ -444,7 +445,8 @@ public class MainUIController implements Initializable {
         return log;
     }
 
-    public ComboBox getConfigList() {
+    @SuppressWarnings("rawtypes")
+	public ComboBox getConfigList() {
         return configList;
     }
 

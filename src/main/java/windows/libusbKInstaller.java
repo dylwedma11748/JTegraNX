@@ -30,14 +30,20 @@ import org.apache.commons.io.FileUtils;
 
 public class libusbKInstaller {
 
-    public static void installLibusbK() {
+	public static final int INSTALLED = 0;
+	public static final int CANCELED = 2;
+	
+    public static int installLibusbK() {
         try {
             File installer = ResourceHandler.rename(ResourceHandler.load("/windows/libusbK-3.0.7.0-setup.exe"), System.getProperty("user.dir") + File.separator + "libusbK-3.0.7.0-setup.exe");
             Process install = Runtime.getRuntime().exec("cmd /c \"" + installer.getAbsolutePath() + "\"");
-            install.waitFor();
+            int exitCode = install.waitFor();
             FileUtils.forceDelete(installer);
+            return exitCode;
         } catch (IOException | InterruptedException ex) {
             Logger.getLogger(libusbKInstaller.class.getName()).log(Level.SEVERE, null, ex);
         }
+        
+		return -1;
     }
 }

@@ -25,7 +25,6 @@ import git.Asset;
 import git.GitHandler;
 import git.Release;
 import java.io.File;
-import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.Scanner;
 import java.util.logging.Level;
@@ -38,7 +37,7 @@ import util.GlobalSettings;
 public class UpdateHandler {
 
     private static Release jtegranx;
-    private static final String currentVersion = "1.6.7";
+    private static final String currentVersion = "1.6.8";
 
     public static void checkForUpdates(Scanner scanner) {
         if (GlobalSettings.commandLineMode) {
