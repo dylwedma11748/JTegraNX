@@ -1,5 +1,5 @@
 ![Png](https://img.shields.io/badge/Platforms-Windows%20x86--x64%20Linux%20x86--x64%20Mac%20OS%20X%20x86--x64-green)
-![Png](https://img.shields.io/badge/Latest%20release-1.6.7-green)
+![Png](https://img.shields.io/badge/Latest%20release-1.6.8-green)
 ![GitHub](https://img.shields.io/badge/License-GPL--2.0%20or%20later-green)
 ![GitHub All Releases](https://img.shields.io/github/downloads/dylwedma11748/JTegraNX/total)
 ![GitHub repo size](https://img.shields.io/github/repo-size/dylwedma11748/JTegraNX)
@@ -9,8 +9,6 @@
 # JTegraNX - Another RCM payload injector
 
 In order to run this program, you need Java 8 or higher installed on your computer. You can download Java [here](https://www.java.com/en/).
-
-My builds of JTegraNX will not run on Java 11 or higher due to JavaFX not being included. Anyone who wishes to use JTegraNX on Java 11 or higher will need to build it from the source code.
 
 JTegraNX is supported on Windows, Linux, and Mac OS X.
 
@@ -35,7 +33,7 @@ Normal mode:
 
 Command line mode:
 - Launch JTegraNX.jar from the command line like this:
-  - `java -cp JTegraNX.jar ui.fx.JTegraNX -cml`
+  - `java -jar JTegraNX.jar -cml`
 
 ## Linux support
 Linux support has been added in v1.6.6, to use JTegraNX on Linux some preperation may be required.
@@ -56,7 +54,7 @@ Mac OS X support has been added in v1.6.7, some things to take note on though.
 ## Command line mode
 Command line mode is a new feature added in v1.6.7. This mode has most of JTegraNX's functionality stuffed into the command line.
 - To access command line mode, run JTegraNX.jar like this:
-  - `java -cp JTegraNX.jar ui.fx.JTegraNX -cml`
+  - `java -jar JTegraNX.jar -cml`
 
 These features are not usable in command line mode:
 - Device listeners (JTegraNX's inject function already checks for the device anyway).
