@@ -5,7 +5,7 @@
 ![GitHub repo size](https://img.shields.io/github/repo-size/dylwedma11748/JTegraNX)
 [![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2Fdylwedma11748%2FJTegraNX.svg?type=small)](https://app.fossa.com/projects/git%2Bgithub.com%2Fdylwedma11748%2FJTegraNX?ref=badge_small)
 ###
-![Png](src/ui/images/banner.png)
+![Png](src/main/resources/images/banner.png)
 # JTegraNX - Another RCM payload injector
 
 In order to run this program, you need Java 8 or higher installed on your computer. You can download Java [here](https://www.java.com/en/).
