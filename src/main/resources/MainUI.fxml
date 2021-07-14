@@ -21,7 +21,7 @@
 
 <Pane fx:id="pane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="411.0" prefWidth="830.0" stylesheets="@style.css" xmlns="http://javafx.com/javafx/16" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ui.fx.MainUIController">
    <children>
-      <MenuBar fx:id="menuBar" prefHeight="40.0" prefWidth="418.0">
+      <MenuBar fx:id="menuBar" prefHeight="40.0" prefWidth="760.0">
         <menus>
           <Menu mnemonicParsing="false" text="Menu">
             <items>
@@ -46,20 +46,11 @@
                         </ImageView>
                      </graphic>
                   </MenuItem>
-                  <MenuItem mnemonicParsing="false" onAction="#prepareSDCard" text="Prepare SD card">
+                  <MenuItem mnemonicParsing="false" onAction="#close" text="Exit">
                      <graphic>
                         <ImageView fitHeight="32.0" fitWidth="32.0" pickOnBounds="true" preserveRatio="true">
                            <image>
-                              <Image url="@images/sdcard.png" />
-                           </image>
-                        </ImageView>
-                     </graphic>
-                  </MenuItem>
-                  <MenuItem fx:id="installDriver" mnemonicParsing="false" onAction="#installAPXDriver" text="Install APX driver">
-                     <graphic>
-                        <ImageView fitHeight="32.0" fitWidth="32.0" pickOnBounds="true" preserveRatio="true">
-                           <image>
-                              <Image url="@images/usb.png" />
+                              <Image url="@images/exit.png" />
                            </image>
                         </ImageView>
                      </graphic>
@@ -85,6 +76,44 @@
                   </ImageView>
                </graphic>
           </Menu>
+            <Menu mnemonicParsing="false" text="Tools">
+              <items>
+                  <MenuItem mnemonicParsing="false" onAction="#prepareSDCard" text="Prepare SD card">
+                     <graphic>
+                        <ImageView fitHeight="32.0" fitWidth="32.0" pickOnBounds="true" preserveRatio="true">
+                           <image>
+                              <Image url="@images/sdcard.png" />
+                           </image>
+                        </ImageView>
+                     </graphic>
+                  </MenuItem>
+                  <MenuItem fx:id="installDriver" mnemonicParsing="false" onAction="#installAPXDriver" text="Install APX driver">
+                     <graphic>
+                        <ImageView fitHeight="32.0" fitWidth="32.0" pickOnBounds="true" preserveRatio="true">
+                           <image>
+                              <Image url="@images/usb.png" />
+                           </image>
+                        </ImageView>
+                     </graphic>
+                  </MenuItem>
+                <MenuItem mnemonicParsing="false" onAction="#gptRestore" text="Restore GPT">
+                     <graphic>
+                        <ImageView fitHeight="32.0" fitWidth="32.0" pickOnBounds="true" preserveRatio="true">
+                           <image>
+                              <Image url="@images/tool.png" />
+                           </image>
+                        </ImageView>
+                     </graphic>
+                  </MenuItem>
+              </items>
+               <graphic>
+                  <ImageView fitHeight="32.0" fitWidth="32.0" pickOnBounds="true" preserveRatio="true">
+                     <image>
+                        <Image url="@images/tool.png" />
+                     </image>
+                  </ImageView>
+               </graphic>
+            </Menu>
           <Menu mnemonicParsing="false" text="Settings">
                <graphic>
                   <ImageView fitHeight="32.0" fitWidth="32.0" pickOnBounds="true" preserveRatio="true">

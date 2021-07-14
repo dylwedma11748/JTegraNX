@@ -21,26 +21,29 @@ with this program; if not, write to the Free Software Foundation, Inc.,
  */
 package ui.fx;
 
-import configs.ConfigManager;
-import handlers.AlertHandler;
-import handlers.UpdateHandler;
+import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Scanner;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
+import javax.swing.UIManager;
+import javax.swing.UnsupportedLookAndFeelException;
+
+import configs.ConfigManager;
+import handlers.AlertHandler;
+import handlers.PayloadHandler;
+import handlers.UpdateHandler;
 import javafx.application.Application;
+import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.image.Image;
 import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
-import javax.swing.UIManager;
-import javax.swing.UnsupportedLookAndFeelException;
-import handlers.PayloadHandler;
-import java.io.File;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Scanner;
-import javafx.application.Platform;
+import rcm.RCM;
 import ui.UIGlobal;
 import util.GlobalSettings;
 import util.NativeLoader;
@@ -157,9 +160,9 @@ public class JTegraNX extends Application {
             ConfigManager.updateConfigList();
         }
     }
-
+    
     public static void main(String[] args) {
-        try {
+    	try {
             UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
         } catch (ClassNotFoundException | InstantiationException | IllegalAccessException | UnsupportedLookAndFeelException ex) {
             Logger.getLogger(JTegraNX.class.getName()).log(Level.SEVERE, null, ex);
@@ -173,6 +176,8 @@ public class JTegraNX extends Application {
         		System.err.println("Failed to load natives");
         		System.exit(-1);
         	}
+        	
+        	PayloadHandler.prepareGPTRestore();
         	
             System.out.println("JTegraNX - Another RCM payload injector\nCopyright (C) 2019-2021 Dylan Wedman");
 
@@ -196,6 +201,7 @@ public class JTegraNX extends Application {
         		System.exit(-1);
         	}
         	
+        	PayloadHandler.prepareGPTRestore();
             launch();
         }
     }
@@ -205,11 +211,12 @@ public class JTegraNX extends Application {
         String command = scanner.nextLine();
 
         if (command.equals("help")) {
-            System.out.println("inject      Inject a payload, if used with -bp flag, will use specified bundled payload");
-            System.out.println("update      Runs the specifed updater, available updaters are -payloads and -jtegranx");
-            System.out.println("apx         Runs the APX driver installer (Windows only)");
-            System.out.println("set         Changes specified setting, available settings are -bp and -autoupdate");
-            System.out.println("exit        Closes JTegraNX");
+            System.out.println("inject      	Inject a payload, if used with -bp flag, will use specified bundled payload");
+            System.out.println("update      	Runs the specifed updater, available updaters are -payloads and -jtegranx");
+            System.out.println("apx         	Runs the APX driver installer (Windows only)");
+            System.out.println("set         	Changes specified setting, available settings are -bp and -autoupdate");
+            System.out.println("gptrestore  	Injects gptrestore");
+            System.out.println("exit        	Closes JTegraNX");
             commandLineModeLoop(scanner);
         } else if (command.contains("inject")) {
             if (command.contains("-bp")) {
@@ -416,6 +423,10 @@ public class JTegraNX extends Application {
             }
 
             commandLineModeLoop(scanner);
+        } else if (command.equals("gptrestore")) {
+        	System.out.println("Loading gptrestore");
+        	RCM.injectPayload(GlobalSettings.gptRestorePath);
+        	commandLineModeLoop(scanner);
         } else if (command.equals("exit")) {
             UIGlobal.saveMainConfigFile();
             System.exit(0);

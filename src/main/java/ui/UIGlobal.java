@@ -269,6 +269,10 @@ public class UIGlobal {
                     if (line.contains("selectedConfig")) {
                         GlobalSettings.selectedConfig = line.substring(line.indexOf("=") + 1);
                     }
+                    
+                    if (line.contains("lastSelectedBundledPayload")) {
+                    	GlobalSettings.lastSelectedBundledPayload = line.substring(line.indexOf("=") + 1);
+                    }
 
                     if (line.contains("autoInject")) {
                         GlobalSettings.autoInject = Boolean.valueOf(line.substring(line.indexOf("=") + 1));
@@ -359,6 +363,10 @@ public class UIGlobal {
                     if (line.contains("selectedConfig")) {
                         GlobalSettings.selectedConfig = line.substring(line.indexOf("=") + 1);
                     }
+                    
+                    if (line.contains("lastSelectedBundledPayload")) {
+                    	GlobalSettings.lastSelectedBundledPayload = line.substring(line.indexOf("=") + 1);
+                    }
 
                     if (line.contains("autoInject")) {
                         GlobalSettings.autoInject = Boolean.valueOf(line.substring(line.indexOf("=") + 1));
@@ -445,6 +453,7 @@ public class UIGlobal {
                 writer.println("savedFolderPath=" + GlobalSettings.savedFolderPath);
                 writer.println("savedPayloadPath=" + GlobalSettings.savedPayloadPath);
                 writer.println("selectedConfig=" + GlobalSettings.selectedConfig);
+                writer.println("lastSelectedBundledPayload=" + GlobalSettings.lastSelectedBundledPayload);
                 writer.println("autoInject=" + GlobalSettings.autoInject);
                 writer.println("checkJTegraNXUpdates=" + GlobalSettings.checkJTegraNXUpdates);
                 writer.println("checkPayloadUpdates=" + GlobalSettings.checkPayloadUpdates);
@@ -470,6 +479,7 @@ public class UIGlobal {
                 writer.println("savedFolderPath=" + GlobalSettings.savedFolderPath);
                 writer.println("savedPayloadPath=" + GlobalSettings.savedPayloadPath);
                 writer.println("selectedConfig=" + GlobalSettings.selectedConfig);
+                writer.println("lastSelectedBundledPayload=" + GlobalSettings.lastSelectedBundledPayload);
                 writer.println("autoInject=" + GlobalSettings.autoInject);
                 writer.println("checkJTegraNXUpdates=" + GlobalSettings.checkJTegraNXUpdates);
                 writer.println("checkPayloadUpdates=" + GlobalSettings.checkPayloadUpdates);

@@ -72,7 +72,6 @@ public class NativeLoader {
 			suffix = ".so";
 			nativeURL = NativeLoader.class.getResource("/native/linux/JTegraNX_" + ARCH + suffix);
 		} else if (OS.contains("Mac OS X")) {
-			System.out.println("Mac OS X doesn't need a native");
 			return true;
 		}
 		

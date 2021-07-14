@@ -21,17 +21,20 @@ with this program; if not, write to the Free Software Foundation, Inc.,
  */
 package ui.fx;
 
-import configs.Config;
-import configs.ConfigManager;
-import handlers.AlertHandler;
-import handlers.PayloadHandler;
-import handlers.UpdateHandler;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
+import org.apache.commons.io.FileUtils;
+
+import configs.Config;
+import configs.ConfigManager;
+import handlers.AlertHandler;
+import handlers.PayloadHandler;
+import handlers.UpdateHandler;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -39,6 +42,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.CheckMenuItem;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Menu;
+import javafx.scene.control.MenuBar;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
@@ -47,13 +51,12 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
-import org.apache.commons.io.FileUtils;
 import rcm.RCM;
-import windows.DriverInstaller;
 import ui.UIGlobal;
 import util.GlobalSettings;
 import util.SDPrepare;
 import util.Tray;
+import windows.DriverInstaller;
 
 public class MainUIController implements Initializable {
 
@@ -76,6 +79,9 @@ public class MainUIController implements Initializable {
     @FXML
     public TextField configName;
 
+    @FXML
+    private MenuBar menuBar;
+    
     @FXML
     private Menu payloadMenu;
 
@@ -262,56 +268,90 @@ public class MainUIController implements Initializable {
                 Tray.updateMenuItems();
             }
         } else if (source.equals(standardMode)) {
-            if (GlobalSettings.PORTABLE_MODE_JTEGRANX_CONFIG_FILE.exists()) {
-                try {
-                    FileUtils.forceDelete(GlobalSettings.PORTABLE_MODE_JTEGRANX_CONFIG_FILE);
-                } catch (IOException ex) {
-                    Logger.getLogger(MainUIController.class.getName()).log(Level.SEVERE, null, ex);
+            if (!GlobalSettings.portableMode) {
+            	standardMode.setSelected(true);
+            } else {
+            	if (GlobalSettings.PORTABLE_MODE_JTEGRANX_CONFIG_FILE.exists()) {
+                    try {
+                        FileUtils.forceDelete(GlobalSettings.PORTABLE_MODE_JTEGRANX_CONFIG_FILE);
+                    } catch (IOException ex) {
+                        Logger.getLogger(MainUIController.class.getName()).log(Level.SEVERE, null, ex);
+                    }
                 }
-            }
 
-            if (GlobalSettings.PORTABLE_MODE_JTEGRANX_PAYLOAD_DIR.exists()) {
-                try {
-                    FileUtils.deleteDirectory(GlobalSettings.PORTABLE_MODE_JTEGRANX_PAYLOAD_DIR);
-                } catch (IOException ex) {
-                    Logger.getLogger(MainUIController.class.getName()).log(Level.SEVERE, null, ex);
+                if (GlobalSettings.PORTABLE_MODE_JTEGRANX_PAYLOAD_DIR.exists()) {
+                    try {
+                        FileUtils.deleteDirectory(GlobalSettings.PORTABLE_MODE_JTEGRANX_PAYLOAD_DIR);
+                    } catch (IOException ex) {
+                        Logger.getLogger(MainUIController.class.getName()).log(Level.SEVERE, null, ex);
+                    }
                 }
-            }
+                
+                UIGlobal.clearLog();
+                UIGlobal.appendLog("Using standard mode");
+                GlobalSettings.portableMode = false;
+                portableMode.setSelected(false);
 
-            UIGlobal.appendLog("Using standard mode");
-            GlobalSettings.portableMode = false;
-            portableMode.setSelected(false);
+                PayloadHandler.updatePayloads();
 
-            PayloadHandler.updatePayloads();
-
-            if (GlobalSettings.enableTrayIcon) {
-                Tray.updateMenuItems();
+                if (GlobalSettings.enableTrayIcon) {
+                    Tray.updateMenuItems();
+                }
+                
+                if (payloadPath.getText().endsWith(File.separator + "Payloads" + File.separator + "fusee-primary.bin") && GlobalSettings.includeFuseePrimary && GlobalSettings.lastSelectedBundledPayload.equals("fusee-primary")) {
+                	payloadPath.setText(GlobalSettings.STANDARD_MODE_JTEGRANX_PAYLOAD_DIR_PATH + File.separator + "fusee-primary.bin");
+                } else if (payloadPath.getText().endsWith(File.separator + "Payloads" + File.separator + "Hekate.bin") && GlobalSettings.includeHekate && GlobalSettings.lastSelectedBundledPayload.equals("Hekate")) {
+                	payloadPath.setText(GlobalSettings.STANDARD_MODE_JTEGRANX_PAYLOAD_DIR_PATH + File.separator + "Hekate.bin");
+                } else if (payloadPath.getText().endsWith(File.separator + "Payloads" + File.separator + "Lockpick_RCM.bin") && GlobalSettings.includeLockpickRCM && GlobalSettings.lastSelectedBundledPayload.equals("Lockpick_RCM")) {
+                	payloadPath.setText(GlobalSettings.STANDARD_MODE_JTEGRANX_PAYLOAD_DIR_PATH + File.separator + "Lockpick_RCM.bin");
+                } else if (payloadPath.getText().endsWith(File.separator + "Payloads" + File.separator + "TegraExplorer.bin") && GlobalSettings.includeTegraExplorer && GlobalSettings.lastSelectedBundledPayload.equals("TegraExplorer")) {
+                	payloadPath.setText(GlobalSettings.STANDARD_MODE_JTEGRANX_PAYLOAD_DIR_PATH + File.separator + "TegraExplorer.bin");
+                } else {
+                	payloadPath.clear();
+                }
             }
         } else if (source.equals(portableMode)) {
-            if (GlobalSettings.STANDARD_MODE_JTEGRANX_CONFIG_FILE.exists()) {
-                try {
-                    FileUtils.forceDelete(GlobalSettings.STANDARD_MODE_JTEGRANX_CONFIG_FILE);
-                } catch (IOException ex) {
-                    Logger.getLogger(MainUIController.class.getName()).log(Level.SEVERE, null, ex);
+            if (GlobalSettings.portableMode) {
+            	portableMode.setSelected(true);
+            } else {
+            	if (GlobalSettings.STANDARD_MODE_JTEGRANX_CONFIG_FILE.exists()) {
+                    try {
+                        FileUtils.forceDelete(GlobalSettings.STANDARD_MODE_JTEGRANX_CONFIG_FILE);
+                    } catch (IOException ex) {
+                        Logger.getLogger(MainUIController.class.getName()).log(Level.SEVERE, null, ex);
+                    }
                 }
-            }
 
-            if (GlobalSettings.STANDARD_MODE_JTEGRANX_PAYLOAD_DIR.exists()) {
-                try {
-                    FileUtils.deleteDirectory(GlobalSettings.STANDARD_MODE_JTEGRANX_PAYLOAD_DIR);
-                } catch (IOException ex) {
-                    Logger.getLogger(MainUIController.class.getName()).log(Level.SEVERE, null, ex);
+                if (GlobalSettings.STANDARD_MODE_JTEGRANX_PAYLOAD_DIR.exists()) {
+                    try {
+                        FileUtils.deleteDirectory(GlobalSettings.STANDARD_MODE_JTEGRANX_PAYLOAD_DIR);
+                    } catch (IOException ex) {
+                        Logger.getLogger(MainUIController.class.getName()).log(Level.SEVERE, null, ex);
+                    }
                 }
-            }
 
-            UIGlobal.appendLog("Using portable mode");
-            GlobalSettings.portableMode = true;
-            standardMode.setSelected(false);
+                UIGlobal.clearLog();
+                UIGlobal.appendLog("Using portable mode");
+                GlobalSettings.portableMode = true;
+                standardMode.setSelected(false);
 
-            PayloadHandler.updatePayloads();
+                PayloadHandler.updatePayloads();
 
-            if (GlobalSettings.enableTrayIcon) {
-                Tray.updateMenuItems();
+                if (GlobalSettings.enableTrayIcon) {
+                    Tray.updateMenuItems();
+                }
+                
+                if (payloadPath.getText().endsWith(File.separator + "Payloads" + File.separator + "fusee-primary.bin") && GlobalSettings.includeFuseePrimary && GlobalSettings.lastSelectedBundledPayload.equals("fusee-primary")) {
+                	payloadPath.setText(GlobalSettings.PORTABLE_MODE_JTEGRANX_PAYLOAD_DIR_PATH + File.separator + "fusee-primary.bin");
+                } else if (payloadPath.getText().endsWith(File.separator + "Payloads" + File.separator + "Hekate.bin") && GlobalSettings.includeHekate && GlobalSettings.lastSelectedBundledPayload.equals("Hekate")) {
+                	payloadPath.setText(GlobalSettings.PORTABLE_MODE_JTEGRANX_PAYLOAD_DIR_PATH + File.separator + "Hekate.bin");
+                } else if (payloadPath.getText().endsWith(File.separator + "Payloads" + File.separator + "Lockpick_RCM.bin") && GlobalSettings.includeLockpickRCM && GlobalSettings.lastSelectedBundledPayload.equals("Lockpick_RCM")) {
+                	payloadPath.setText(GlobalSettings.PORTABLE_MODE_JTEGRANX_PAYLOAD_DIR_PATH + File.separator + "Lockpick_RCM.bin");
+                } else if (payloadPath.getText().endsWith(File.separator + "Payloads" + File.separator + "TegraExplorer.bin") && GlobalSettings.includeTegraExplorer && GlobalSettings.lastSelectedBundledPayload.equals("TegraExplorer")) {
+                	payloadPath.setText(GlobalSettings.PORTABLE_MODE_JTEGRANX_PAYLOAD_DIR_PATH + File.separator + "TegraExplorer.bin");
+                } else {
+                	payloadPath.clear();
+                }
             }
         }
     }
@@ -424,6 +464,19 @@ public class MainUIController implements Initializable {
             }
         }
     }
+    
+    @FXML
+    private void gptRestore() {
+    	boolean load = AlertHandler.showGPTRestoreDialog();
+    	
+    	if (load) {
+    		UIGlobal.appendLog("Loading gptrestore");
+    		
+    		UIGlobal.clearLog();
+    		UIGlobal.appendLog("Loading gptrestore");
+    		RCM.injectPayload(GlobalSettings.gptRestorePath);
+    	}
+    }
 
     private void setUndecoratedFrameDragEvent() {
         pane.setOnMousePressed((MouseEvent event) -> {
@@ -432,6 +485,16 @@ public class MainUIController implements Initializable {
         });
 
         pane.setOnMouseDragged((MouseEvent event) -> {
+            JTegraNX.getStage().setX(event.getScreenX() + xOffset);
+            JTegraNX.getStage().setY(event.getScreenY() + yOffset);
+        });
+        
+        menuBar.setOnMousePressed((MouseEvent event) -> {
+            xOffset = JTegraNX.getStage().getX() - event.getScreenX();
+            yOffset = JTegraNX.getStage().getY() - event.getScreenY();
+        });
+
+        menuBar.setOnMouseDragged((MouseEvent event) -> {
             JTegraNX.getStage().setX(event.getScreenX() + xOffset);
             JTegraNX.getStage().setY(event.getScreenY() + yOffset);
         });

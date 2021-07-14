@@ -101,7 +101,7 @@ public class Tray {
 
         if (GlobalSettings.selectedPayloadCount > 0) {
             if (GlobalSettings.includeFuseePrimary) {
-                MenuItem fuseePrimary = new MenuItem("fusee-primary (Atmosphère " + GlobalSettings.fuseePrimaryTag + ")");
+                MenuItem fuseePrimary = new MenuItem("fusee-primary (Atmosphere " + GlobalSettings.fuseePrimaryTag + ")");
 
                 fuseePrimary.addActionListener((ActionEvent e) -> {
                     Platform.runLater(() -> {

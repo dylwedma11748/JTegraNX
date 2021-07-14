@@ -105,7 +105,7 @@ public class PayloadHandler {
                 }
 
                 if (!GlobalSettings.commandLineMode) {
-                    MenuItem item = new MenuItem("fusee-primary (Atmosphère " + fuseePrimary.getTag() + ")");
+                    MenuItem item = new MenuItem("fusee-primary (Atmosphere " + fuseePrimary.getTag() + ")");
                     ImageView image = new ImageView(PayloadHandler.class.getResource("/images/payload.png").toString());
                     item.setGraphic(image);
 
@@ -124,6 +124,8 @@ public class PayloadHandler {
                             } catch (NullPointerException ex) {
                             }
                         });
+                        
+                        GlobalSettings.lastSelectedBundledPayload = "fusee-primary";
                     });
 
                     JTegraNX.getController().getPayloadMenu().getItems().add(item);
@@ -311,6 +313,8 @@ public class PayloadHandler {
                             }
                         } catch (NullPointerException ex) {
                         }
+                        
+                        GlobalSettings.lastSelectedBundledPayload = "Hekate";
                     });
 
                     JTegraNX.getController().getPayloadMenu().getItems().add(item);
@@ -398,6 +402,8 @@ public class PayloadHandler {
                             }
                         } catch (NullPointerException ex) {
                         }
+                        
+                        GlobalSettings.lastSelectedBundledPayload = "Lockpick_RCM";
                     });
 
                     JTegraNX.getController().getPayloadMenu().getItems().add(item);
@@ -485,6 +491,8 @@ public class PayloadHandler {
                             }
                         } catch (NullPointerException ex) {
                         }
+                        
+                        GlobalSettings.lastSelectedBundledPayload = "TegraExplorer";
                     });
 
                     JTegraNX.getController().getPayloadMenu().getItems().add(item);
@@ -511,19 +519,51 @@ public class PayloadHandler {
                 }
             }
         }
-
+        
         if (GlobalSettings.commandLineMode) {
             System.out.println("Bundled payloads are up to date");
         }
 
         GlobalSettings.payloadsUpdatedThisSession = true;
     }
+    
+    public static void prepareGPTRestore() {
+    	File payload;
+        
+        if (GlobalSettings.portableMode) {
+			payload = new File(GlobalSettings.PORTABLE_MODE_JTEGRANX_PAYLOAD_DIR_PATH + File.separator + "gptrestore.bin");
+			
+			if (payload.exists()) {
+				try {
+					FileUtils.forceDelete(payload);
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
+			
+        	payload = ResourceHandler.rename(ResourceHandler.load("/tools/gptrestore.bin"), GlobalSettings.PORTABLE_MODE_JTEGRANX_PAYLOAD_DIR_PATH + File.separator + "gptrestore.bin");
+		} else {
+			payload = new File(GlobalSettings.STANDARD_MODE_JTEGRANX_PAYLOAD_DIR_PATH + File.separator + "gptrestore.bin");
+			
+			if (payload.exists()) {
+				try {
+					FileUtils.forceDelete(payload);
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
+			
+			payload = ResourceHandler.rename(ResourceHandler.load("/tools/gptrestore.bin"), GlobalSettings.STANDARD_MODE_JTEGRANX_PAYLOAD_DIR_PATH + File.separator + "gptrestore.bin");
+		}
+        
+        GlobalSettings.gptRestorePath = payload.getAbsolutePath();
+    }
 
     public static void addSelectedPayloadsToMenu() {
         JTegraNX.getController().getPayloadMenu().getItems().removeAll();
 
         if (GlobalSettings.includeFuseePrimary) {
-            MenuItem item = new MenuItem("fusee-primary (AtmosphÃ¨re " + GlobalSettings.fuseePrimaryTag + ")");
+            MenuItem item = new MenuItem("fusee-primary (Atmosphere " + GlobalSettings.fuseePrimaryTag + ")");
             ImageView image = new ImageView(PayloadHandler.class.getResource("/ui/images/payload.png").toString());
             item.setGraphic(image);
 
@@ -540,6 +580,8 @@ public class PayloadHandler {
                     }
                 } catch (NullPointerException ex) {
                 }
+                
+                GlobalSettings.lastSelectedBundledPayload = "fusee-primary";
             });
 
             JTegraNX.getController().getPayloadMenu().getItems().add(item);
@@ -563,6 +605,8 @@ public class PayloadHandler {
                     }
                 } catch (NullPointerException ex) {
                 }
+                
+                GlobalSettings.lastSelectedBundledPayload = "Hekate";
             });
 
             JTegraNX.getController().getPayloadMenu().getItems().add(item);
@@ -586,6 +630,8 @@ public class PayloadHandler {
                     }
                 } catch (NullPointerException ex) {
                 }
+                
+                GlobalSettings.lastSelectedBundledPayload = "Lockpick_RCM";
             });
 
             JTegraNX.getController().getPayloadMenu().getItems().add(item);
@@ -609,6 +655,8 @@ public class PayloadHandler {
                     }
                 } catch (NullPointerException ex) {
                 }
+                
+                GlobalSettings.lastSelectedBundledPayload = "TegraExplorer";
             });
 
             JTegraNX.getController().getPayloadMenu().getItems().add(item);

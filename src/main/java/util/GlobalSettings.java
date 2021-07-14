@@ -38,6 +38,9 @@ public class GlobalSettings {
     public static final String PORTABLE_MODE_JTEGRANX_PAYLOAD_DIR_PATH = PORTABLE_MODE_JTEGRANX_DIR_PATH + File.separator + "Payloads";
     public static final File PORTABLE_MODE_JTEGRANX_PAYLOAD_DIR = new File(PORTABLE_MODE_JTEGRANX_PAYLOAD_DIR_PATH);
     public static final File PORTABLE_MODE_JTEGRANX_CONFIG_FILE = new File(PORTABLE_MODE_JTEGRANX_DIR_PATH + File.separator + "JTegraNX.ini");
+    
+    public static String gptRestorePath;
+    public static String lastSelectedBundledPayload;
 
     public static String savedFolderPath;
     public static String savedPayloadPath;

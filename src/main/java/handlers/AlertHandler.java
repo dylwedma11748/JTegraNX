@@ -23,12 +23,14 @@ package handlers;
 
 import java.util.List;
 import java.util.Optional;
+
+import javax.swing.JOptionPane;
+
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.ChoiceDialog;
 import javafx.scene.control.TextArea;
-import javax.swing.JOptionPane;
 import ui.fx.JTegraNX;
 
 public class AlertHandler {
@@ -111,17 +113,19 @@ public class AlertHandler {
 
         TextArea aboutTextBox = new TextArea();
         aboutTextBox.setEditable(false);
-        aboutTextBox.setWrapText(true);
-        aboutTextBox.setText("JTegraNX is a fully cross-platform Nintendo Switch RCM payload injector. "
-                + "I started this project back in 2019 when I tried using TegraRCMGUI and it didn't "
-                + "work because of corrupted Visual C++ files. Back then JTegraNX started "
-                + "off as just a simple TegraRCMSmash GUI with no special features of any kind. "
-                + "Later I then started adding more features on par with some of the features that TegraRCMGUI has and then "
+        aboutTextBox.setWrapText(false);
+        aboutTextBox.setText("JTegraNX is a fully cross-platform Nintendo Switch RCM payload injector."
+                + "\nI started this project back in 2019 when I tried using TegraRCMGUI and it didn't "
+                + "work because of corrupted Visual C++ files.\nBack then JTegraNX started "
+                + "off as just a simple TegraRCMSmash GUI with no special features of any kind."
+                + "\nLater I then started adding more features on par with some of the features that TegraRCMGUI has and then "
                 + "JTegraNX became what it is today."
                 + "\n\nCurrent release: " + UpdateHandler.getCurrentVersion() + "\n\nChangelog:"
-                + "\n\u2022 Fixed issue with Hekate not updating."
-                + "\n\u2022 Properly packaged JavaFX to support Java 11 and up."
+                + "\n\u2022 Minor UI changes."
+                + "\n\u2022 Added gptrestore as a bundled tool."
+                + "\n\u2022 Re-worked the APX driver installer again to fix a bug that came with the first re-work."
                 + "\n\u2022 General system stability improvements to enhance the user's experience."
+                + "\n\nI have big plans for JTegraNX v1.7, so stay tuned."
                 + "\n\nCopyright (C) 2019-2021 Dylan Wedman\n"
                 + "\n"
                 + "This program is free software; you can redistribute it and/or modify\n"
@@ -141,5 +145,18 @@ public class AlertHandler {
         alert.getDialogPane().getButtonTypes().add(ButtonType.OK);
         alert.initOwner(JTegraNX.getStage());
         alert.show();
+    }
+    
+    public static boolean showGPTRestoreDialog() {
+    	Alert alert = new Alert(AlertType.NONE);
+        alert.setTitle("JTegraNX");
+        alert.setHeaderText("The Restore GPT feature uses gptrestore by Rajko Stojadinovic (rajkosto)");
+        alert.setContentText("It is strongly recommended that you have a NAND backup ready before you proceed.");
+        alert.getDialogPane().getButtonTypes().addAll(ButtonType.OK, ButtonType.CANCEL);
+        alert.initOwner(JTegraNX.getStage());
+        
+        Optional<ButtonType> returnValue = alert.showAndWait();
+        
+        return returnValue.isPresent() && returnValue.get().equals(ButtonType.OK);
     }
 }
