@@ -1,5 +1,5 @@
 ![Png](https://img.shields.io/badge/Platforms-Windows%20x86--x64%20Linux%20x86--x64%20Mac%20OS%20X%20x86--x64-green)
-![Png](https://img.shields.io/badge/Latest%20release-1.6.8-green)
+![Png](https://img.shields.io/badge/Latest%20release-1.6.9-green)
 ![GitHub](https://img.shields.io/badge/License-GPL--2.0%20or%20later-green)
 ![GitHub All Releases](https://img.shields.io/github/downloads/dylwedma11748/JTegraNX/total)
 ![GitHub repo size](https://img.shields.io/github/repo-size/dylwedma11748/JTegraNX)
@@ -13,7 +13,7 @@ In order to run this program, you need Java 8 or higher installed on your comput
 JTegraNX is supported on Windows, Linux, and Mac OS X.
 
 ## Preview
-![Png](preview.png)
+![image](https://user-images.githubusercontent.com/32218999/125573024-25bb1802-c9df-40fe-9419-1857b755e5a9.png)
 
 ## Features
 - RCM payload injection
@@ -26,6 +26,7 @@ JTegraNX is supported on Windows, Linux, and Mac OS X.
 - APX driver detection/installation
 - Portable mode
 - Command line mode
+- GPT restoration
 
 ## Usage
 Normal mode:
@@ -86,6 +87,9 @@ You can now customize JTegraNX's settings to your liking.
 ## SD Card preparation
 This new feature with JTegraNX will download all the basic requirements for getting your Switch ready for CFW and copy them to the specified output path.
 
+## GPT restoration
+This new feature added in v1.6.9 will inject [gptrestore](https://github.com/rajkosto/gptrestore), which is now bundled with JTegraNX as a standard tool instead of a bundled payload.
+
 ## APX driver detection/installation
 JTegraNX can detect if the APX driver is missing or incorrect, and if this is the case, you have the option to install it from there.
 
@@ -103,7 +107,7 @@ For any bundled payloads, JTegraNX will download them automatically, place them 
 
 # Credits
 - [suchmememanyskill](https://github.com/suchmememanyskill) for [TegraExplorer](https://github.com/suchmememanyskill/TegraExplorer).
-- [rajkosto](https://github.com/rajkosto) for [memloader](https://github.com/rajkosto/memloader) and [TegraRcmSmash](https://github.com/rajkosto/TegraRcmSmash) (No longer being used in v1.6+).
+- [rajkosto](https://github.com/rajkosto) for [gptrestore](https://github.com/rajkosto/gptrestore).
 - [shchmue](https://github.com/shchmue) for [Lockpick_RCM](https://github.com/shchmue/Lockpick_RCM).
 - [eliboa](https://github.com/eliboa) for the images from [TegraRcmGUI](https://github.com/eliboa/TegraRcmGUI).
 - The creators of Atmosphère for [fusee-primary](https://github.com/Atmosphere-NX/Atmosphere/releases).
