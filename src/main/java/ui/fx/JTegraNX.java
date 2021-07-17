@@ -177,8 +177,6 @@ public class JTegraNX extends Application {
         		System.exit(-1);
         	}
         	
-        	PayloadHandler.prepareGPTRestore();
-        	
             System.out.println("JTegraNX - Another RCM payload injector\nCopyright (C) 2019-2021 Dylan Wedman");
 
             if (UIGlobal.readMainConfigFile()) {
@@ -201,7 +199,6 @@ public class JTegraNX extends Application {
         		System.exit(-1);
         	}
         	
-        	PayloadHandler.prepareGPTRestore();
             launch();
         }
     }
@@ -425,6 +422,7 @@ public class JTegraNX extends Application {
             commandLineModeLoop(scanner);
         } else if (command.equals("gptrestore")) {
         	System.out.println("Loading gptrestore");
+        	PayloadHandler.prepareGPTRestore();
         	RCM.injectPayload(GlobalSettings.gptRestorePath);
         	commandLineModeLoop(scanner);
         } else if (command.equals("exit")) {

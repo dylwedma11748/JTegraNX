@@ -470,6 +470,7 @@ public class MainUIController implements Initializable {
     	boolean load = AlertHandler.showGPTRestoreDialog();
     	
     	if (load) {
+    		PayloadHandler.prepareGPTRestore();
     		UIGlobal.appendLog("Loading gptrestore");
     		
     		UIGlobal.clearLog();

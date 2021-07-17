@@ -5,7 +5,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>dylwedma11748</groupId>
 	<artifactId>JTegraNX</artifactId>
-	<version>1.6.9</version>
+	<version>1.6.9-R1</version>
 	<name>JTegraNX</name>
 	<description>Another RCM payload injector</description>
 	<inceptionYear>2019</inceptionYear>
@@ -203,6 +203,17 @@
 						</goals>
 					</execution>
 				</executions>
+			</plugin>
+			
+			<plugin>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<version>3.1</version>
+				<configuration>
+					<source>1.8</source>
+					<target>1.8</target>
+					<fork>true</fork>
+					<executable>C:\Program Files\Java\jdk1.8.0_111\bin\javac</executable>
+				</configuration>
 			</plugin>
 		</plugins>
 	</build>

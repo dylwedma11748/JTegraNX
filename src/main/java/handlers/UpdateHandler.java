@@ -37,7 +37,7 @@ import util.GlobalSettings;
 public class UpdateHandler {
 
     private static Release jtegranx;
-    private static final String currentVersion = "1.6.9";
+    private static final String currentVersion = "1.6.9-R1";
 
     public static void checkForUpdates(Scanner scanner) {
         if (GlobalSettings.commandLineMode) {

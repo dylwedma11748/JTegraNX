@@ -46,13 +46,18 @@ public class ZipHandler {
             ZipEntry entry = zipInput.getNextEntry();
 
             while (entry != null) {
-                String filePath = destination + File.separator + entry.getName();
+                File file = new File(destination, entry.getName());
 
-                if (!entry.isDirectory()) {
-                    extractFile(zipInput, filePath);
+                if (file.toPath().normalize().startsWith(destDir.toPath())) {
+                	if (!entry.isDirectory()) {
+                        extractFile(zipInput, file.getAbsolutePath());
+                    } else {
+                        File dir = new File(file.getAbsolutePath());
+                        dir.mkdir();
+                    }
                 } else {
-                    File dir = new File(filePath);
-                    dir.mkdir();
+                	System.err.println("CWE-22 Zip Slip: Bad entry blocked. Stopping entire extraction.");
+                	break;
                 }
 
                 zipInput.closeEntry();
