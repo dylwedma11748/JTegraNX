@@ -2,7 +2,7 @@
 
 JTegraNX - Another RCM payload injector
 
-Copyright (C) 2019-2021 Dylan Wedman
+Copyright (C) 2019-2022 Dylan Wedman
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -24,7 +24,7 @@ package configs;
 import java.util.ArrayList;
 import java.util.List;
 import javafx.application.Platform;
-import ui.fx.JTegraNX;
+import ui.JTegraNX;
 import util.GlobalSettings;
 
 public class ConfigManager {

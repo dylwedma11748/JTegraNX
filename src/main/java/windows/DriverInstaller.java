@@ -2,7 +2,7 @@
 
 JTegraNX - Another RCM payload injector
 
-Copyright (C) 2019-2021 Dylan Wedman
+Copyright (C) 2019-2022 Dylan Wedman
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -37,9 +37,10 @@ public class DriverInstaller {
 	public static final int READY_FOR_USE = 256;
 	public static final int DEVICE_UPDATED = 1;
 	public static final int UAC_CANCEL = 1223;
+	
+	private static int result;
 
 	public static int installDriver() {
-		int exitCode = 0;
 		File installer;
 		File outputDir;
 
@@ -65,9 +66,23 @@ public class DriverInstaller {
 				}
 			}
 		}
-
+		
+		//ProgressAlert alert = AlertHandler.createProgressAlert("JTegraNX", "Extracting");
+    	//alert.show();
+    	
 		installer = ResourceHandler.rename(ResourceHandler.load("/windows/APX-Driver.exe"), outputDir + File.separator + "APX-Driver.exe");
-
+		//alert.setHeaderText("Running installer");
+		
+		result = runInstaller(installer, outputDir);
+		
+		//alert.close();
+		
+		return result;
+	}
+	
+	private static int runInstaller(File installer, File outputDir) {
+		int exitCode = 0;
+		
 		try {
 			Process install = Runtime.getRuntime().exec("cmd /c " + installer.getAbsolutePath());
 			exitCode = install.waitFor();

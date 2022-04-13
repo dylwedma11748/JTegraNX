@@ -2,7 +2,7 @@
 
 JTegraNX - Another RCM payload injector
 
-Copyright (C) 2019-2021 Dylan Wedman
+Copyright (C) 2019-2022 Dylan Wedman
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -19,7 +19,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
  */
-package ui.fx;
+package ui;
 
 import java.io.File;
 import java.io.IOException;
@@ -34,8 +34,11 @@ import configs.Config;
 import configs.ConfigManager;
 import handlers.AlertHandler;
 import handlers.PayloadHandler;
+import handlers.ProgressAlert;
 import handlers.UpdateHandler;
+import javafx.concurrent.WorkerStateEvent;
 import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
@@ -52,7 +55,6 @@ import javafx.scene.layout.Pane;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
 import rcm.RCM;
-import ui.UIGlobal;
 import util.GlobalSettings;
 import util.SDPrepare;
 import util.Tray;
@@ -71,8 +73,8 @@ public class MainUIController implements Initializable {
 
     @FXML
     private TextArea log;
-
-    @SuppressWarnings("rawtypes")
+    
+	@SuppressWarnings("rawtypes")
 	@FXML
     private ComboBox configList;
 
@@ -101,7 +103,7 @@ public class MainUIController implements Initializable {
     private CheckMenuItem minimizeToTray;
 
     @FXML
-    private CheckMenuItem includeFuseePrimary;
+    private CheckMenuItem includeFusee;
 
     @FXML
     private CheckMenuItem includehekate;
@@ -181,6 +183,7 @@ public class MainUIController implements Initializable {
         if (file != null && file.exists()) {
             payloadPath.setText(file.getAbsolutePath());
             GlobalSettings.savedFolderPath = file.getParent();
+            configList.getSelectionModel().select(-1);
         }
     }
 
@@ -219,12 +222,12 @@ public class MainUIController implements Initializable {
             }
         } else if (source.equals(minimizeToTray)) {
             GlobalSettings.minimizeToTray = minimizeToTray.isSelected();
-        } else if (source.equals(includeFuseePrimary)) {
-            GlobalSettings.includeFuseePrimary = includeFuseePrimary.isSelected();
+        } else if (source.equals(includeFusee)) {
+            GlobalSettings.includeFusee = includeFusee.isSelected();
             PayloadHandler.updatePayloads();
             UIGlobal.checkIfSpecifiedPayloadExists();
 
-            if (payloadPath.getText().contains("Payloads" + File.separator + "fusee-primary.bin")) {
+            if (payloadPath.getText().contains("Payloads" + File.separator + "fusee.bin")) {
                 payloadPath.clear();
             }
 
@@ -236,7 +239,7 @@ public class MainUIController implements Initializable {
             PayloadHandler.updatePayloads();
             UIGlobal.checkIfSpecifiedPayloadExists();
 
-            if (payloadPath.getText().contains("Payloads" + File.separator + "Hekate.bin")) {
+            if (payloadPath.getText().contains("Payloads" + File.separator + "hekate_ctcaer") && payloadPath.getText().endsWith(".bin")) {
                 payloadPath.clear();
             }
 
@@ -298,17 +301,7 @@ public class MainUIController implements Initializable {
                     Tray.updateMenuItems();
                 }
                 
-                if (payloadPath.getText().endsWith(File.separator + "Payloads" + File.separator + "fusee-primary.bin") && GlobalSettings.includeFuseePrimary && GlobalSettings.lastSelectedBundledPayload.equals("fusee-primary")) {
-                	payloadPath.setText(GlobalSettings.STANDARD_MODE_JTEGRANX_PAYLOAD_DIR_PATH + File.separator + "fusee-primary.bin");
-                } else if (payloadPath.getText().endsWith(File.separator + "Payloads" + File.separator + "Hekate.bin") && GlobalSettings.includeHekate && GlobalSettings.lastSelectedBundledPayload.equals("Hekate")) {
-                	payloadPath.setText(GlobalSettings.STANDARD_MODE_JTEGRANX_PAYLOAD_DIR_PATH + File.separator + "Hekate.bin");
-                } else if (payloadPath.getText().endsWith(File.separator + "Payloads" + File.separator + "Lockpick_RCM.bin") && GlobalSettings.includeLockpickRCM && GlobalSettings.lastSelectedBundledPayload.equals("Lockpick_RCM")) {
-                	payloadPath.setText(GlobalSettings.STANDARD_MODE_JTEGRANX_PAYLOAD_DIR_PATH + File.separator + "Lockpick_RCM.bin");
-                } else if (payloadPath.getText().endsWith(File.separator + "Payloads" + File.separator + "TegraExplorer.bin") && GlobalSettings.includeTegraExplorer && GlobalSettings.lastSelectedBundledPayload.equals("TegraExplorer")) {
-                	payloadPath.setText(GlobalSettings.STANDARD_MODE_JTEGRANX_PAYLOAD_DIR_PATH + File.separator + "TegraExplorer.bin");
-                } else {
-                	payloadPath.clear();
-                }
+                payloadPath.clear();
             }
         } else if (source.equals(portableMode)) {
             if (GlobalSettings.portableMode) {
@@ -341,33 +334,27 @@ public class MainUIController implements Initializable {
                     Tray.updateMenuItems();
                 }
                 
-                if (payloadPath.getText().endsWith(File.separator + "Payloads" + File.separator + "fusee-primary.bin") && GlobalSettings.includeFuseePrimary && GlobalSettings.lastSelectedBundledPayload.equals("fusee-primary")) {
-                	payloadPath.setText(GlobalSettings.PORTABLE_MODE_JTEGRANX_PAYLOAD_DIR_PATH + File.separator + "fusee-primary.bin");
-                } else if (payloadPath.getText().endsWith(File.separator + "Payloads" + File.separator + "Hekate.bin") && GlobalSettings.includeHekate && GlobalSettings.lastSelectedBundledPayload.equals("Hekate")) {
-                	payloadPath.setText(GlobalSettings.PORTABLE_MODE_JTEGRANX_PAYLOAD_DIR_PATH + File.separator + "Hekate.bin");
-                } else if (payloadPath.getText().endsWith(File.separator + "Payloads" + File.separator + "Lockpick_RCM.bin") && GlobalSettings.includeLockpickRCM && GlobalSettings.lastSelectedBundledPayload.equals("Lockpick_RCM")) {
-                	payloadPath.setText(GlobalSettings.PORTABLE_MODE_JTEGRANX_PAYLOAD_DIR_PATH + File.separator + "Lockpick_RCM.bin");
-                } else if (payloadPath.getText().endsWith(File.separator + "Payloads" + File.separator + "TegraExplorer.bin") && GlobalSettings.includeTegraExplorer && GlobalSettings.lastSelectedBundledPayload.equals("TegraExplorer")) {
-                	payloadPath.setText(GlobalSettings.PORTABLE_MODE_JTEGRANX_PAYLOAD_DIR_PATH + File.separator + "TegraExplorer.bin");
-                } else {
-                	payloadPath.clear();
-                }
+                payloadPath.clear();
             }
         }
     }
 
     @FXML
     private void injectPayload() {
-        UIGlobal.injectPayload(payloadPath.getText());
+        UIGlobal.injectPayload(payloadPath.getText(), false);
     }
 
     @FXML
     private void checkForJTegraNXUpdates() {
-        if (!GlobalSettings.restartPending) {
-            UpdateHandler.checkForUpdates(null);
-        } else {
-            UIGlobal.restartJTegraNX();
-        }
+        if (!GlobalSettings.OFFLINE_MODE) {
+    		if (!GlobalSettings.restartPending) {
+                UpdateHandler.checkForUpdates(null);
+            } else {
+                UIGlobal.restartJTegraNX();
+            }
+    	} else {
+    		AlertHandler.showErrorMessage("JTegraNX", "JTegraNX is in offline mode", "This feature can't be used in offline mode.");
+    	}
     }
 
     @FXML
@@ -377,7 +364,11 @@ public class MainUIController implements Initializable {
 
     @FXML
     private void checkForPayloadUpdates() {
-        PayloadHandler.updatePayloads();
+    	if (!GlobalSettings.OFFLINE_MODE) {
+    		PayloadHandler.updatePayloads();
+    	} else {
+    		AlertHandler.showErrorMessage("JTegraNX", "JTegraNX is in offline mode", "This feature can't be used in offline mode.");
+    	}
     }
 
     @FXML
@@ -387,13 +378,48 @@ public class MainUIController implements Initializable {
 
     @FXML
     private void prepareSDCard() {
-        DirectoryChooser chooser = new DirectoryChooser();
-        chooser.setTitle("Select SD Card root");
-        File dir = chooser.showDialog(JTegraNX.getStage());
+    	if (!GlobalSettings.OFFLINE_MODE) {
+    		DirectoryChooser chooser = new DirectoryChooser();
+            chooser.setTitle("Select SD Card root");
+            File dir = chooser.showDialog(JTegraNX.getStage());
 
-        if (dir != null && dir.exists()) {
-            SDPrepare.prepareSDCard(dir);
-        }
+            if (dir != null && dir.exists()) {
+                //SDPrepare2.prepareSDCard(dir);
+            	ProgressAlert alert = AlertHandler.createProgressAlert("JTegraNX", "Preparing");
+            	alert.show();
+            	
+            	SDPrepare worker = new SDPrepare(dir);
+            	
+            	alert.getBar().progressProperty().unbind();
+            	alert.getBar().progressProperty().bind(worker.progressProperty());
+            	
+            	alert.getAlert().titleProperty().unbind();
+            	alert.getAlert().titleProperty().bind(worker.titleProperty());
+            	
+                alert.getAlert().headerTextProperty().unbind();
+                alert.getAlert().headerTextProperty().bind(worker.messageProperty());
+            	
+            	worker.addEventHandler(WorkerStateEvent.WORKER_STATE_SUCCEEDED, new EventHandler<WorkerStateEvent>() {
+        			@Override
+        			public void handle(WorkerStateEvent event) {
+        				alert.close();
+        			}
+            	});
+            	
+            	worker.addEventHandler(WorkerStateEvent.WORKER_STATE_FAILED, new EventHandler<WorkerStateEvent>() {
+        			@Override
+        			public void handle(WorkerStateEvent event) {
+        				alert.close();
+        			}
+            	});
+            	
+            	new Thread(worker).start();
+            }
+            
+            
+    	} else {
+    		AlertHandler.showErrorMessage("JTegraNX", "JTegraNX is in offline mode", "This feature can't be used in offline mode.");
+    	}
     }
 
     @FXML
@@ -475,7 +501,7 @@ public class MainUIController implements Initializable {
     		
     		UIGlobal.clearLog();
     		UIGlobal.appendLog("Loading gptrestore");
-    		RCM.injectPayload(GlobalSettings.gptRestorePath);
+    		RCM.injectPayload(GlobalSettings.gptRestorePath, false);
     	}
     }
 
@@ -543,7 +569,7 @@ public class MainUIController implements Initializable {
     }
 
     public CheckMenuItem getIncludeFuseePrimaryMenuItem() {
-        return includeFuseePrimary;
+        return includeFusee;
     }
 
     public CheckMenuItem getIncludeHekateMenuItem() {

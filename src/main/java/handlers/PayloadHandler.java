@@ -2,7 +2,7 @@
 
 JTegraNX - Another RCM payload injector
 
-Copyright (C) 2019-2021 Dylan Wedman
+Copyright (C) 2019-2022 Dylan Wedman
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -19,515 +19,516 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
  */
+
 package handlers;
 
-import git.GitHandler;
-import git.Release;
+import java.io.BufferedInputStream;
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import javafx.application.Platform;
+import java.net.URL;
+
+import org.apache.commons.io.FileUtils;
+import org.kohsuke.github.GHAsset;
+import org.kohsuke.github.GHRelease;
+import org.kohsuke.github.GHRepository;
+
 import javafx.event.ActionEvent;
 import javafx.scene.control.MenuItem;
 import javafx.scene.image.ImageView;
-import org.apache.commons.io.FileUtils;
+import ui.JTegraNX;
 import ui.UIGlobal;
-import ui.fx.JTegraNX;
 import util.GlobalSettings;
 
 public class PayloadHandler {
+	private static GHRepository fusee;
+	private static GHRepository hekate;
+	private static GHRepository lockpickRCM;
+	private static GHRepository tegraExplorer;
+	
+	private static GHRelease latest_fusee;
+	private static GHRelease latest_hekate;
+	private static GHRelease latest_lockpickRCM;
+	private static GHRelease latest_tegraExplorer;
+	
+	private static GHAsset fusee_payload;
+	private static GHAsset hekate_zip;
+	private static GHAsset lockpickRCM_payload;
+	private static GHAsset tegraExplorer_payload;
+	
+	private static File hekate_zip_file;
+	private static File hekate_payload_file;
+	
+	private static boolean fuseeUpdate;
+	private static boolean hekateUpdate;
+	private static boolean lockpickRCMUpdate;
+	private static boolean tegraExplorerUpdate;
+	
+	public static void updatePayloads() {
+		if (!GlobalSettings.OFFLINE_MODE) {
+			checkSelectedPayloads();
+			updateRepositories();
+			updateReleases();
+			determineUpdates();
+			updateAssets();
+			downloadAssets();
+		}
+		
+		if (!GlobalSettings.commandLineMode) {
+			addPayloadsToMenu(true);
+		}
+	}
 
-    private static Release fuseePrimary;
-    private static Release hekate;
-    private static Release lockpickRCM;
-    private static Release tegraExplorer;
+	private static void updateRepositories() {
+		try {
+			fusee = GlobalSettings.gitHub.getRepository("Atmosphere-NX/Atmosphere");
+			hekate = GlobalSettings.gitHub.getRepository("CTCaer/hekate");
+			lockpickRCM = GlobalSettings.gitHub.getRepository("shchmue/Lockpick_RCM");
+			tegraExplorer = GlobalSettings.gitHub.getRepository("suchmememanyskill/TegraExplorer");
+		} catch (IOException e) {
+			UIGlobal.appendLog("Failed to get payload repositories");
+			return;
+		}
+	}
+	
+	private static void updateReleases() {
+		try {
+			latest_fusee = fusee.getLatestRelease();
+			latest_hekate = hekate.getLatestRelease();
+			latest_lockpickRCM = lockpickRCM.getLatestRelease();
+			latest_tegraExplorer = tegraExplorer.getLatestRelease();
+		} catch (IOException e) {
+			UIGlobal.appendLog("Failed to get latest payload releases");
+			return;
+		}
+	}
+	
+	private static void determineUpdates() {
+		if (GlobalSettings.includeFusee && GlobalSettings.fuseeTag.equals(null)) {
+			GlobalSettings.fuseeTag = latest_fusee.getTagName();
+			fuseeUpdate = true;
+		}
+		
+		if (GlobalSettings.includeHekate && GlobalSettings.hekateTag.equals(null)) {
+			GlobalSettings.hekateTag = latest_hekate.getTagName();
+			hekateUpdate = true;
+		}
+		
+		if (GlobalSettings.includeLockpickRCM && GlobalSettings.lockpickRCMTag.equals(null)) {
+			GlobalSettings.lockpickRCMTag = latest_lockpickRCM.getTagName();
+			lockpickRCMUpdate = true;
+		}
+		
+		if (GlobalSettings.includeTegraExplorer && GlobalSettings.tegraExplorerTag.equals(null)) {
+			GlobalSettings.tegraExplorerTag = latest_tegraExplorer.getTagName();
+			tegraExplorerUpdate = true;
+		}
+		
+		if (GlobalSettings.includeFusee && !GlobalSettings.fuseeTag.equals(latest_fusee.getTagName())) {
+			GlobalSettings.fuseeTag = latest_fusee.getTagName();
+			fuseeUpdate = true;
+		}
+		
+		if (GlobalSettings.includeHekate && !GlobalSettings.hekateTag.equals(latest_hekate.getTagName())) {
+			GlobalSettings.hekateTag = latest_hekate.getTagName();
+			hekateUpdate = true;
+		}
+		
+		if (GlobalSettings.includeLockpickRCM && !GlobalSettings.lockpickRCMTag.equals(latest_lockpickRCM.getTagName())) {
+			GlobalSettings.lockpickRCMTag = latest_lockpickRCM.getTagName();
+			lockpickRCMUpdate = true;
+		}
+		
+		if (GlobalSettings.includeTegraExplorer && !GlobalSettings.tegraExplorerTag.equals(latest_tegraExplorer.getTagName())) {
+			GlobalSettings.tegraExplorerTag = latest_tegraExplorer.getTagName();
+			tegraExplorerUpdate = true;
+		}
+		
+		System.out.println("Payload updates checked");
+		
+		if (GlobalSettings.includeFusee) {
+			if (fuseeUpdate) {
+				System.out.println("fusee: Update found");
+			} else {
+				System.out.println("fusee: Up to date");
+			}
+		}
+		
+		if (GlobalSettings.includeHekate) {
+			if (hekateUpdate) {
+				System.out.println("Hekate: Update found");
+			} else {
+				System.out.println("Hekate: Up to date");
+			}
+		}
+		
+		if (GlobalSettings.includeLockpickRCM) {
+			if (lockpickRCMUpdate) {
+				System.out.println("Lockpick_RCM: Update found");
+			} else {
+				System.out.println("Lockpick_RCM: Up to date");
+			}
+		}
+		
+		if (GlobalSettings.includeTegraExplorer) {
+			if (tegraExplorerUpdate) {
+				System.out.println("TegraExplorer: Update found");
+			} else {
+				System.out.println("TegraExplorer: Up to date");
+			}
+		}
+	}
+	
+	private static void updateAssets() {
+		try {
+			for (GHAsset asset : latest_fusee.listAssets()) {
+				if (asset.getName().equals("fusee.bin")) {
+					fusee_payload = asset;
+					break;
+				}
+			}
+			
+			for (GHAsset asset : latest_hekate.listAssets()) {
+				if (asset.getName().contains("hekate_ctcaer") && asset.getName().endsWith(".zip")) {
+					hekate_zip = asset;
+					break;
+				}
+			}
+			
+			for (GHAsset asset : latest_lockpickRCM.listAssets()) {
+				if (asset.getName().equals("Lockpick_RCM.bin")) {
+					lockpickRCM_payload = asset;
+					break;
+				}
+			}
+			
+			for (GHAsset asset : latest_tegraExplorer.listAssets()) {
+				if (asset.getName().equals("TegraExplorer.bin")) {
+					tegraExplorer_payload = asset;
+					break;
+				}
+			}
+		} catch (IOException e) {
+			UIGlobal.appendLog("Failed to get payload assets");
+			return;
+		}
+	}
+	
+	private static void downloadAssets() {
+		if (GlobalSettings.selectedPayloadCount > 0) {	
+			if (GlobalSettings.portableMode) {
+				if (!GlobalSettings.PORTABLE_MODE_JTEGRANX_PAYLOAD_DIR.exists()) {
+					GlobalSettings.PORTABLE_MODE_JTEGRANX_PAYLOAD_DIR.mkdirs();
+				}
+			} else {
+				if (!GlobalSettings.STANDARD_MODE_JTEGRANX_PAYLOAD_DIR.exists()) {
+					GlobalSettings.STANDARD_MODE_JTEGRANX_PAYLOAD_DIR.mkdirs();
+				}
+			}
+			
+			if (GlobalSettings.includeFusee) {
+				File file = null;
+				
+				if (GlobalSettings.portableMode) {
+					file = new File(GlobalSettings.PORTABLE_MODE_JTEGRANX_PAYLOAD_DIR_PATH + File.separator + "fusee.bin");
+				} else {
+					file = new File(GlobalSettings.STANDARD_MODE_JTEGRANX_PAYLOAD_DIR_PATH + File.separator + "fusee.bin");
+				}
+				
+				if (!file.exists()) {
+					downloadAsset(fusee_payload);
+				} else if (file.exists() && fuseeUpdate) {
+					downloadAsset(fusee_payload);
+				}
+			}
+			
+			if (GlobalSettings.includeHekate) {
+				File file = null;
+				
+				if (GlobalSettings.portableMode) {
+					for (File payloadFile : GlobalSettings.PORTABLE_MODE_JTEGRANX_PAYLOAD_DIR.listFiles()) {
+						if (payloadFile.isFile() && payloadFile.getName().startsWith("hekate_ctcaer") && payloadFile.getName().endsWith(".bin")) {
+							file = payloadFile;
+							break;
+						}
+					}
+				} else {
+					for (File payloadFile : GlobalSettings.STANDARD_MODE_JTEGRANX_PAYLOAD_DIR.listFiles()) {
+						if (payloadFile.isFile() && payloadFile.getName().startsWith("hekate_ctcaer") && payloadFile.getName().endsWith(".bin")) {
+							file = payloadFile;
+							break;
+						}
+					}
+				}
+				
+				if (file == null) {
+					hekate_zip_file = downloadAsset(hekate_zip);
+				} else if (file.exists() && hekateUpdate) {
+					try {
+						FileUtils.forceDelete(file);
+					} catch (IOException e) {
+						System.err.println("Failed to delete existing Hekate bin");
+					}
+					
+					hekate_zip_file = downloadAsset(hekate_zip);
+				}
+				
+				if (hekate_zip_file != null) {
+					if (GlobalSettings.portableMode) {
+						ZipHandler.unzip(hekate_zip_file.getAbsolutePath(), GlobalSettings.PORTABLE_MODE_JTEGRANX_PAYLOAD_DIR_PATH);
+						
+						for (File payloadFile : GlobalSettings.PORTABLE_MODE_JTEGRANX_PAYLOAD_DIR.listFiles()) {
+							if (payloadFile.getName().equals("bootloader") && payloadFile.isDirectory()) {
+								try {
+									FileUtils.deleteDirectory(payloadFile);
+								} catch (IOException e) {
+									System.err.println("Failed to delete bootloader from hekate");
+									break;
+								}
+							}
+							
+							if (payloadFile.isFile() && payloadFile.getName().startsWith("hekate_ctcaer") && payloadFile.getName().endsWith(".bin")) {
+								hekate_payload_file = payloadFile;
+							}
+						}
+					} else {
+						ZipHandler.unzip(hekate_zip_file.getAbsolutePath(), GlobalSettings.STANDARD_MODE_JTEGRANX_PAYLOAD_DIR_PATH);
+						
+						for (File payloadFile : GlobalSettings.STANDARD_MODE_JTEGRANX_PAYLOAD_DIR.listFiles()) {
+							if (payloadFile.getName().equals("bootloader") && payloadFile.isDirectory()) {
+								try {
+									FileUtils.deleteDirectory(payloadFile);
+								} catch (IOException e) {
+									System.err.println("Failed to delete bootloader from hekate");
+									break;
+								}
+							}
+							
+							if (payloadFile.isFile() && payloadFile.getName().startsWith("hekate_ctcaer") && payloadFile.getName().endsWith(".bin")) {
+								hekate_payload_file = payloadFile;
+							}
+						}
+					}
+					
+					try {
+						FileUtils.forceDelete(hekate_zip_file);
+					} catch (IOException e) {
+						System.err.println("Failed to delete Hekate zip");
+					}
+				} else {
+					if (GlobalSettings.portableMode) {
+						for (File payloadFile : GlobalSettings.PORTABLE_MODE_JTEGRANX_PAYLOAD_DIR.listFiles()) {
+							if (payloadFile.isFile() && payloadFile.getName().startsWith("hekate_ctcaer") && payloadFile.getName().endsWith(".bin")) {
+								hekate_payload_file = payloadFile;
+							}
+						}
+					} else {
+						for (File payloadFile : GlobalSettings.STANDARD_MODE_JTEGRANX_PAYLOAD_DIR.listFiles()) {
+							if (payloadFile.isFile() && payloadFile.getName().startsWith("hekate_ctcaer") && payloadFile.getName().endsWith(".bin")) {
+								hekate_payload_file = payloadFile;
+							}
+						}
+					}
+				}
+			}
+			
+			if (GlobalSettings.includeLockpickRCM) {
+				File file = null;
+				
+				if (GlobalSettings.portableMode) {
+					file = new File(GlobalSettings.PORTABLE_MODE_JTEGRANX_PAYLOAD_DIR_PATH + File.separator + "Lockpick_RCM.bin");
+				} else {
+					file = new File(GlobalSettings.STANDARD_MODE_JTEGRANX_PAYLOAD_DIR_PATH + File.separator + "Lockpick_RCM.bin");
+				}
+				
+				if (!file.exists()) {
+					downloadAsset(lockpickRCM_payload);
+				} else if (file.exists() && lockpickRCMUpdate) {
+					downloadAsset(lockpickRCM_payload);
+				}
+			}
+			
+			if (GlobalSettings.includeTegraExplorer) {
+				File file = null;
+				
+				if (GlobalSettings.portableMode) {
+					file = new File(GlobalSettings.PORTABLE_MODE_JTEGRANX_PAYLOAD_DIR_PATH + File.separator + "TegraExplorer.bin");
+				} else {
+					file = new File(GlobalSettings.STANDARD_MODE_JTEGRANX_PAYLOAD_DIR_PATH + File.separator + "TegraExplorer.bin");
+				}
+				
+				if (!file.exists()) {
+					downloadAsset(tegraExplorer_payload);
+				} else if (file.exists() && tegraExplorerUpdate) {
+					downloadAsset(tegraExplorer_payload);
+				}
+			}
+		}
+	}
+	
+	private static File downloadAsset(GHAsset asset) {
+        File output = null;
+        String destination = null;
 
-    public static void updatePayloads() {
-        checkSelectedPayloads();
+        try {
+            URL download = new URL(asset.getBrowserDownloadUrl());
 
-        if (!GlobalSettings.commandLineMode) {
-            UIGlobal.clearPayloadMenu();
-        }
-
-        if (GlobalSettings.selectedPayloadCount > 0) {
-            if (!GlobalSettings.portableMode) {
-                if (!GlobalSettings.STANDARD_MODE_JTEGRANX_PAYLOAD_DIR.exists()) {
-                    GlobalSettings.STANDARD_MODE_JTEGRANX_PAYLOAD_DIR.mkdirs();
-                }
+            if (GlobalSettings.portableMode) {
+            	destination = GlobalSettings.PORTABLE_MODE_JTEGRANX_PAYLOAD_DIR_PATH + File.separator + asset.getName();
             } else {
-                if (!GlobalSettings.PORTABLE_MODE_JTEGRANX_PAYLOAD_DIR.exists()) {
-                    GlobalSettings.PORTABLE_MODE_JTEGRANX_PAYLOAD_DIR.mkdirs();
+            	destination = GlobalSettings.STANDARD_MODE_JTEGRANX_PAYLOAD_DIR_PATH + File.separator + asset.getName();
+            }
+            
+            try (BufferedInputStream bis = new BufferedInputStream(download.openStream()); FileOutputStream fos = new FileOutputStream((output = new File(destination)))) {
+                byte[] buffer = new byte[1024];
+                int bytes;
+
+                while ((bytes = bis.read(buffer, 0, 1024)) != -1) {
+                    fos.write(buffer, 0, bytes);
                 }
             }
+        } catch (IOException ex) {
+            UIGlobal.appendLog("Failed to download " + asset.getName());
+            return null;
+        }
 
-            if (GlobalSettings.includeFuseePrimary) {
-                fuseePrimary = GitHandler.generateLatestRelease("https://github.com/Atmosphere-NX/Atmosphere/releases");
+        return output;
+    }
+	
+	public static void addPayloadsToMenu(boolean updated) {
+		JTegraNX.getController().getPayloadMenu().getItems().clear();
+		
+		if (updated) {
+			if (GlobalSettings.includeFusee) {
+				addPayloadToMenu("fusee v", GlobalSettings.fuseeTag, "fusee.bin");
+			}
+			
+			if (GlobalSettings.includeHekate) {
+				addPayloadToMenu("Hekate ", GlobalSettings.hekateTag, hekate_payload_file.getName());
+			}
+			
+			if (GlobalSettings.includeLockpickRCM) {
+				addPayloadToMenu("Lockpick_RCM ", GlobalSettings.lockpickRCMTag, "Lockpick_RCM.bin");
+			}
+			
+			if (GlobalSettings.includeTegraExplorer) {
+				addPayloadToMenu("TegraExplorer v", GlobalSettings.tegraExplorerTag, "TegraExplorer.bin");
+			}
+		} else {
+			if (GlobalSettings.includeFusee) {
+				addPayloadToMenu("fusee v", GlobalSettings.fuseeTag, "fusee.bin");
+			}
+			
+			if (GlobalSettings.includeHekate) {
+				if (GlobalSettings.portableMode) {
+					for (File payloadFile : GlobalSettings.PORTABLE_MODE_JTEGRANX_PAYLOAD_DIR.listFiles()) {
+						if (payloadFile.isFile() && payloadFile.getName().startsWith("hekate_ctcaer") && payloadFile.getName().endsWith(".bin")) {
+							hekate_payload_file = payloadFile;
+							break;
+						}
+					}
+				} else {
+					for (File payloadFile : GlobalSettings.STANDARD_MODE_JTEGRANX_PAYLOAD_DIR.listFiles()) {
+						if (payloadFile.isFile() && payloadFile.getName().startsWith("hekate_ctcaer") && payloadFile.getName().endsWith(".bin")) {
+							hekate_payload_file = payloadFile;
+							break;
+						}
+					}
+				}
+				
+				addPayloadToMenu("Hekate ", GlobalSettings.hekateTag, hekate_payload_file.getName());
+			}
+			
+			if (GlobalSettings.includeLockpickRCM) {
+				addPayloadToMenu("Lockpick_RCM ", GlobalSettings.lockpickRCMTag, "Lockpick_RCM.bin");
+			}
+			
+			if (GlobalSettings.includeTegraExplorer) {
+				addPayloadToMenu("TegraExplorer v", GlobalSettings.tegraExplorerTag, "TegraExplorer.bin");
+			}
+		}
+	}
+	
+	private static void addPayloadToMenu(String name, String version, String fileName) {
+		MenuItem item = new MenuItem(name + version);
+        ImageView image = new ImageView(PayloadHandler.class.getResource("/images/payload.png").toString());
+        item.setGraphic(image);
+        
+        item.setOnAction((ActionEvent event) -> {
+        	if (GlobalSettings.portableMode) {
+        		JTegraNX.getController().getPayloadPathField().setText(GlobalSettings.PORTABLE_MODE_JTEGRANX_PAYLOAD_DIR_PATH + File.separator + fileName);
+        	} else {
+        		JTegraNX.getController().getPayloadPathField().setText(GlobalSettings.STANDARD_MODE_JTEGRANX_PAYLOAD_DIR_PATH + File.separator + fileName);
+        	}
+        });
+        
+        JTegraNX.getController().getPayloadMenu().getItems().add(item);
+	}
+	
+	public static void checkSelectedPayloads() {
+        GlobalSettings.selectedPayloadCount = 0;
 
-                if (GlobalSettings.fuseePrimaryTag == null) {
-                    GlobalSettings.fuseePrimaryTag = fuseePrimary.getTag();
-                }
+        if (GlobalSettings.includeFusee) {
+            GlobalSettings.selectedPayloadCount++;
+        }
 
-                if (GlobalSettings.fuseePrimaryTag != null && !GlobalSettings.fuseePrimaryTag.equals(fuseePrimary.getTag()) && !GlobalSettings.portableMode) {
-                    fuseePrimary.getAssets().stream().filter((asset) -> (asset.getAssetName().equals("fusee-primary.bin"))).forEachOrdered((asset) -> {
-                        if (GlobalSettings.commandLineMode) {
-                            System.out.println("Updating fusee-primary");
-                        }
+        if (GlobalSettings.includeHekate) {
+            GlobalSettings.selectedPayloadCount++;
+        }
 
-                        GitHandler.downloadAsset(asset, GlobalSettings.STANDARD_MODE_JTEGRANX_PAYLOAD_DIR_PATH + File.separator + "fusee-primary.bin");
-                    });
-                } else if (!new File(GlobalSettings.STANDARD_MODE_JTEGRANX_PAYLOAD_DIR_PATH + File.separator + "fusee-primary.bin").exists() && !GlobalSettings.portableMode) {
-                    fuseePrimary.getAssets().stream().filter((asset) -> (asset.getAssetName().equals("fusee-primary.bin"))).forEachOrdered((asset) -> {
-                        if (GlobalSettings.commandLineMode) {
-                            System.out.println("Downloading fusee-primary");
-                        }
+        if (GlobalSettings.includeLockpickRCM) {
+            GlobalSettings.selectedPayloadCount++;
+        }
 
-                        GitHandler.downloadAsset(asset, GlobalSettings.STANDARD_MODE_JTEGRANX_PAYLOAD_DIR_PATH + File.separator + "fusee-primary.bin");
-                    });
-                }
+        if (GlobalSettings.includeTegraExplorer) {
+            GlobalSettings.selectedPayloadCount++;
+        }
+    }
+	
+	public static StringBuilder getPayloadInfoAsString() {
+        checkSelectedPayloads();
+        StringBuilder payloadInfo = new StringBuilder();
 
-                if (GlobalSettings.fuseePrimaryTag != null && !GlobalSettings.fuseePrimaryTag.equals(fuseePrimary.getTag()) && GlobalSettings.portableMode) {
-                    fuseePrimary.getAssets().stream().filter((asset) -> (asset.getAssetName().equals("fusee-primary.bin"))).forEachOrdered((asset) -> {
-                        if (GlobalSettings.commandLineMode) {
-                            System.out.println("Updating fusee-primary");
-                        }
+        if (GlobalSettings.selectedPayloadCount > 0) {
+            payloadInfo.append("[PAYLOAD RELEASE INFO]\n");
 
-                        GitHandler.downloadAsset(asset, GlobalSettings.PORTABLE_MODE_JTEGRANX_PAYLOAD_DIR_PATH + File.separator + "fusee-primary.bin");
-                    });
-                } else if (!new File(GlobalSettings.PORTABLE_MODE_JTEGRANX_PAYLOAD_DIR_PATH + File.separator + "fusee-primary.bin").exists() && GlobalSettings.portableMode) {
-                    fuseePrimary.getAssets().stream().filter((asset) -> (asset.getAssetName().equals("fusee-primary.bin"))).forEachOrdered((asset) -> {
-                        if (GlobalSettings.commandLineMode) {
-                            System.out.println("Downloading fusee-primary");
-                        }
-
-                        GitHandler.downloadAsset(asset, GlobalSettings.PORTABLE_MODE_JTEGRANX_PAYLOAD_DIR_PATH + File.separator + "fusee-primary.bin");
-                    });
-                }
-
-                if (!GlobalSettings.commandLineMode) {
-                    MenuItem item = new MenuItem("fusee-primary (Atmosphere " + fuseePrimary.getTag() + ")");
-                    ImageView image = new ImageView(PayloadHandler.class.getResource("/images/payload.png").toString());
-                    item.setGraphic(image);
-
-                    item.setOnAction((ActionEvent event) -> {
-                        Platform.runLater(() -> {
-                            if (!GlobalSettings.portableMode) {
-                                JTegraNX.getController().getPayloadPathField().setText(GlobalSettings.STANDARD_MODE_JTEGRANX_PAYLOAD_DIR_PATH + File.separator + "fusee-primary.bin");
-                            } else {
-                                JTegraNX.getController().getPayloadPathField().setText(GlobalSettings.PORTABLE_MODE_JTEGRANX_PAYLOAD_DIR_PATH + File.separator + "fusee-primary.bin");
-                            }
-
-                            try {
-                                if (!JTegraNX.getController().getConfigList().getSelectionModel().getSelectedItem().equals("No configs")) {
-                                    JTegraNX.getController().getConfigList().getSelectionModel().clearSelection();
-                                }
-                            } catch (NullPointerException ex) {
-                            }
-                        });
-                        
-                        GlobalSettings.lastSelectedBundledPayload = "fusee-primary";
-                    });
-
-                    JTegraNX.getController().getPayloadMenu().getItems().add(item);
-                }
-            } else {
-                File payload;
-
-                if (!GlobalSettings.portableMode) {
-                    payload = new File(GlobalSettings.STANDARD_MODE_JTEGRANX_PAYLOAD_DIR_PATH + File.separator + "fusee-primary.bin");
+            if (GlobalSettings.includeFusee) {
+                if (GlobalSettings.payloadsUpdatedThisSession) {
+                    payloadInfo.append("fusee=").append(latest_fusee.getTagName()).append("\n");
                 } else {
-                    payload = new File(GlobalSettings.PORTABLE_MODE_JTEGRANX_PAYLOAD_DIR_PATH + File.separator + "fusee-primary.bin");
-                }
-
-                if (payload.exists()) {
-                    try {
-                        if (GlobalSettings.commandLineMode) {
-                            System.out.println("Deleting fusee-primary");
-                        }
-
-                        FileUtils.forceDelete(payload);
-                    } catch (IOException ex) {
-                        Logger.getLogger(PayloadHandler.class.getName()).log(Level.SEVERE, null, ex);
-                    }
+                    payloadInfo.append("fusee=").append(GlobalSettings.fuseeTag).append("\n");
                 }
             }
 
             if (GlobalSettings.includeHekate) {
-                hekate = GitHandler.generateLatestRelease("https://github.com/CTCaer/hekate/releases");
-
-                if (GlobalSettings.hekateTag == null) {
-                    GlobalSettings.hekateTag = hekate.getTag();
-                }
-
-                if (GlobalSettings.hekateTag != null && !GlobalSettings.hekateTag.equals(hekate.getTag()) && !GlobalSettings.portableMode) {
-                    File hekateBin = new File(GlobalSettings.STANDARD_MODE_JTEGRANX_PAYLOAD_DIR_PATH + File.separator + "Hekate.bin");
-                    
-                    if (hekateBin.exists()) {
-                        try {
-                            FileUtils.forceDelete(hekateBin);
-                        } catch (IOException ex) {
-                            Logger.getLogger(PayloadHandler.class.getName()).log(Level.SEVERE, null, ex);
-                        }
-                    }
-                    
-                    hekate.getAssets().stream().filter((asset) -> (asset.getAssetName().contains("hekate_ctcaer"))).map((asset) -> GitHandler.downloadAsset(asset, GlobalSettings.STANDARD_MODE_JTEGRANX_PAYLOAD_DIR_PATH + File.separator + "hekate.zip")).map((zip) -> {
-                        if (GlobalSettings.commandLineMode) {
-                            System.out.println("Updating Hekate");
-                        }
-
-                        ZipHandler.unzip(zip.getAbsolutePath(), GlobalSettings.STANDARD_MODE_JTEGRANX_PAYLOAD_DIR_PATH);
-                        return zip;
-                    }).forEachOrdered((_item) -> {
-                        for (File file : GlobalSettings.STANDARD_MODE_JTEGRANX_PAYLOAD_DIR.listFiles()) {
-                            if (file.getName().equals("bootloader")) {
-                                try {
-                                    FileUtils.deleteDirectory(file);
-                                } catch (IOException ex) {
-                                    Logger.getLogger(PayloadHandler.class.getName()).log(Level.SEVERE, null, ex);
-                                }
-                            }
-
-                            if (file.getName().equals("hekate.zip")) {
-                                file.delete();
-                            }
-
-                            if (file.getName().contains("hekate_ctcaer")) {
-                                file.renameTo(new File(GlobalSettings.STANDARD_MODE_JTEGRANX_PAYLOAD_DIR_PATH + File.separator + "Hekate.bin"));
-                                file.delete();
-                            }
-                        }
-                    });
-                } else if (!new File(GlobalSettings.STANDARD_MODE_JTEGRANX_PAYLOAD_DIR_PATH + File.separator + "Hekate.bin").exists() && !GlobalSettings.portableMode) {
-                    hekate.getAssets().stream().filter((asset) -> (asset.getAssetName().contains("hekate_ctcaer"))).map((asset) -> GitHandler.downloadAsset(asset, GlobalSettings.STANDARD_MODE_JTEGRANX_PAYLOAD_DIR_PATH + File.separator + "hekate.zip")).map((zip) -> {
-                        if (GlobalSettings.commandLineMode) {
-                            System.out.println("Downloading Hekate");
-                        }
-
-                        ZipHandler.unzip(zip.getAbsolutePath(), GlobalSettings.STANDARD_MODE_JTEGRANX_PAYLOAD_DIR_PATH);
-                        return zip;
-                    }).forEachOrdered((_item) -> {
-                        for (File file : GlobalSettings.STANDARD_MODE_JTEGRANX_PAYLOAD_DIR.listFiles()) {
-                            if (file.getName().equals("bootloader")) {
-                                try {
-                                    FileUtils.deleteDirectory(file);
-                                } catch (IOException ex) {
-                                    Logger.getLogger(PayloadHandler.class.getName()).log(Level.SEVERE, null, ex);
-                                }
-                            }
-
-                            if (file.getName().equals("hekate.zip")) {
-                                file.delete();
-                            }
-
-                            if (file.getName().contains("hekate_ctcaer")) {
-                                file.renameTo(new File(GlobalSettings.STANDARD_MODE_JTEGRANX_PAYLOAD_DIR_PATH + File.separator + "Hekate.bin"));
-                                file.delete();
-                            }
-                        }
-                    });
-                }
-
-                if (GlobalSettings.hekateTag != null && !GlobalSettings.hekateTag.equals(hekate.getTag()) && GlobalSettings.portableMode) {
-                    File hekateBin = new File(GlobalSettings.PORTABLE_MODE_JTEGRANX_PAYLOAD_DIR_PATH + File.separator + "Hekate.bin");
-                    
-                    if (hekateBin.exists()) {
-                        try {
-                            FileUtils.forceDelete(hekateBin);
-                        } catch (IOException ex) {
-                            Logger.getLogger(PayloadHandler.class.getName()).log(Level.SEVERE, null, ex);
-                        }
-                    }
-                    
-                    hekate.getAssets().stream().filter((asset) -> (asset.getAssetName().contains("hekate_ctcaer"))).map((asset) -> GitHandler.downloadAsset(asset, GlobalSettings.PORTABLE_MODE_JTEGRANX_PAYLOAD_DIR_PATH + File.separator + "hekate.zip")).map((zip) -> {
-                        if (GlobalSettings.commandLineMode) {
-                            System.out.println("Updating Hekate");
-                        }
-
-                        ZipHandler.unzip(zip.getAbsolutePath(), GlobalSettings.PORTABLE_MODE_JTEGRANX_PAYLOAD_DIR_PATH);
-                        return zip;
-                    }).forEachOrdered((_item) -> {
-                        for (File file : GlobalSettings.PORTABLE_MODE_JTEGRANX_PAYLOAD_DIR.listFiles()) {
-                            if (file.getName().equals("bootloader")) {
-                                try {
-                                    FileUtils.deleteDirectory(file);
-                                } catch (IOException ex) {
-                                    Logger.getLogger(PayloadHandler.class.getName()).log(Level.SEVERE, null, ex);
-                                }
-                            }
-
-                            if (file.getName().equals("hekate.zip")) {
-                                file.delete();
-                            }
-
-                            if (file.getName().contains("hekate_ctcaer")) {
-                                file.renameTo(new File(GlobalSettings.PORTABLE_MODE_JTEGRANX_PAYLOAD_DIR_PATH + File.separator + "Hekate.bin"));
-                                file.delete();
-                            }
-                        }
-                    });
-                } else if (!new File(GlobalSettings.PORTABLE_MODE_JTEGRANX_PAYLOAD_DIR_PATH + File.separator + "Hekate.bin").exists() && GlobalSettings.portableMode) {
-                    hekate.getAssets().stream().filter((asset) -> (asset.getAssetName().contains("hekate_ctcaer"))).map((asset) -> GitHandler.downloadAsset(asset, GlobalSettings.PORTABLE_MODE_JTEGRANX_PAYLOAD_DIR_PATH + File.separator + "hekate.zip")).map((zip) -> {
-                        if (GlobalSettings.commandLineMode) {
-                            System.out.println("Downloading Hekate");
-                        }
-
-                        ZipHandler.unzip(zip.getAbsolutePath(), GlobalSettings.PORTABLE_MODE_JTEGRANX_PAYLOAD_DIR_PATH);
-                        return zip;
-                    }).forEachOrdered((_item) -> {
-                        for (File file : GlobalSettings.PORTABLE_MODE_JTEGRANX_PAYLOAD_DIR.listFiles()) {
-                            if (file.getName().equals("bootloader")) {
-                                try {
-                                    FileUtils.deleteDirectory(file);
-                                } catch (IOException ex) {
-                                    Logger.getLogger(PayloadHandler.class.getName()).log(Level.SEVERE, null, ex);
-                                }
-                            }
-
-                            if (file.getName().equals("hekate.zip")) {
-                                file.delete();
-                            }
-
-                            if (file.getName().contains("hekate_ctcaer")) {
-                                file.renameTo(new File(GlobalSettings.PORTABLE_MODE_JTEGRANX_PAYLOAD_DIR_PATH + File.separator + "Hekate.bin"));
-                                file.delete();
-                            }
-                        }
-                    });
-                }
-
-                if (!GlobalSettings.commandLineMode) {
-                    MenuItem item = new MenuItem("Hekate " + hekate.getTag());
-                    ImageView image = new ImageView(PayloadHandler.class.getResource("/images/payload.png").toString());
-                    item.setGraphic(image);
-
-                    item.setOnAction((ActionEvent event) -> {
-                        if (!GlobalSettings.portableMode) {
-                            JTegraNX.getController().getPayloadPathField().setText(GlobalSettings.STANDARD_MODE_JTEGRANX_PAYLOAD_DIR_PATH + File.separator + "Hekate.bin");
-                        } else {
-                            JTegraNX.getController().getPayloadPathField().setText(GlobalSettings.PORTABLE_MODE_JTEGRANX_PAYLOAD_DIR_PATH + File.separator + "Hekate.bin");
-                        }
-
-                        try {
-                            if (!JTegraNX.getController().getConfigList().getSelectionModel().getSelectedItem().equals("No configs")) {
-                                JTegraNX.getController().getConfigList().getSelectionModel().clearSelection();
-                            }
-                        } catch (NullPointerException ex) {
-                        }
-                        
-                        GlobalSettings.lastSelectedBundledPayload = "Hekate";
-                    });
-
-                    JTegraNX.getController().getPayloadMenu().getItems().add(item);
-                }
-            } else {
-                File payload;
-
-                if (!GlobalSettings.portableMode) {
-                    payload = new File(GlobalSettings.STANDARD_MODE_JTEGRANX_PAYLOAD_DIR_PATH + File.separator + "Hekate.bin");
+                if (GlobalSettings.payloadsUpdatedThisSession) {
+                    payloadInfo.append("hekate=").append(latest_hekate.getTagName()).append("\n");
                 } else {
-                    payload = new File(GlobalSettings.PORTABLE_MODE_JTEGRANX_PAYLOAD_DIR_PATH + File.separator + "Hekate.bin");
-                }
-
-                if (payload.exists()) {
-                    try {
-                        if (GlobalSettings.commandLineMode) {
-                            System.out.println("Deleting Hekate");
-                        }
-
-                        FileUtils.forceDelete(payload);
-                    } catch (IOException ex) {
-                        Logger.getLogger(PayloadHandler.class.getName()).log(Level.SEVERE, null, ex);
-                    }
+                    payloadInfo.append("hekate=").append(GlobalSettings.hekateTag).append("\n");
                 }
             }
 
             if (GlobalSettings.includeLockpickRCM) {
-                lockpickRCM = GitHandler.generateLatestRelease("https://github.com/shchmue/Lockpick_RCM/releases");
-
-                if (GlobalSettings.lockpickRCMTag == null) {
-                    GlobalSettings.lockpickRCMTag = lockpickRCM.getTag();
-                }
-
-                if (GlobalSettings.lockpickRCMTag != null && !GlobalSettings.lockpickRCMTag.equals(lockpickRCM.getTag()) && !GlobalSettings.portableMode) {
-                    lockpickRCM.getAssets().stream().filter((asset) -> (asset.getAssetName().equals("Lockpick_RCM.bin"))).forEachOrdered((asset) -> {
-                        if (GlobalSettings.commandLineMode) {
-                            System.out.println("Updating Lockpick_RCM");
-                        }
-
-                        GitHandler.downloadAsset(asset, GlobalSettings.STANDARD_MODE_JTEGRANX_PAYLOAD_DIR_PATH + File.separator + "Lockpick_RCM.bin");
-                    });
-                } else if (!new File(GlobalSettings.STANDARD_MODE_JTEGRANX_PAYLOAD_DIR_PATH + File.separator + "Lockpick_RCM.bin").exists() && !GlobalSettings.portableMode) {
-                    lockpickRCM.getAssets().stream().filter((asset) -> (asset.getAssetName().equals("Lockpick_RCM.bin"))).forEachOrdered((asset) -> {
-                        if (GlobalSettings.commandLineMode) {
-                            System.out.println("Downloading Lockpick_RCM");
-                        }
-
-                        GitHandler.downloadAsset(asset, GlobalSettings.STANDARD_MODE_JTEGRANX_PAYLOAD_DIR_PATH + File.separator + "Lockpick_RCM.bin");
-                    });
-                }
-
-                if (GlobalSettings.lockpickRCMTag != null && !GlobalSettings.lockpickRCMTag.equals(lockpickRCM.getTag()) && GlobalSettings.portableMode) {
-                    lockpickRCM.getAssets().stream().filter((asset) -> (asset.getAssetName().equals("Lockpick_RCM.bin"))).forEachOrdered((asset) -> {
-                        if (GlobalSettings.commandLineMode) {
-                            System.out.println("Updating Lockpick_RCM");
-                        }
-
-                        GitHandler.downloadAsset(asset, GlobalSettings.PORTABLE_MODE_JTEGRANX_PAYLOAD_DIR_PATH + File.separator + "Lockpick_RCM.bin");
-                    });
-                } else if (!new File(GlobalSettings.PORTABLE_MODE_JTEGRANX_PAYLOAD_DIR_PATH + File.separator + "Lockpick_RCM.bin").exists() && GlobalSettings.portableMode) {
-                    lockpickRCM.getAssets().stream().filter((asset) -> (asset.getAssetName().equals("Lockpick_RCM.bin"))).forEachOrdered((asset) -> {
-                        if (GlobalSettings.commandLineMode) {
-                            System.out.println("Downloading Lockpick_RCM");
-                        }
-
-                        GitHandler.downloadAsset(asset, GlobalSettings.PORTABLE_MODE_JTEGRANX_PAYLOAD_DIR_PATH + File.separator + "Lockpick_RCM.bin");
-                    });
-                }
-
-                if (!GlobalSettings.commandLineMode) {
-                    MenuItem item = new MenuItem("Lockpick_RCM " + lockpickRCM.getTag());
-                    ImageView image = new ImageView(PayloadHandler.class.getResource("/images/payload.png").toString());
-                    item.setGraphic(image);
-
-                    item.setOnAction((ActionEvent event) -> {
-                        if (!GlobalSettings.portableMode) {
-                            JTegraNX.getController().getPayloadPathField().setText(GlobalSettings.STANDARD_MODE_JTEGRANX_PAYLOAD_DIR_PATH + File.separator + "Lockpick_RCM.bin");
-                        } else {
-                            JTegraNX.getController().getPayloadPathField().setText(GlobalSettings.PORTABLE_MODE_JTEGRANX_PAYLOAD_DIR_PATH + File.separator + "Lockpick_RCM.bin");
-                        }
-
-                        try {
-                            if (!JTegraNX.getController().getConfigList().getSelectionModel().getSelectedItem().equals("No configs")) {
-                                JTegraNX.getController().getConfigList().getSelectionModel().clearSelection();
-                            }
-                        } catch (NullPointerException ex) {
-                        }
-                        
-                        GlobalSettings.lastSelectedBundledPayload = "Lockpick_RCM";
-                    });
-
-                    JTegraNX.getController().getPayloadMenu().getItems().add(item);
-                }
-            } else {
-                File payload;
-
-                if (!GlobalSettings.portableMode) {
-                    payload = new File(GlobalSettings.STANDARD_MODE_JTEGRANX_PAYLOAD_DIR_PATH + File.separator + "Lockpick_RCM.bin");
+                if (GlobalSettings.payloadsUpdatedThisSession) {
+                    payloadInfo.append("lockpickRCM=").append(latest_lockpickRCM.getTagName()).append("\n");
                 } else {
-                    payload = new File(GlobalSettings.PORTABLE_MODE_JTEGRANX_PAYLOAD_DIR_PATH + File.separator + "Lockpick_RCM.bin");
-                }
-
-                if (payload.exists()) {
-                    try {
-                        if (GlobalSettings.commandLineMode) {
-                            System.out.println("Deleting Lockpick_RCM");
-                        }
-
-                        FileUtils.forceDelete(payload);
-                    } catch (IOException ex) {
-                        Logger.getLogger(PayloadHandler.class.getName()).log(Level.SEVERE, null, ex);
-                    }
+                    payloadInfo.append("lockpickRCM=").append(GlobalSettings.lockpickRCMTag).append("\n");
                 }
             }
 
             if (GlobalSettings.includeTegraExplorer) {
-                tegraExplorer = GitHandler.generateLatestRelease("https://github.com/suchmememanyskill/TegraExplorer/releases");
-
-                if (GlobalSettings.tegraExplorerTag == null) {
-                    GlobalSettings.tegraExplorerTag = tegraExplorer.getTag();
-                }
-
-                if (GlobalSettings.tegraExplorerTag != null && !GlobalSettings.tegraExplorerTag.equals(tegraExplorer.getTag()) && !GlobalSettings.portableMode) {
-                    tegraExplorer.getAssets().stream().filter((asset) -> (asset.getAssetName().equals("TegraExplorer.bin"))).forEachOrdered((asset) -> {
-                        if (GlobalSettings.commandLineMode) {
-                            System.out.println("Updating TegraExplorer");
-                        }
-
-                        GitHandler.downloadAsset(asset, GlobalSettings.STANDARD_MODE_JTEGRANX_PAYLOAD_DIR_PATH + File.separator + "TegraExplorer.bin");
-                    });
-                } else if (!new File(GlobalSettings.STANDARD_MODE_JTEGRANX_PAYLOAD_DIR_PATH + File.separator + "TegraExplorer.bin").exists() && !GlobalSettings.portableMode) {
-                    tegraExplorer.getAssets().stream().filter((asset) -> (asset.getAssetName().equals("TegraExplorer.bin"))).forEachOrdered((asset) -> {
-                        if (GlobalSettings.commandLineMode) {
-                            System.out.println("Downloading TegraExplorer");
-                        }
-
-                        GitHandler.downloadAsset(asset, GlobalSettings.STANDARD_MODE_JTEGRANX_PAYLOAD_DIR_PATH + File.separator + "TegraExplorer.bin");
-                    });
-                }
-
-                if (GlobalSettings.tegraExplorerTag != null && !GlobalSettings.tegraExplorerTag.equals(tegraExplorer.getTag()) && GlobalSettings.portableMode) {
-                    tegraExplorer.getAssets().stream().filter((asset) -> (asset.getAssetName().equals("TegraExplorer.bin"))).forEachOrdered((asset) -> {
-                        if (GlobalSettings.commandLineMode) {
-                            System.out.println("Updating TegraExplorer");
-                        }
-
-                        GitHandler.downloadAsset(asset, GlobalSettings.PORTABLE_MODE_JTEGRANX_PAYLOAD_DIR_PATH + File.separator + "TegraExplorer.bin");
-                    });
-                } else if (!new File(GlobalSettings.PORTABLE_MODE_JTEGRANX_PAYLOAD_DIR_PATH + File.separator + "TegraExplorer.bin").exists() && GlobalSettings.portableMode) {
-                    tegraExplorer.getAssets().stream().filter((asset) -> (asset.getAssetName().equals("TegraExplorer.bin"))).forEachOrdered((asset) -> {
-                        if (GlobalSettings.commandLineMode) {
-                            System.out.println("Downloading TegraExplorer");
-                        }
-
-                        GitHandler.downloadAsset(asset, GlobalSettings.PORTABLE_MODE_JTEGRANX_PAYLOAD_DIR_PATH + File.separator + "TegraExplorer.bin");
-                    });
-                }
-
-                if (!GlobalSettings.commandLineMode) {
-                    MenuItem item = new MenuItem("TegraExplorer v" + tegraExplorer.getTag());
-                    ImageView image = new ImageView(PayloadHandler.class.getResource("/images/payload.png").toString());
-                    item.setGraphic(image);
-
-                    item.setOnAction((ActionEvent event) -> {
-                        if (!GlobalSettings.portableMode) {
-                            JTegraNX.getController().getPayloadPathField().setText(GlobalSettings.STANDARD_MODE_JTEGRANX_PAYLOAD_DIR_PATH + File.separator + "TegraExplorer.bin");
-                        } else {
-                            JTegraNX.getController().getPayloadPathField().setText(GlobalSettings.PORTABLE_MODE_JTEGRANX_PAYLOAD_DIR_PATH + File.separator + "TegraExplorer.bin");
-                        }
-
-                        try {
-                            if (!JTegraNX.getController().getConfigList().getSelectionModel().getSelectedItem().equals("No configs")) {
-                                JTegraNX.getController().getConfigList().getSelectionModel().clearSelection();
-                            }
-                        } catch (NullPointerException ex) {
-                        }
-                        
-                        GlobalSettings.lastSelectedBundledPayload = "TegraExplorer";
-                    });
-
-                    JTegraNX.getController().getPayloadMenu().getItems().add(item);
-                }
-            } else {
-                File payload;
-
-                if (!GlobalSettings.portableMode) {
-                    payload = new File(GlobalSettings.STANDARD_MODE_JTEGRANX_PAYLOAD_DIR_PATH + File.separator + "TegraExplorer.bin");
+                if (GlobalSettings.payloadsUpdatedThisSession) {
+                    payloadInfo.append("tegraExplorer=").append(latest_tegraExplorer.getTagName()).append("\n");
                 } else {
-                    payload = new File(GlobalSettings.PORTABLE_MODE_JTEGRANX_PAYLOAD_DIR_PATH + File.separator + "TegraExplorer.bin");
-                }
-
-                if (payload.exists()) {
-                    try {
-                        if (GlobalSettings.commandLineMode) {
-                            System.out.println("Deleting TegraExplorer");
-                        }
-
-                        FileUtils.forceDelete(payload);
-                    } catch (IOException ex) {
-                        Logger.getLogger(PayloadHandler.class.getName()).log(Level.SEVERE, null, ex);
-                    }
+                    payloadInfo.append("tegraExplorer=").append(GlobalSettings.tegraExplorerTag).append("\n");
                 }
             }
         }
-        
-        if (GlobalSettings.commandLineMode) {
-            System.out.println("Bundled payloads are up to date");
-        }
 
-        GlobalSettings.payloadsUpdatedThisSession = true;
+        return payloadInfo;
     }
-    
-    public static void prepareGPTRestore() {
+
+	public static void prepareGPTRestore() {
     	File payload;
         
         if (GlobalSettings.portableMode) {
@@ -557,172 +558,5 @@ public class PayloadHandler {
 		}
         
         GlobalSettings.gptRestorePath = payload.getAbsolutePath();
-    }
-
-    public static void addSelectedPayloadsToMenu() {
-        JTegraNX.getController().getPayloadMenu().getItems().removeAll();
-
-        if (GlobalSettings.includeFuseePrimary) {
-            MenuItem item = new MenuItem("fusee-primary (Atmosphere " + GlobalSettings.fuseePrimaryTag + ")");
-            ImageView image = new ImageView(PayloadHandler.class.getResource("/ui/images/payload.png").toString());
-            item.setGraphic(image);
-
-            item.setOnAction((ActionEvent event) -> {
-                if (!GlobalSettings.portableMode) {
-                    JTegraNX.getController().getPayloadPathField().setText(GlobalSettings.STANDARD_MODE_JTEGRANX_PAYLOAD_DIR_PATH + File.separator + "fusee-primary.bin");
-                } else {
-                    JTegraNX.getController().getPayloadPathField().setText(GlobalSettings.PORTABLE_MODE_JTEGRANX_PAYLOAD_DIR_PATH + File.separator + "fusee-primary.bin");
-                }
-
-                try {
-                    if (!JTegraNX.getController().getConfigList().getSelectionModel().getSelectedItem().equals("No configs")) {
-                        JTegraNX.getController().getConfigList().getSelectionModel().clearSelection();
-                    }
-                } catch (NullPointerException ex) {
-                }
-                
-                GlobalSettings.lastSelectedBundledPayload = "fusee-primary";
-            });
-
-            JTegraNX.getController().getPayloadMenu().getItems().add(item);
-        }
-
-        if (GlobalSettings.includeHekate) {
-            MenuItem item = new MenuItem("Hekate " + GlobalSettings.hekateTag);
-            ImageView image = new ImageView(PayloadHandler.class.getResource("/ui/images/payload.png").toString());
-            item.setGraphic(image);
-
-            item.setOnAction((ActionEvent event) -> {
-                if (!GlobalSettings.portableMode) {
-                    JTegraNX.getController().getPayloadPathField().setText(GlobalSettings.STANDARD_MODE_JTEGRANX_PAYLOAD_DIR_PATH + File.separator + "Hekate.bin");
-                } else {
-                    JTegraNX.getController().getPayloadPathField().setText(GlobalSettings.PORTABLE_MODE_JTEGRANX_PAYLOAD_DIR_PATH + File.separator + "Hekate.bin");
-                }
-
-                try {
-                    if (!JTegraNX.getController().getConfigList().getSelectionModel().getSelectedItem().equals("No configs")) {
-                        JTegraNX.getController().getConfigList().getSelectionModel().clearSelection();
-                    }
-                } catch (NullPointerException ex) {
-                }
-                
-                GlobalSettings.lastSelectedBundledPayload = "Hekate";
-            });
-
-            JTegraNX.getController().getPayloadMenu().getItems().add(item);
-        }
-
-        if (GlobalSettings.includeLockpickRCM) {
-            MenuItem item = new MenuItem("Lockpick_RCM " + GlobalSettings.lockpickRCMTag);
-            ImageView image = new ImageView(PayloadHandler.class.getResource("/ui/images/payload.png").toString());
-            item.setGraphic(image);
-
-            item.setOnAction((ActionEvent event) -> {
-                if (!GlobalSettings.portableMode) {
-                    JTegraNX.getController().getPayloadPathField().setText(GlobalSettings.STANDARD_MODE_JTEGRANX_PAYLOAD_DIR_PATH + File.separator + "Lockpick_RCM.bin");
-                } else {
-                    JTegraNX.getController().getPayloadPathField().setText(GlobalSettings.PORTABLE_MODE_JTEGRANX_PAYLOAD_DIR_PATH + File.separator + "Lockpick_RCM.bin");
-                }
-
-                try {
-                    if (!JTegraNX.getController().getConfigList().getSelectionModel().getSelectedItem().equals("No configs")) {
-                        JTegraNX.getController().getConfigList().getSelectionModel().clearSelection();
-                    }
-                } catch (NullPointerException ex) {
-                }
-                
-                GlobalSettings.lastSelectedBundledPayload = "Lockpick_RCM";
-            });
-
-            JTegraNX.getController().getPayloadMenu().getItems().add(item);
-        }
-
-        if (GlobalSettings.includeTegraExplorer) {
-            MenuItem item = new MenuItem("TegraExplorer v" + GlobalSettings.tegraExplorerTag);
-            ImageView image = new ImageView(PayloadHandler.class.getResource("/ui/images/payload.png").toString());
-            item.setGraphic(image);
-
-            item.setOnAction((ActionEvent event) -> {
-                if (!GlobalSettings.portableMode) {
-                    JTegraNX.getController().getPayloadPathField().setText(GlobalSettings.STANDARD_MODE_JTEGRANX_PAYLOAD_DIR_PATH + File.separator + "TegraExplorer.bin");
-                } else {
-                    JTegraNX.getController().getPayloadPathField().setText(GlobalSettings.PORTABLE_MODE_JTEGRANX_PAYLOAD_DIR_PATH + File.separator + "TegraExplorer.bin");
-                }
-
-                try {
-                    if (!JTegraNX.getController().getConfigList().getSelectionModel().getSelectedItem().equals("No configs")) {
-                        JTegraNX.getController().getConfigList().getSelectionModel().clearSelection();
-                    }
-                } catch (NullPointerException ex) {
-                }
-                
-                GlobalSettings.lastSelectedBundledPayload = "TegraExplorer";
-            });
-
-            JTegraNX.getController().getPayloadMenu().getItems().add(item);
-        }
-    }
-
-    public static void checkSelectedPayloads() {
-        GlobalSettings.selectedPayloadCount = 0;
-
-        if (GlobalSettings.includeFuseePrimary) {
-            GlobalSettings.selectedPayloadCount++;
-        }
-
-        if (GlobalSettings.includeHekate) {
-            GlobalSettings.selectedPayloadCount++;
-        }
-
-        if (GlobalSettings.includeLockpickRCM) {
-            GlobalSettings.selectedPayloadCount++;
-        }
-
-        if (GlobalSettings.includeTegraExplorer) {
-            GlobalSettings.selectedPayloadCount++;
-        }
-    }
-
-    public static StringBuilder getPayloadInfoAsString() {
-        checkSelectedPayloads();
-        StringBuilder payloadInfo = new StringBuilder();
-
-        if (GlobalSettings.selectedPayloadCount > 0) {
-            payloadInfo.append("[PAYLOAD RELEASE INFO]\n");
-
-            if (GlobalSettings.includeFuseePrimary) {
-                if (GlobalSettings.payloadsUpdatedThisSession) {
-                    payloadInfo.append("fuseePrimary=").append(fuseePrimary.getTag()).append("\n");
-                } else {
-                    payloadInfo.append("fuseePrimary=").append(GlobalSettings.fuseePrimaryTag).append("\n");
-                }
-            }
-
-            if (GlobalSettings.includeHekate) {
-                if (GlobalSettings.payloadsUpdatedThisSession) {
-                    payloadInfo.append("hekate=").append(hekate.getTag()).append("\n");
-                } else {
-                    payloadInfo.append("hekate=").append(GlobalSettings.hekateTag).append("\n");
-                }
-            }
-
-            if (GlobalSettings.includeLockpickRCM) {
-                if (GlobalSettings.payloadsUpdatedThisSession) {
-                    payloadInfo.append("lockpickRCM=").append(lockpickRCM.getTag()).append("\n");
-                } else {
-                    payloadInfo.append("lockpickRCM=").append(GlobalSettings.lockpickRCMTag).append("\n");
-                }
-            }
-
-            if (GlobalSettings.includeTegraExplorer) {
-                if (GlobalSettings.payloadsUpdatedThisSession) {
-                    payloadInfo.append("tegraExplorer=").append(tegraExplorer.getTag()).append("\n");
-                } else {
-                    payloadInfo.append("tegraExplorer=").append(GlobalSettings.tegraExplorerTag).append("\n");
-                }
-            }
-        }
-
-        return payloadInfo;
     }
 }

@@ -2,7 +2,7 @@
 
 JTegraNX - Another RCM payload injector
 
-Copyright (C) 2019-2021 Dylan Wedman
+Copyright (C) 2019-2022 Dylan Wedman
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -36,8 +36,8 @@ import java.util.logging.Logger;
 import javax.swing.ImageIcon;
 import handlers.PayloadHandler;
 import javafx.application.Platform;
+import ui.JTegraNX;
 import ui.UIGlobal;
-import ui.fx.JTegraNX;
 
 public class Tray {
 
@@ -75,7 +75,7 @@ public class Tray {
             systemTray = SystemTray.getSystemTray();
 
             trayIcon.addActionListener((ActionEvent e) -> {
-                Platform.runLater(() -> {
+            	Platform.runLater(() -> {
                     if (JTegraNX.getStage().isIconified()) {
                         JTegraNX.getStage().setIconified(false);
                         JTegraNX.getStage().setAlwaysOnTop(true);
@@ -100,8 +100,8 @@ public class Tray {
         PayloadHandler.checkSelectedPayloads();
 
         if (GlobalSettings.selectedPayloadCount > 0) {
-            if (GlobalSettings.includeFuseePrimary) {
-                MenuItem fuseePrimary = new MenuItem("fusee-primary (Atmosphere " + GlobalSettings.fuseePrimaryTag + ")");
+            if (GlobalSettings.includeFusee) {
+                MenuItem fuseePrimary = new MenuItem("fusee-primary (Atmosphere " + GlobalSettings.fuseeTag + ")");
 
                 fuseePrimary.addActionListener((ActionEvent e) -> {
                     Platform.runLater(() -> {
@@ -248,7 +248,7 @@ public class Tray {
             File payloadToInject = new File(JTegraNX.getController().getPayloadPathField().getText());
 
             if (payloadToInject.exists()) {
-                UIGlobal.injectPayload(JTegraNX.getController().getPayloadPathField().getText());
+                UIGlobal.injectPayload(JTegraNX.getController().getPayloadPathField().getText(), false);
             }
         });
 

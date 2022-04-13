@@ -2,7 +2,7 @@
 
 JTegraNX - Another RCM payload injector
 
-Copyright (C) 2019-2021 Dylan Wedman
+Copyright (C) 2019-2022 Dylan Wedman
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -40,7 +40,6 @@ import javafx.scene.control.ButtonType;
 import rcm.RCM;
 import linux.LinuxDeviceListener;
 import macOS.MacOSDeviceListener;
-import ui.fx.JTegraNX;
 import util.GlobalSettings;
 import util.Tray;
 
@@ -73,12 +72,12 @@ public class UIGlobal {
         }
     }
 
-    public static void injectPayload(String payloadPath) {
+    public static void injectPayload(String payloadPath, boolean ctegranx) {
         if (!GlobalSettings.commandLineMode) {
             clearLog();
         }
 
-        RCM.injectPayload(payloadPath);
+        RCM.injectPayload(payloadPath, ctegranx);
     }
 
     public static void checkIfSpecifiedPayloadExists() {
@@ -101,7 +100,7 @@ public class UIGlobal {
                 checkIfSpecifiedPayloadExists();
 
                 if (GlobalSettings.autoInject) {
-                    injectPayload(JTegraNX.getController().getPayloadPathField().getText());
+                    injectPayload(JTegraNX.getController().getPayloadPathField().getText(), false);
                 }
 
                 if (previous_rcm_status.equals("RCM_UNDETECTED") && GlobalSettings.driverUpdatedNeedsReconnect) {
@@ -129,6 +128,11 @@ public class UIGlobal {
 
                 if (previous_rcm_status.equals("RCM_LOADED")) {
                     GlobalSettings.driverUpdatedNeedsReconnect = false;
+                }
+                
+                if (GlobalSettings.CTEGRANX_ACTIVE) {
+                	UIGlobal.appendLog("Disconnected from CTegraNX");
+                	GlobalSettings.CTEGRANX_ACTIVE = false;
                 }
 
                 break;
@@ -235,7 +239,7 @@ public class UIGlobal {
         JTegraNX.getController().getCheckJTegraNXUpdatesMenuItem().setSelected(GlobalSettings.checkJTegraNXUpdates);
         JTegraNX.getController().getCheckPayloadUpdatesMenuItem().setSelected(GlobalSettings.checkPayloadUpdates);
         JTegraNX.getController().getEnableTrayIconMenuItem().setSelected(GlobalSettings.enableTrayIcon);
-        JTegraNX.getController().getIncludeFuseePrimaryMenuItem().setSelected(GlobalSettings.includeFuseePrimary);
+        JTegraNX.getController().getIncludeFuseePrimaryMenuItem().setSelected(GlobalSettings.includeFusee);
         JTegraNX.getController().getIncludeHekateMenuItem().setSelected(GlobalSettings.includeHekate);
         JTegraNX.getController().getIncludeLockpickRCMMenuItem().setSelected(GlobalSettings.includeLockpickRCM);
         JTegraNX.getController().getIncludeTegraExplorerItem().setSelected(GlobalSettings.includeTegraExplorer);
@@ -290,8 +294,8 @@ public class UIGlobal {
                         GlobalSettings.enableTrayIcon = Boolean.valueOf(line.substring(line.indexOf("=") + 1));
                     }
 
-                    if (line.contains("includeFussePrimary")) {
-                        GlobalSettings.includeFuseePrimary = Boolean.valueOf(line.substring(line.indexOf("=") + 1));
+                    if (line.contains("includeFusse")) {
+                        GlobalSettings.includeFusee = Boolean.valueOf(line.substring(line.indexOf("=") + 1));
                     }
 
                     if (line.contains("includeHekate")) {
@@ -311,9 +315,9 @@ public class UIGlobal {
                     }
 
                     if (line.contains("[PAYLOAD RELEASE INFO]")) {
-                        if (GlobalSettings.includeFuseePrimary) {
+                        if (GlobalSettings.includeFusee) {
                             line = bReader.readLine();
-                            GlobalSettings.fuseePrimaryTag = line.substring(line.indexOf("=") + 1);
+                            GlobalSettings.fuseeTag = line.substring(line.indexOf("=") + 1);
                         }
 
                         if (GlobalSettings.includeHekate) {
@@ -384,8 +388,8 @@ public class UIGlobal {
                         GlobalSettings.enableTrayIcon = Boolean.valueOf(line.substring(line.indexOf("=") + 1));
                     }
 
-                    if (line.contains("includeFussePrimary")) {
-                        GlobalSettings.includeFuseePrimary = Boolean.valueOf(line.substring(line.indexOf("=") + 1));
+                    if (line.contains("includeFusse")) {
+                        GlobalSettings.includeFusee = Boolean.valueOf(line.substring(line.indexOf("=") + 1));
                     }
 
                     if (line.contains("includeHekate")) {
@@ -405,9 +409,9 @@ public class UIGlobal {
                     }
 
                     if (line.contains("[PAYLOAD RELEASE INFO]")) {
-                        if (GlobalSettings.includeFuseePrimary) {
+                        if (GlobalSettings.includeFusee) {
                             line = bReader.readLine();
-                            GlobalSettings.fuseePrimaryTag = line.substring(line.indexOf("=") + 1);
+                            GlobalSettings.fuseeTag = line.substring(line.indexOf("=") + 1);
                         }
 
                         if (GlobalSettings.includeHekate) {
@@ -458,7 +462,7 @@ public class UIGlobal {
                 writer.println("checkJTegraNXUpdates=" + GlobalSettings.checkJTegraNXUpdates);
                 writer.println("checkPayloadUpdates=" + GlobalSettings.checkPayloadUpdates);
                 writer.println("enableTrayIcon=" + GlobalSettings.enableTrayIcon);
-                writer.println("includeFussePrimary=" + GlobalSettings.includeFuseePrimary);
+                writer.println("includeFusse=" + GlobalSettings.includeFusee);
                 writer.println("includeHekate=" + GlobalSettings.includeHekate);
                 writer.println("includeLockpickRCM=" + GlobalSettings.includeLockpickRCM);
                 writer.println("includeTegraExplorer=" + GlobalSettings.includeTegraExplorer);
@@ -484,7 +488,7 @@ public class UIGlobal {
                 writer.println("checkJTegraNXUpdates=" + GlobalSettings.checkJTegraNXUpdates);
                 writer.println("checkPayloadUpdates=" + GlobalSettings.checkPayloadUpdates);
                 writer.println("enableTrayIcon=" + GlobalSettings.enableTrayIcon);
-                writer.println("includeFussePrimary=" + GlobalSettings.includeFuseePrimary);
+                writer.println("includeFusse=" + GlobalSettings.includeFusee);
                 writer.println("includeHekate=" + GlobalSettings.includeHekate);
                 writer.println("includeLockpickRCM=" + GlobalSettings.includeLockpickRCM);
                 writer.println("includeTegraExplorer=" + GlobalSettings.includeTegraExplorer);

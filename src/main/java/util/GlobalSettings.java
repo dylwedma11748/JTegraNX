@@ -2,7 +2,7 @@
 
 JTegraNX - Another RCM payload injector
 
-Copyright (C) 2019-2021 Dylan Wedman
+Copyright (C) 2019-2022 Dylan Wedman
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -23,9 +23,13 @@ package util;
 
 import java.io.File;
 
+import org.kohsuke.github.GitHub;
+
 public class GlobalSettings {
     
-    public static final String JRE_ARCH = System.getProperty("sun.arch.data.model");
+	public static final String GITHUB_ACCESS_TOKEN = "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";
+	
+	public static final String JRE_ARCH = System.getProperty("sun.arch.data.model");
 
     public static final String STANDARD_MODE_JTEGRANX_DIR_PATH = System.getProperty("user.home") + File.separator + "Documents" + File.separator + "JTegraNX";
     public static final File STANDARD_MODE_JTEGRANX_DIR = new File(STANDARD_MODE_JTEGRANX_DIR_PATH);
@@ -39,6 +43,11 @@ public class GlobalSettings {
     public static final File PORTABLE_MODE_JTEGRANX_PAYLOAD_DIR = new File(PORTABLE_MODE_JTEGRANX_PAYLOAD_DIR_PATH);
     public static final File PORTABLE_MODE_JTEGRANX_CONFIG_FILE = new File(PORTABLE_MODE_JTEGRANX_DIR_PATH + File.separator + "JTegraNX.ini");
     
+    public static boolean OFFLINE_MODE = false;
+    public static boolean CTEGRANX_ACTIVE = false;
+    
+    public static GitHub gitHub;
+    
     public static String gptRestorePath;
     public static String lastSelectedBundledPayload;
 
@@ -48,7 +57,7 @@ public class GlobalSettings {
 
     public static int selectedPayloadCount;
 
-    public static String fuseePrimaryTag;
+    public static String fuseeTag;
     public static String hekateTag;
     public static String lockpickRCMTag;
     public static String tegraExplorerTag;
@@ -57,7 +66,7 @@ public class GlobalSettings {
     public static boolean checkJTegraNXUpdates = true;
     public static boolean checkPayloadUpdates = true;
     public static boolean enableTrayIcon = false;
-    public static boolean includeFuseePrimary = true;
+    public static boolean includeFusee = true;
     public static boolean includeHekate = true;
     public static boolean includeLockpickRCM = true;
     public static boolean includeTegraExplorer = true;

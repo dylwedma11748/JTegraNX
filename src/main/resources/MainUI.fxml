@@ -19,7 +19,7 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.Pane?>
 
-<Pane fx:id="pane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="411.0" prefWidth="830.0" stylesheets="@style.css" xmlns="http://javafx.com/javafx/16" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ui.fx.MainUIController">
+<Pane fx:id="pane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="411.0" prefWidth="830.0" stylesheets="@style.css" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ui.MainUIController">
    <children>
       <MenuBar fx:id="menuBar" prefHeight="40.0" prefWidth="760.0">
         <menus>
@@ -134,7 +134,7 @@
                   </CheckMenuItem>
                   <Menu mnemonicParsing="false" text="Change bundled payloads">
                     <items>
-                        <CheckMenuItem fx:id="includeFuseePrimary" mnemonicParsing="false" onAction="#changeSetting" selected="true" text="Include fusee-primary">
+                        <CheckMenuItem fx:id="includeFusee" mnemonicParsing="false" onAction="#changeSetting" selected="true" text="Include fusee">
                            <graphic>
                               <ImageView fitHeight="32.0" fitWidth="32.0" pickOnBounds="true" preserveRatio="true">
                                  <image>
@@ -152,7 +152,7 @@
                               </ImageView>
                            </graphic>
                         </CheckMenuItem>
-                        <CheckMenuItem fx:id="includeLockpickRCM" mnemonicParsing="false" onAction="#changeSetting" selected="true" text="Include L:ockpick_RCM">
+                        <CheckMenuItem fx:id="includeLockpickRCM" mnemonicParsing="false" onAction="#changeSetting" selected="true" text="Include Lockpick_RCM">
                            <graphic>
                               <ImageView fitHeight="32.0" fitWidth="32.0" pickOnBounds="true" preserveRatio="true">
                                  <image>

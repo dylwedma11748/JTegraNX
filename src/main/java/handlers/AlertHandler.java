@@ -2,7 +2,7 @@
 
 JTegraNX - Another RCM payload injector
 
-Copyright (C) 2019-2021 Dylan Wedman
+Copyright (C) 2019-2022 Dylan Wedman
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -30,8 +30,10 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.ChoiceDialog;
+import javafx.scene.control.ProgressBar;
 import javafx.scene.control.TextArea;
-import ui.fx.JTegraNX;
+import javafx.scene.layout.GridPane;
+import ui.JTegraNX;
 
 public class AlertHandler {
 
@@ -104,6 +106,27 @@ public class AlertHandler {
 
         return null;
     }
+    
+    public static ProgressAlert createProgressAlert(String title, String headerText) {
+    	ProgressAlert progress;
+    	
+    	Alert alert = new Alert(AlertType.NONE);
+    	alert.setTitle(title);
+    	alert.setHeaderText(headerText);
+    	
+    	GridPane pane = new GridPane();
+    	ProgressBar bar = new ProgressBar();
+    	
+    	bar.setMinSize(600, 0);
+    	pane.add(bar, 0, 1);
+    	pane.setMinSize(600, 0);
+    	alert.getDialogPane().setContent(pane);
+    	
+    	alert.initOwner(JTegraNX.getStage());
+    	
+    	progress = new ProgressAlert(alert, bar);
+    	return progress;
+    }
 
     public static void showAboutDialog() {
         Alert alert = new Alert(AlertType.NONE);
@@ -121,9 +144,12 @@ public class AlertHandler {
                 + "\nLater I then started adding more features on par with some of the features that TegraRCMGUI has and then "
                 + "JTegraNX became what it is today."
                 + "\n\nCurrent release: " + UpdateHandler.getCurrentVersion() + "\n\nChangelog:"
-                + "\n\u2022 Fixed a bug that prevented JTegraNX to launch if it failed to extract gptrestore."
-                + "\n\nI have big plans for JTegraNX v1.7, so stay tuned."
-                + "\n\nCopyright (C) 2019-2021 Dylan Wedman\n"
+                + "\n\u2022 Added offline mode"
+                + "\n\u2022 Renamed fusee-primary to fusee"
+                + "\n\u2022 Replaced GitHandler with kohsuke/github-api"
+                + "\n\u2022 Added a preloader so that JTegraNX doesn't hang while preparing"
+                + "\n\u2022 Updated the SDPrepare tool and replaced Checkpoint with JKSV."
+                + "\n\nCopyright (C) 2019-2022 Dylan Wedman\n"
                 + "\n"
                 + "This program is free software; you can redistribute it and/or modify\n"
                 + "it under the terms of the GNU General Public License as published by\n"
@@ -136,8 +162,7 @@ public class AlertHandler {
                 + "GNU General Public License for more details.\n"
                 + "\n"
                 + "You should have received a copy of the GNU General Public License along\n"
-                + "with this program; if not, write to the Free Software Foundation, Inc.,\n"
-                + "51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.");
+                + "with this program; If not, see http://www.gnu.org/licenses.");
         alert.getDialogPane().setContent(aboutTextBox);
         alert.getDialogPane().getButtonTypes().add(ButtonType.OK);
         alert.initOwner(JTegraNX.getStage());

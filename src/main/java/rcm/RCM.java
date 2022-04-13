@@ -2,7 +2,7 @@
 
 JTegraNX - Another RCM payload injector
 
-Copyright (C) 2019-2021 Dylan Wedman
+Copyright (C) 2019-2022 Dylan Wedman
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -37,8 +37,9 @@ import org.usb4java.DeviceDescriptor;
 import org.usb4java.DeviceHandle;
 import org.usb4java.DeviceList;
 import org.usb4java.LibUsb;
+
+import ui.JTegraNX;
 import ui.UIGlobal;
-import ui.fx.JTegraNX;
 import util.GlobalSettings;
 import util.Tray;
 
@@ -63,6 +64,9 @@ public class RCM {
     };
 
     private static final byte[] spreadPattern = {0x00, 0x00, 0x01, 0x40};
+    
+    // RCM Device Stored for easy access
+    public static DeviceHandle rcmDevice = null;
 
     // Device listener for Windows
     public static native void startDeviceListener();
@@ -92,6 +96,7 @@ public class RCM {
 
     public static void promptDriverInstall() {
         System.out.println("called");
+        
         if (!GlobalSettings.commandLineMode) {
             Platform.runLater(() -> {
                 boolean install = AlertHandler.showConfirmationDialog("APX driver missing", "An RCM device was detected but the APX driver is not installed. Install now?", "This driver is required to inject a payload.");
@@ -120,20 +125,20 @@ public class RCM {
         });
     }
 
-    public static void injectPayload(String payloadPath) {
+    public static void injectPayload(String payloadPath, boolean ctegranx) {
         if (!GlobalSettings.commandLineMode) {
             new Thread("RCM") {
                 @Override
                 public void run() {
-                    inject(payloadPath);
+                    inject(payloadPath, ctegranx);
                 }
             }.start();
         } else {
-            inject(payloadPath);
+            inject(payloadPath, ctegranx);
         }
     }
 
-    private static void inject(String payloadPath) {
+    public static void inject(String payloadPath, boolean ctegranx) {
         setRCMStatus("RCM_LOADING");
         byte[] payload = createRCMPayload(payloadPath);
 
@@ -292,6 +297,8 @@ public class RCM {
                             }
                         }
                     }
+                    
+                    closeDevice(handle);
                 } else {
                     setRCMStatus("ERROR");
 
@@ -301,6 +308,7 @@ public class RCM {
                         }
                     }
                 }
+                
             } else {
                 setRCMStatus("ERROR");
                 appendLog("Failed to get RCM device");
@@ -418,7 +426,7 @@ public class RCM {
                         return null;
                     } else {
                         if ((descriptor.idVendor() == vendorID) && descriptor.idProduct() == productID) {
-                            return device;
+                        	return device;
                         }
                     }
                 }
@@ -428,7 +436,7 @@ public class RCM {
         return null;
     }
 
-    private static DeviceHandle openDevice(Device device) {
+    public static DeviceHandle openDevice(Device device) {
         DeviceHandle handle = new DeviceHandle();
         int returnValue = LibUsb.open(device, handle);
 
@@ -438,7 +446,13 @@ public class RCM {
             return null;
         }
 
+        rcmDevice = handle;
         return handle;
+    }
+    
+    private static void closeDevice(DeviceHandle handle) {
+    	LibUsb.releaseInterface(handle, 0);
+    	LibUsb.close(handle);
     }
 
     private static StringBuilder readDeviceID(DeviceHandle handle) {

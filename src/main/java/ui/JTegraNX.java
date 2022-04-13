@@ -2,7 +2,7 @@
 
 JTegraNX - Another RCM payload injector
 
-Copyright (C) 2019-2021 Dylan Wedman
+Copyright (C) 2019-2022 Dylan Wedman
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -19,24 +19,26 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
  */
-package ui.fx;
+package ui;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
 
-import configs.ConfigManager;
+import org.kohsuke.github.GitHubBuilder;
+
 import handlers.AlertHandler;
 import handlers.PayloadHandler;
+import handlers.ProgressAlert;
 import handlers.UpdateHandler;
 import javafx.application.Application;
 import javafx.application.Platform;
+import javafx.concurrent.WorkerStateEvent;
+import javafx.event.EventHandler;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.image.Image;
@@ -44,7 +46,7 @@ import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import rcm.RCM;
-import ui.UIGlobal;
+import tasks.Preloader;
 import util.GlobalSettings;
 import util.NativeLoader;
 import util.Tray;
@@ -58,7 +60,7 @@ public class JTegraNX extends Application {
 
     @Override
     public void start(Stage stage) throws Exception {
-        Platform.setImplicitExit(false);
+        Platform.setImplicitExit(true);
         FXMLLoader loader = new FXMLLoader(getClass().getResource("/MainUI.fxml"));
         Pane base = loader.load();
         controller = loader.getController();
@@ -71,32 +73,17 @@ public class JTegraNX extends Application {
         icon = new Image(getClass().getResourceAsStream("/images/icon.png"));
         stage.getIcons().add(icon);
         stage.setResizable(false);
+        
+		/*
+		 * Screen screen = Screen.getPrimary(); Rectangle2D bounds =
+		 * screen.getVisualBounds(); stage.setX(bounds.getMinX());
+		 * stage.setY(bounds.getMinY()); stage.setWidth(bounds.getWidth());
+		 * stage.setHeight(bounds.getHeight());
+		 */
+        
+        
         JTegraNX.stage = stage;
-
-        boolean configFileFoundAndRead = false;
-
-        if (UIGlobal.readMainConfigFile()) {
-            configFileFoundAndRead = true;
-            UIGlobal.applyGlobalSettings();
-            UIGlobal.startDeviceListener();
-
-            if (GlobalSettings.enableTrayIcon) {
-                Tray.enableTrayIcon();
-            }
-
-            if (GlobalSettings.checkPayloadUpdates) {
-                PayloadHandler.updatePayloads();
-            } else {
-                PayloadHandler.addSelectedPayloadsToMenu();
-            }
-
-            if (GlobalSettings.checkJTegraNXUpdates) {
-                UpdateHandler.checkForUpdates(null);
-            }
-
-            ConfigManager.updateConfigList();
-        }
-
+        
         controller.getPayloadPathField().textProperty().addListener((observable, oldValue, newValue) -> {
             UIGlobal.checkIfSpecifiedPayloadExists();
 
@@ -106,6 +93,14 @@ public class JTegraNX extends Application {
         });
 
         stage.show();
+        
+        boolean configFileFoundAndRead = false;
+
+        if (UIGlobal.readMainConfigFile()) {
+            configFileFoundAndRead = true;
+            UIGlobal.applyGlobalSettings();
+            prepare();
+        }
 
         controller.configName.getParent().requestFocus();
 
@@ -153,21 +148,45 @@ public class JTegraNX extends Application {
                 controller.getPortableModeMenuItem().setSelected(false);
                 controller.getStandardModeMenuItem().setSelected(true);
             }
-
-            PayloadHandler.updatePayloads();
-            UpdateHandler.checkForUpdates(null);
-            UIGlobal.startDeviceListener();
-            ConfigManager.updateConfigList();
+            
+            prepare();
         }
     }
     
+    private static void prepare() {
+    	ProgressAlert alert = AlertHandler.createProgressAlert("JTegraNX", "Preparing");
+    	alert.show();
+    	
+    	Preloader loader = new Preloader();
+    	
+    	alert.getBar().progressProperty().unbind();
+    	alert.getBar().progressProperty().bind(loader.progressProperty());
+    	
+        alert.getAlert().headerTextProperty().unbind();
+        alert.getAlert().headerTextProperty().bind(loader.messageProperty());
+    	
+    	loader.addEventHandler(WorkerStateEvent.WORKER_STATE_SUCCEEDED, new EventHandler<WorkerStateEvent>() {
+			@Override
+			public void handle(WorkerStateEvent event) {
+				alert.close();
+				
+				if (GlobalSettings.checkJTegraNXUpdates) {
+		    		UpdateHandler.checkForUpdates(null);
+		    	}
+			}
+    	});
+    	
+    	loader.addEventHandler(WorkerStateEvent.WORKER_STATE_FAILED, new EventHandler<WorkerStateEvent>() {
+			@Override
+			public void handle(WorkerStateEvent event) {
+				alert.close();
+			}
+    	});
+    	
+    	new Thread(loader).start();
+    }
+    
     public static void main(String[] args) {
-    	try {
-            UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-        } catch (ClassNotFoundException | InstantiationException | IllegalAccessException | UnsupportedLookAndFeelException ex) {
-            Logger.getLogger(JTegraNX.class.getName()).log(Level.SEVERE, null, ex);
-        }
-
         if (args.length > 0 && args[0].equals("-cml")) {
         	GlobalSettings.commandLineMode = true;
         	Scanner scanner = new Scanner(System.in);
@@ -177,9 +196,25 @@ public class JTegraNX extends Application {
         		System.exit(-1);
         	}
         	
-            System.out.println("JTegraNX - Another RCM payload injector\nCopyright (C) 2019-2021 Dylan Wedman");
+            System.out.println("JTegraNX - Another RCM payload injector\nCopyright (C) 2019-2022 Dylan Wedman");
 
             if (UIGlobal.readMainConfigFile()) {
+            	try {
+            		System.out.println("Connecting to GitHub");
+        			GlobalSettings.gitHub = new GitHubBuilder().withOAuthToken(GlobalSettings.GITHUB_ACCESS_TOKEN).build();
+        			
+        			if (!GlobalSettings.gitHub.isCredentialValid()) {
+        				System.err.println("Failed to connect to GitHub: invalid credential");
+        				GlobalSettings.OFFLINE_MODE = true;
+        			} else {
+        				System.out.println("Connected to GitHub");
+        			}
+        		} catch (IOException e) {
+        			System.err.println("Failed to connect to GitHub: IOException happened during GitHub builder");
+        			e.printStackTrace();
+        			GlobalSettings.OFFLINE_MODE = true;
+        		}
+            	
                 if (GlobalSettings.checkPayloadUpdates) {
                     System.out.println("Checking for payload updates");
                     PayloadHandler.updatePayloads();
@@ -189,11 +224,31 @@ public class JTegraNX extends Application {
                     System.out.println("Checking for JTegraNX updates");
                     UpdateHandler.checkForUpdates(scanner);
                 }
+            } else {
+            	System.out.println("Select a configuration mode\nS - Standard Mode\nP - Portable mode");
+            	System.out.append("> ");
+            	String command = scanner.nextLine();
+            	
+            	if (command.equalsIgnoreCase("S")) {
+            		System.out.println("Standard mode selected");
+            		GlobalSettings.portableMode = false;
+            	} else if (command.equalsIgnoreCase("P")) {
+            		System.out.println("Portable mode selected");
+            		GlobalSettings.portableMode = true;
+            	}
             }
 
             System.out.println("Command line mode ready\nFor help, type \"help\"");
             commandLineModeLoop(scanner);
         } else {
+        	try {
+                UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+            } catch (ClassNotFoundException | InstantiationException | IllegalAccessException | UnsupportedLookAndFeelException ex) {
+                System.err.println("Failed to set UI look and feel: " + ex.getClass().getName() + " happened");
+                ex.printStackTrace();
+                System.exit(-1);
+            }
+        	
         	if (!NativeLoader.loadNatives()) {
         		System.err.println("Failed to load natives");
         		System.exit(-1);
@@ -229,22 +284,30 @@ public class JTegraNX extends Application {
                     System.out.println("Invalid use of inject -bp; must include target payload");
                 }
                 
-                if (bp.equalsIgnoreCase("fusee-primary")) {
-                    if (GlobalSettings.includeFuseePrimary) {
+                if (bp.equalsIgnoreCase("fusee")) {
+                    if (GlobalSettings.includeFusee) {
                         if (GlobalSettings.portableMode) {
-                            UIGlobal.injectPayload(GlobalSettings.PORTABLE_MODE_JTEGRANX_PAYLOAD_DIR_PATH + File.separator + "fusee-primary.bin");
+                            UIGlobal.injectPayload(GlobalSettings.PORTABLE_MODE_JTEGRANX_PAYLOAD_DIR_PATH + File.separator + "fusee-primary.bin", false);
                         } else {
-                            UIGlobal.injectPayload(GlobalSettings.STANDARD_MODE_JTEGRANX_PAYLOAD_DIR_PATH + File.separator + "fusee-primary.bin");
+                            UIGlobal.injectPayload(GlobalSettings.STANDARD_MODE_JTEGRANX_PAYLOAD_DIR_PATH + File.separator + "fusee-primary.bin", false);
                         }
                     } else {
                         System.out.println("fusee-primary bundled payload is disabled");
                     }
                 } else if (bp.equalsIgnoreCase("Hekate")) {
                     if (GlobalSettings.includeHekate) {
-                        if (GlobalSettings.portableMode) {
-                            UIGlobal.injectPayload(GlobalSettings.PORTABLE_MODE_JTEGRANX_PAYLOAD_DIR_PATH + File.separator + "Hekate.bin");
+                    	if (GlobalSettings.portableMode) {
+                    		for (File file : GlobalSettings.PORTABLE_MODE_JTEGRANX_PAYLOAD_DIR.listFiles()) {
+                            	if (file.getName().contains("hekate_ctcaer")) {
+                            		UIGlobal.injectPayload(file.getAbsolutePath(), false);
+                            	}
+                            }
                         } else {
-                            UIGlobal.injectPayload(GlobalSettings.STANDARD_MODE_JTEGRANX_PAYLOAD_DIR_PATH + File.separator + "Hekate.bin");
+                        	for (File file : GlobalSettings.STANDARD_MODE_JTEGRANX_PAYLOAD_DIR.listFiles()) {
+                            	if (file.getName().contains("hekate_ctcaer")) {
+                            		UIGlobal.injectPayload(file.getAbsolutePath(), false);
+                            	}
+                            }
                         }
                     } else {
                         System.out.println("Hekate bundled payload is disabled");
@@ -252,9 +315,9 @@ public class JTegraNX extends Application {
                 } else if (bp.equalsIgnoreCase("Lockpick_RCM")) {
                     if (GlobalSettings.includeLockpickRCM) {
                         if (GlobalSettings.portableMode) {
-                            UIGlobal.injectPayload(GlobalSettings.PORTABLE_MODE_JTEGRANX_PAYLOAD_DIR_PATH + File.separator + "Lockpick_RCM.bin");
+                            UIGlobal.injectPayload(GlobalSettings.PORTABLE_MODE_JTEGRANX_PAYLOAD_DIR_PATH + File.separator + "Lockpick_RCM.bin", false);
                         } else {
-                            UIGlobal.injectPayload(GlobalSettings.STANDARD_MODE_JTEGRANX_PAYLOAD_DIR_PATH + File.separator + "Lockpick_RCM.bin");
+                            UIGlobal.injectPayload(GlobalSettings.STANDARD_MODE_JTEGRANX_PAYLOAD_DIR_PATH + File.separator + "Lockpick_RCM.bin", false);
                         }
                     } else {
                         System.out.println("Lockpick_RCM bundled payload is disabled");
@@ -262,19 +325,21 @@ public class JTegraNX extends Application {
                 } else if (bp.equalsIgnoreCase("TegraExplorer")) {
                     if (GlobalSettings.includeTegraExplorer) {
                         if (GlobalSettings.portableMode) {
-                            UIGlobal.injectPayload(GlobalSettings.PORTABLE_MODE_JTEGRANX_PAYLOAD_DIR_PATH + File.separator + "TegraExplorer.bin");
+                            UIGlobal.injectPayload(GlobalSettings.PORTABLE_MODE_JTEGRANX_PAYLOAD_DIR_PATH + File.separator + "TegraExplorer.bin", false);
                         } else {
-                            UIGlobal.injectPayload(GlobalSettings.STANDARD_MODE_JTEGRANX_PAYLOAD_DIR_PATH + File.separator + "TegraExplorer.bin");
+                            UIGlobal.injectPayload(GlobalSettings.STANDARD_MODE_JTEGRANX_PAYLOAD_DIR_PATH + File.separator + "TegraExplorer.bin", false);
                         }
                     } else {
                         System.out.println("TegraExplorer bundled payload is disabled");
                     }
+                } else {
+                	System.out.println("Invalid -bp specification");
                 }
 
                 commandLineModeLoop(scanner);
             } else {
                 String payloadPath = command.substring(command.indexOf(" ") + 1);
-                UIGlobal.injectPayload(payloadPath);
+                UIGlobal.injectPayload(payloadPath, false);
                 commandLineModeLoop(scanner);
             }
         } else if (command.contains("update") && !command.contains("-autoupdate")) {
@@ -357,7 +422,7 @@ public class JTegraNX extends Application {
                 }
 
                 if (targetPayload.equalsIgnoreCase("fusee-primary")) {
-                    GlobalSettings.includeFuseePrimary = setTrue;
+                    GlobalSettings.includeFusee = setTrue;
                     PayloadHandler.updatePayloads();
                 } else if (targetPayload.equalsIgnoreCase("hekate")) {
                     GlobalSettings.includeHekate = setTrue;
@@ -423,7 +488,7 @@ public class JTegraNX extends Application {
         } else if (command.equals("gptrestore")) {
         	System.out.println("Loading gptrestore");
         	PayloadHandler.prepareGPTRestore();
-        	RCM.injectPayload(GlobalSettings.gptRestorePath);
+        	RCM.injectPayload(GlobalSettings.gptRestorePath, false);
         	commandLineModeLoop(scanner);
         } else if (command.equals("exit")) {
             UIGlobal.saveMainConfigFile();

@@ -19,23 +19,36 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
  */
-package configs;
 
-public class Config {
+package handlers;
 
-    private final String configName;
-    private final String payloadPath;
+import javafx.scene.control.Alert;
+import javafx.scene.control.ButtonType;
+import javafx.scene.control.ProgressBar;
 
-    public Config(String configName, String payloadPath) {
-        this.configName = configName;
-        this.payloadPath = payloadPath;
-    }
+public class ProgressAlert {
+	private Alert alert;
+	private ProgressBar bar;
+	
+	public ProgressAlert(Alert alert, ProgressBar bar) {
+		this.alert = alert;
+		this.bar = bar;
+	}
+	
+	public Alert getAlert() {
+		return alert;
+	}
 
-    public String getConfigName() {
-        return configName;
-    }
-
-    public String getPayloadPath() {
-        return payloadPath;
-    }
+	public ProgressBar getBar() {
+		return bar;
+	}
+	
+	public void show() {
+		this.alert.show();
+	}
+	
+	public void close() {
+		this.alert.getButtonTypes().add(ButtonType.OK);
+		this.alert.close();
+	}
 }
