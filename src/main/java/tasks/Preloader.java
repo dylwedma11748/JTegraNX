@@ -24,6 +24,7 @@ package tasks;
 
 import java.io.IOException;
 
+import org.kohsuke.github.GitHub;
 import org.kohsuke.github.GitHubBuilder;
 
 import configs.ConfigManager;
@@ -53,7 +54,7 @@ public class Preloader extends Task<Object> {
 		
 		try {
 			updateMessage("Connecting to GitHub");
-			GlobalSettings.gitHub = new GitHubBuilder().withOAuthToken(GlobalSettings.GITHUB_ACCESS_TOKEN).build();
+			GlobalSettings.gitHub = GitHub.connectAnonymously();
 			
 			if (!GlobalSettings.gitHub.isCredentialValid()) {
 				System.err.println("Failed to connect to GitHub: invalid credential");

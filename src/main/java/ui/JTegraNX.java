@@ -29,6 +29,7 @@ import java.util.Scanner;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
 
+import org.kohsuke.github.GitHub;
 import org.kohsuke.github.GitHubBuilder;
 
 import handlers.AlertHandler;
@@ -201,7 +202,7 @@ public class JTegraNX extends Application {
             if (UIGlobal.readMainConfigFile()) {
             	try {
             		System.out.println("Connecting to GitHub");
-        			GlobalSettings.gitHub = new GitHubBuilder().withOAuthToken(GlobalSettings.GITHUB_ACCESS_TOKEN).build();
+        			GlobalSettings.gitHub = GitHub.connectAnonymously();
         			
         			if (!GlobalSettings.gitHub.isCredentialValid()) {
         				System.err.println("Failed to connect to GitHub: invalid credential");
