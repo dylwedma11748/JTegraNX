@@ -112,6 +112,3 @@ For any bundled payloads, JTegraNX will download them automatically, place them 
 - [eliboa](https://github.com/eliboa) for the images from [TegraRcmGUI](https://github.com/eliboa/TegraRcmGUI).
 - The creators of Atmosphère for [fusee-primary](https://github.com/Atmosphere-NX/Atmosphere/releases).
 - [CTCaer](https://github.com/CTCaer) for [Hekate](https://github.com/CTCaer/hekate).
-
-## Donate
-[![Donations](https://www.paypalobjects.com/en_US/i/btn/btn_donateCC_LG.gif)](https://www.paypal.com/donate?business=2N3E52994D2KG&no_recurring=0&currency_code=USD)
