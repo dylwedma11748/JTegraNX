@@ -1,14 +1,7 @@
-![Png](https://img.shields.io/badge/Platforms-Windows%20x86--x64%20Linux%20x86--x64%20Mac%20OS%20X%20x86--x64-green)
-![Png](https://img.shields.io/badge/Latest%20release-1.6.9-green)
-![GitHub](https://img.shields.io/badge/License-GPL--2.0%20or%20later-green)
-![GitHub All Releases](https://img.shields.io/github/downloads/dylwedma11748/JTegraNX/total)
-![GitHub repo size](https://img.shields.io/github/repo-size/dylwedma11748/JTegraNX)
-[![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2Fdylwedma11748%2FJTegraNX.svg?type=small)](https://app.fossa.com/projects/git%2Bgithub.com%2Fdylwedma11748%2FJTegraNX?ref=badge_small)
-###
 ![Png](https://github.com/dylwedma11748/JTegraNX/blob/master/src/main/resources/images/banner.png)
 # JTegraNX - Another RCM payload injector
 
-In order to run this program, you need Java 8 or higher installed on your computer. You can download Java [here](https://www.java.com/en/).
+In order to run this program, you need Java 8 or higher installed on your computer.
 
 JTegraNX is supported on Windows, Linux, and Mac OS X.
 
