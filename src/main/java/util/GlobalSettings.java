@@ -27,7 +27,7 @@ import org.kohsuke.github.GitHub;
 
 public class GlobalSettings {
     
-	public static final String GITHUB_ACCESS_TOKEN = "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";
+	public static final String GITHUB_ACCESS_TOKEN = "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";
 	
 	public static final String JRE_ARCH = System.getProperty("sun.arch.data.model");
 
