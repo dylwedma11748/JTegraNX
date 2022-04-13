@@ -1,4 +1,4 @@
-![Png](https://github.com/dylwedma11748/JTegraNX/blob/master/src/main/resources/images/banner.png)
+![Png](https://raw.githubusercontent.com/dylwedma11748/JTegraNX/master/src/main/resources/images/banner.png)
 # JTegraNX - Another RCM payload injector
 
 In order to run this program, you need Java 8 or higher installed on your computer.
