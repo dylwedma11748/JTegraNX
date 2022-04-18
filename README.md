@@ -100,7 +100,7 @@ JTegraNX's old behavior for handling data files has been re-implemented as a sec
 For any bundled payloads, JTegraNX will download them automatically, place them in the "Payloads" directory, and optionally check for updates on them each time the program is launched. If updates are enabled and an update for a payload is found, it will be taken care of.
 
 ### Currently bundled payloads:
-- [fusee-primary](https://github.com/Atmosphere-NX/Atmosphere/releases)
+- [fusee](https://github.com/Atmosphere-NX/Atmosphere/releases)
 - [Hekate](https://github.com/CTCaer/hekate)
 - [Lockpick_RCM](https://github.com/shchmue/Lockpick_RCM)
 - [TegraExplorer](https://github.com/suchmememanyskill/TegraExplorer)
@@ -110,5 +110,5 @@ For any bundled payloads, JTegraNX will download them automatically, place them 
 - [rajkosto](https://github.com/rajkosto) for [gptrestore](https://github.com/rajkosto/gptrestore).
 - [shchmue](https://github.com/shchmue) for [Lockpick_RCM](https://github.com/shchmue/Lockpick_RCM).
 - [eliboa](https://github.com/eliboa) for the images from [TegraRcmGUI](https://github.com/eliboa/TegraRcmGUI).
-- The creators of Atmosphère for [fusee-primary](https://github.com/Atmosphere-NX/Atmosphere/releases).
+- [Atmosphere-NX](https://github.com/Atmosphere-NX) for [fusee](https://github.com/Atmosphere-NX/Atmosphere/releases).
 - [CTCaer](https://github.com/CTCaer) for [Hekate](https://github.com/CTCaer/hekate).
