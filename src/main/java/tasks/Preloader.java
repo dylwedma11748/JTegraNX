@@ -26,6 +26,8 @@ import java.io.IOException;
 
 import org.kohsuke.github.GitHub;
 import org.kohsuke.github.GitHubBuilder;
+import org.kohsuke.github.RateLimitHandler;
+import org.kohsuke.github.AbuseLimitHandler;
 
 import configs.ConfigManager;
 import handlers.PayloadHandler;
@@ -54,7 +56,10 @@ public class Preloader extends Task<Object> {
 		
 		try {
 			updateMessage("Connecting to GitHub");
-			GlobalSettings.gitHub = GitHub.connectAnonymously();
+			GlobalSettings.gitHub = new GitHubBuilder()
+					.withRateLimitHandler(RateLimitHandler.FAIL)
+					.withAbuseLimitHandler(AbuseLimitHandler.FAIL)
+					.build();
 			
 			if (!GlobalSettings.gitHub.isCredentialValid()) {
 				System.err.println("Failed to connect to GitHub: invalid credential");

@@ -157,22 +157,31 @@ public class MainUIController implements Initializable {
     private void browseForPayload() {
         FileChooser chooser = new FileChooser();
 
-        if (GlobalSettings.savedFolderPath != null) {
-            if (new File(GlobalSettings.savedFolderPath).exists()) {
-                chooser.setInitialDirectory(new File(GlobalSettings.savedFolderPath));
+        File initialDir = null;
+
+        if (GlobalSettings.savedFolderPath != null && new File(GlobalSettings.savedFolderPath).isDirectory()) {
+            initialDir = new File(GlobalSettings.savedFolderPath);
+        } else {
+            File preferredDir = GlobalSettings.portableMode
+                    ? GlobalSettings.PORTABLE_MODE_JTEGRANX_PAYLOAD_DIR
+                    : GlobalSettings.STANDARD_MODE_JTEGRANX_PAYLOAD_DIR;
+
+            if (!preferredDir.isDirectory()) {
+                preferredDir.mkdirs();
+            }
+
+            if (preferredDir.isDirectory()) {
+                initialDir = preferredDir;
             } else {
-                if (!GlobalSettings.portableMode) {
-                    chooser.setInitialDirectory(GlobalSettings.STANDARD_MODE_JTEGRANX_PAYLOAD_DIR);
-                } else {
-                    chooser.setInitialDirectory(GlobalSettings.PORTABLE_MODE_JTEGRANX_PAYLOAD_DIR);
+                File home = new File(System.getProperty("user.home"));
+                if (home.isDirectory()) {
+                    initialDir = home;
                 }
             }
-        } else {
-            if (!GlobalSettings.portableMode) {
-                chooser.setInitialDirectory(GlobalSettings.STANDARD_MODE_JTEGRANX_PAYLOAD_DIR);
-            } else {
-                chooser.setInitialDirectory(GlobalSettings.PORTABLE_MODE_JTEGRANX_PAYLOAD_DIR);
-            }
+        }
+
+        if (initialDir != null) {
+            chooser.setInitialDirectory(initialDir);
         }
 
         FileChooser.ExtensionFilter filter = new FileChooser.ExtensionFilter("RCM payload files (*.bin)", "*bin");

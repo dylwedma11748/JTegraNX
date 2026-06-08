@@ -83,7 +83,7 @@ public class PayloadHandler {
 		try {
 			fusee = GlobalSettings.gitHub.getRepository("Atmosphere-NX/Atmosphere");
 			hekate = GlobalSettings.gitHub.getRepository("CTCaer/hekate");
-			lockpickRCM = GlobalSettings.gitHub.getRepository("shchmue/Lockpick_RCM");
+			lockpickRCM = GlobalSettings.gitHub.getRepository("saneki/Lockpick_RCM");
 			tegraExplorer = GlobalSettings.gitHub.getRepository("suchmememanyskill/TegraExplorer");
 		} catch (IOException e) {
 			UIGlobal.appendLog("Failed to get payload repositories");

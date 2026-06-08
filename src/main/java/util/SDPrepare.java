@@ -114,7 +114,7 @@ public class SDPrepare extends Task<Object> {
 			
 			updateMessage("Getting Lockpick_RCM repository");
 			updateProgress(2, 47);
-			lockpickRCM = GlobalSettings.gitHub.getRepository("shchmue/Lockpick_RCM");
+			lockpickRCM = GlobalSettings.gitHub.getRepository("saneki/Lockpick_RCM");
 			
 			updateMessage("Getting JKSV repository");
 			updateProgress(3, 47);

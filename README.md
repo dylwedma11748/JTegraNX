@@ -102,13 +102,13 @@ For any bundled payloads, JTegraNX will download them automatically, place them 
 ### Currently bundled payloads:
 - [fusee](https://github.com/Atmosphere-NX/Atmosphere/releases)
 - [Hekate](https://github.com/CTCaer/hekate)
-- [Lockpick_RCM](https://github.com/shchmue/Lockpick_RCM)
+- [Lockpick_RCM](https://github.com/saneki/Lockpick_RCM)
 - [TegraExplorer](https://github.com/suchmememanyskill/TegraExplorer)
 
 # Credits
 - [suchmememanyskill](https://github.com/suchmememanyskill) for [TegraExplorer](https://github.com/suchmememanyskill/TegraExplorer).
 - [rajkosto](https://github.com/rajkosto) for [gptrestore](https://github.com/rajkosto/gptrestore).
-- [shchmue](https://github.com/shchmue) for [Lockpick_RCM](https://github.com/shchmue/Lockpick_RCM).
+- [shchmue](https://github.com/shchmue) for [Lockpick_RCM](https://github.com/saneki/Lockpick_RCM).
 - [eliboa](https://github.com/eliboa) for the images from [TegraRcmGUI](https://github.com/eliboa/TegraRcmGUI).
 - [Atmosphere-NX](https://github.com/Atmosphere-NX) for [fusee](https://github.com/Atmosphere-NX/Atmosphere/releases).
 - [CTCaer](https://github.com/CTCaer) for [Hekate](https://github.com/CTCaer/hekate).
